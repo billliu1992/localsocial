@@ -32,14 +32,42 @@ def get_user_by_platform_id(platform, plat_id):
 		FROM users WHERE loginPlatform=%s AND platformId=%s;
 		""", (platform,plat_id))
 
+	db_conn.commit()
 
 	user_row = cursor.fetchone()
 
 	returned_user = None
 	if(user_row != None):
-		returned_user = User(user_row[5], user_row[6], user_row[7], user_row[8],
-			user_row[1], user_row[2], user_row[3], user_row[4])
-		returned_user.user_id = user_row[0]
+		(user_id, access_token, access_secret, login_platform, platform_id,
+			first_name, last_name, nick_name, portrait) = user_row
+
+		returned_user = User(first_name, last_name, nick_name, portrait,
+			access_token, access_secret, login_platform, platform_id)
+
+		returned_user.user_id = user_id
+
+	return returned_user
+
+def get_user_by_id(user_id):
+	cursor = db_conn.cursor()
+
+	cursor.execute("""SELECT userId,accessToken,accessSecret,loginPlatform,platformId,
+			firstName,lastName,nickName,portrait
+			FROM users WHERE userId=%s;""", (user_id,))
+
+	db_conn.commit()
+
+	user_row = cursor.fetchone()
+
+	returned_user = None
+	if(user_row != None):
+		(user_id, access_token, access_secret, login_platform, platform_id,
+			first_name, last_name, nick_name, portrait) = user_row
+
+		returned_user = User(first_name, last_name, nick_name, portrait,
+			access_token, access_secret, login_platform, platform_id)
+
+		returned_user.user_id = user_id
 
 	return returned_user
 
@@ -76,6 +104,8 @@ def update_user(user_obj):
 		WHERE userId=%s;""",
 		(user_obj.access_token, user_obj.access_secret, user_obj.login_platform, user_obj.platform_id,
 			user_obj.first_name, user_obj.last_name, user_obj.last_name, user_obj.portrait))
+
+	db_conn.commit()
 
 	last_id = cursor.fetchone()[0]
 

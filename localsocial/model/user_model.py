@@ -10,3 +10,7 @@ class User():
 		self.access_secret = access_secret
 		self.login_platform = platform
 		self.platform_id = plat_id
+
+	@property
+	def full_name(self):
+		return self.first_name + " " + self.last_name

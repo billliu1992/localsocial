@@ -1,7 +1,7 @@
 from localsocial.service import facebook_service, user_service 
 
 from localsocial import app
-from flask import redirect, request
+from flask import redirect, request, session
 
 @app.route('/login/facebook')
 def facebook_login():
@@ -17,6 +17,8 @@ def facebook_login_callback():
 		access_token = facebook_service.get_access_token(app.config["FB_APP_ID"], app.config["FB_APP_SECRET"], code, "http://localhost:5000/login/facebook/callback")
 
 		logged_in_user = user_service.login_user_facebook(access_token)
+
+		session['user_id'] = logged_in_user.user_id
 
 		return "Created new user"
 

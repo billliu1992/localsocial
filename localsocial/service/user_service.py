@@ -14,3 +14,6 @@ def login_user_facebook(access_token):
 		logged_in_user = user_dao.create_user(logged_in_user)
 
 	return logged_in_user
+
+def get_user_by_id(user_id):
+	return user_dao.get_user_by_id(user_id)
