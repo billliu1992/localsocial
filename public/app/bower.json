@@ -1,0 +1,25 @@
+{
+  "name": "localsocial",
+  "homepage": "https://github.com/billliu1992/localsocial",
+  "authors": [
+    "Bill Liu <liu_bill@live.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "react": "~0.14.2",
+    "requirejs": "~2.1.20",
+    "axios": "~0.7.0",
+    "babel-polyfill": "~0.0.1"
+  }
+}

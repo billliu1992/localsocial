@@ -2,3 +2,6 @@
 *.pyo
 
 instance/
+
+**/bower_components/
+**/node_modules/
