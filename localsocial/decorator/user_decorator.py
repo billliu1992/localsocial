@@ -5,7 +5,6 @@ from flask import g, session
 def login_required(original_function):
 	@wraps(original_function)
 	def new_function(*args, **kwargs):
-		print("HIHIHIHI")
 		if 'user_id' in session:
 			g.user = user_service.get_user_by_id(session['user_id'])
 			return original_function(*args, **kwargs)

@@ -9,7 +9,7 @@ def create_new_post(author, body, privacy):
 
 	# Do Location Service call here
 
-	new_post = Post(author.user_id, author.full_name, body, current_time, "public", "", 0.0, 0.0)
+	new_post = Post(author.user_id, author.full_name, body, current_time, privacy, "", 0.0, 0.0)
 
 	post_dao.create_post(new_post)
 
