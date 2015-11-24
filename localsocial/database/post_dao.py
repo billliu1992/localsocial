@@ -77,6 +77,8 @@ def get_posts(limit, skip, max_id=None):
 			new_post = Post(author_id, author_name, post_body, post_date, 
 				privacy, city_name, longitude, latitude)
 
+		new_post.post_id = post_id
+
 		post_objects.append(new_post)
 
 	return post_objects
