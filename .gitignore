@@ -3,5 +3,9 @@
 
 instance/
 
+config.js
+
+public/target/
+
 **/bower_components/
 **/node_modules/

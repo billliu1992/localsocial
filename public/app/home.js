@@ -8,8 +8,20 @@ requirejs.config({
 	}
 });
 
-requirejs(['babel-polyfill', 'home-feed/home-feed-component', 'react', 'react-dom'], function(polyfill, HomeFeed, React, ReactDOM) {
+requirejs(['babel-polyfill', 
+	'home-feed/home-feed-component',
+	'react',
+	'react-dom',
+	'components/location-service'
+], function(polyfill, HomeFeed, React, ReactDOM, LocationService) {
 	'use strict';
+
+	LocationService.getLocation().then((position) => {
+		console.log(position);
+	},
+	(error) => {
+		console.log(error);
+	});
 
 	ReactDOM.render(
 		<HomeFeed />,

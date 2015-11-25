@@ -4,7 +4,7 @@ from flask import request, g
 from localsocial import app
 from localsocial.service import post_service
 from localsocial.decorator.user_decorator import login_required
-from localsocial.decorator.post_decorator import api_endpoint
+from localsocial.decorator.route_decorator import api_endpoint
 
 @api_endpoint('/post', methods=("GET",))
 @login_required

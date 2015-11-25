@@ -10,3 +10,4 @@ app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
 from localsocial.routes import user_routes
 from localsocial.routes import post_routes
 from localsocial.routes import web_routes
+from localsocial.routes import location_routes
