@@ -1,4 +1,5 @@
 from localsocial.database.db import db_conn
+from localsocial.model.location_model import Location
 from localsocial.model.post_model import Post, EventPost, ImagePost
 
 """
@@ -65,17 +66,19 @@ def get_posts(limit, skip, max_id=None):
 			longitude, latitude, event_id, event_name, event_location, event_start,
 			event_end, image_id) = row
 
+		post_location = Location(city_name, longitude, latitude)
+
 		if(event_id != None):
 			new_post = EventPost(author_id, author_name, post_body, post_date, 
-				privacy, city_name, longitude, latitude, event_id,
+				privacy, post_location, event_id,
 				event_name, event_location, event_start, event_end)
 
 		elif(image_id != None):
 			new_post = ImagePost(author_id, author_name, post_body, post_date, 
-				privacy, city_name, longitude, latitude, image_id)
+				privacy, post_location, image_id)
 		else:
 			new_post = Post(author_id, author_name, post_body, post_date, 
-				privacy, city_name, longitude, latitude)
+				privacy, post_location)
 
 		new_post.post_id = post_id
 
@@ -90,7 +93,7 @@ def create_post(post):
 		INSERT INTO posts 
 		(authorId, authorName, postBody, postDate, privacy, cityName, longitude, latitude)
 		VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING postId;
-		""", (post.author_id, post.author_name, post.body, post.post_date, post.privacy, post.city_name, 
+		""", (post.author_id, post.author_name, post.body, post.post_date, post.privacy, post.city, 
 			post.longitude, post.latitude))
 
 	db_conn.commit()

@@ -14,3 +14,10 @@ class User():
 	@property
 	def full_name(self):
 		return self.first_name + " " + self.last_name
+
+	def to_json_dict(self):
+		return { "firstName" : self.first_name,
+			"lastName" : self.last_name,
+			"nickName" : self.nick_name,
+			"portrait" : self.portrait,
+			"platform" : self.login_platform }

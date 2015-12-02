@@ -2,7 +2,8 @@ import json
 import localsocial.service.post_service
 from flask import request, g
 from localsocial import app
-from localsocial.service import post_service
+from localsocial.service import post_service, location_service
+from localsocial.model.location_model import Location
 from localsocial.decorator.user_decorator import login_required
 from localsocial.decorator.route_decorator import api_endpoint
 
@@ -25,7 +26,7 @@ def get_posts():
 
 	posts_json = []
 	for post in current_posts:
-		posts_json.append(post_service.get_post_json(post))
+		posts_json.append(post.to_json_dict())
 
 	output_json["posts"] = posts_json
 
@@ -34,11 +35,19 @@ def get_posts():
 
 @api_endpoint('/post', methods=("POST",))
 @login_required
-def put_posts():
+def create_posts():
 	current_user = g.user
 
 	body = request.form['post-body']
 	privacy = request.form['privacy']
+
+	current_location = None
+
+	#manual location input
+	city = request.form.get('city', None)
+	longitude = request.form.get('longitude', None)
+	latitude = request.form.get('latitude', None)
+
 
 	if(len(body) < 10):
 		return {
@@ -46,10 +55,24 @@ def put_posts():
 			"message" : "Please include a post body with length greater than 10"
 		}
 	else:
-		new_post = post_service.create_new_post(current_user, body, privacy)
+		if city != None:
+			try:
+				longitude_parsed = float(longitude)
+				latitude_parsed = float(latitude)
+			except:
+				return { "error" : True, "message" : "Longitude and latitude needs to be decimals" }
+
+			current_location = Location(city, longitude_parsed, latitude_parsed)
+		else:
+			try:
+				current_location = location_service.get_geoip_location(request.remote_addr)
+			except:
+				return { "error" : True, "message" : "Server could not get a location" }, 500
+
+		new_post = post_service.create_new_post(current_user, body, privacy, current_location)
 
 		result_json_dict = {
 			"error" : False,
-			"result" : post_service.get_post_json(new_post)
+			"result" : new_post.to_json_dict()
 		}
 		return result_json_dict

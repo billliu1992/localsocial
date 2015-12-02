@@ -8,20 +8,23 @@ requirejs.config({
 	}
 });
 
+var doGeolocation = function() {
+};
+
 requirejs(['babel-polyfill', 
 	'home-feed/home-feed-component',
 	'react',
 	'react-dom',
-	'components/location-service'
-], function(polyfill, HomeFeed, React, ReactDOM, LocationService) {
+	'components/location-service',
+	'components/user-service'
+], function(polyfill, HomeFeed, React, ReactDOM, LocationService, UserService) {
 	'use strict';
 
-	LocationService.getLocation().then((position) => {
-		console.log(position);
-	},
-	(error) => {
-		console.log(error);
-	});
+	window.doGeolocation = function() {
+		LocationService.doBrowserGeolocation().then(function(location) {
+			UserService.setCustomLocation(location);
+		});
+	};
 
 	ReactDOM.render(
 		<HomeFeed />,

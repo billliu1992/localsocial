@@ -9,3 +9,6 @@ class Location(object):
 		self.city = city
 		self.longitude = longitude
 		self.latitude = latitude
+
+	def to_json_dict(self):
+		return self.__dict__

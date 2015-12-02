@@ -2,12 +2,14 @@ define(
 	[
 		'react',
 		'components/post-service',
+		'components/user-service',
 		'home-feed/feed/feed-component', 
 		'home-feed/post-form/post-form-component'
 	], 
 	function(
 		React,
 		PostService,
+		UserService,
 		Feed, 
 		NewPostForm
 	) {
@@ -45,6 +47,14 @@ define(
 			},
 
 			submitPost(newPost) {
+				var locationOverride = UserService.getCustomLocation();
+
+				if(locationOverride) {
+					newPost.city = locationOverride.city;
+					newPost.longitude = locationOverride.longitude;
+					newPost.latitude = locationOverride.latitude;
+				}
+
 				PostService.savePost(newPost);
 
 				this.getNewPosts();

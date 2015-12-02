@@ -1,98 +1,61 @@
-define(['axios', 'components/google-maps-service'], function(axios, GoogleMapsService) {
+define(['axios', 'components/google-maps-service', 'components/coordinates-model'], function(axios, GoogleMapsService, Coordinates) {
 	'use strict';
 
 	var GEOIP_API_URL = '/location';
 
-	var UserLocation = function(cityName, longitude, latitude) {
-		this.cityName = cityName;
-		this.longitude = longitude;
-		this.latitude = latitude;
-	};
+	var LocationService = {
+		doBrowserGeolocation() {
+			var browserGeolocationPromise = new Promise((resolve, reject) => {
+				if(navigator.geolocation) {
+					navigator.geolocation.getCurrentPosition((position) => {
+						GoogleMapsService.defer().then(() => {
+							// TODO maybe reuse
+							var geocoder = new google.maps.Geocoder();
 
-	var doGeolocation = function() {
-		var browserGeolocationPromise = new Promise((resolve, reject) => {
-			if(navigator.geolocation) {
-				navigator.geolocation.getCurrentPosition((position) => {
-					GoogleMapsService.defer().then(() => {
-						// TODO maybe reuse
-						var geocoder = new google.maps.Geocoder();
+							geocoder.geocode({
+								location : {
+									lat : position.coords.latitude,
+									lng : position.coords.longitude
+								}
+							},
+							(results, status) => {
+								if(status === google.maps.GeocoderStatus.OK) {
+									var cityName = null;
 
-						geocoder.geocode({
-							location : {
-								lat : position.coords.latitude,
-								lng : position.coords.longitude
-							}
-						},
-						(results, status) => {
-							if(status === google.maps.GeocoderStatus.OK) {
-								var cityName = null;
+									if(results && results[0]) {
+										for(var componentIdx in results[0].address_components) {
+											var addressComponent = results[0].address_components[componentIdx];
 
-								if(results && results[0]) {
-									for(var componentIdx in results[0].address_components) {
-										var addressComponent = results[0].address_components[componentIdx];
+											if(addressComponent.types.indexOf('locality') !== -1) {
+												var userLocation = new Coordinates(addressComponent.short_name, position.coords.longitude, position.coords.latitude);
 
-										if(addressComponent.types.indexOf('locality') !== -1) {
-											resolve(addressComponent.short_name);
+												resolve(userLocation);
 
-											return;
+												return;
+											}
 										}
+									}
+									else {
+										reject();
 									}
 								}
 								else {
 									reject();
 								}
-							}
-							else {
-								reject();
-							}
+							});
 						});
+					}, (error) => {
+						reject();
 					});
-				}, (error) => {
+				}
+				else {
 					reject();
-				});
-			}
-			else {
-				reject();
-			}
-		});
-
-		return browserGeolocationPromise;
-	};
-
-	var doGeoip = function() {
-		var geoipApiRequestPromise = new Promise((resolve, reject) => {
-			axios.get(GEOIP_API_URL)
-				.then((response) => {
-					resolve(new UserLocation(response.city, response.longitude, response.latitude));
-				})
-				.catch((response) => {
-					if(errorCallback) {
-						reject({ statusCode : response.status, data : response.data });
-					}
-				});
-		});
-	};
-
-	var currentLocationPromise = new Promise((resolve, reject) => {
-		doGeolocation().then((position) => {
-			resolve(position);
-		},
-		() => {
-			doGeoip().then((position) => {
-				resolve(position);
-			},
-			() => {
-				reject(position);
+				}
 			});
-		});
-	});
 
-	var LocationService = {
-		getLocation() {
-			return currentLocationPromise;
+			return browserGeolocationPromise;
 		}
 	};
 
 	return LocationService;
-
 });

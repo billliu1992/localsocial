@@ -7,10 +7,7 @@ from flask import request
 def get_geoip_location():
 	ip_address = request.remote_addr
 
-	result_dict = location_service.get_geoip_location(ip_address)
+	current_location = location_service.get_geoip_location(ip_address)
 
-	if result_dict.get("error", False) == False:
-		return result_dict, 200
-	else:
-		return result_dict, 500
+	return current_location.to_json_dict()
 

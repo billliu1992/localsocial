@@ -1,6 +1,8 @@
 from localsocial.service import facebook_service, user_service 
 
 from localsocial import app
+from localsocial.decorator.user_decorator import login_required
+from localsocial.decorator.route_decorator import api_endpoint
 from flask import redirect, request, session
 
 @app.route('/login/facebook')
@@ -20,8 +22,15 @@ def facebook_login_callback():
 
 		session['user_id'] = logged_in_user.user_id
 
-		return "Created new user"
+		return "Created new user"	#TODO Redirect to home page
 
 @app.route("/login/facebook/error")
 def facebook_login_error():
 	return "Error"
+
+@api_endpoint('/user/me')
+@login_required
+def get_current_user():
+	current_user = g.user
+
+	return current_user.to_json_dict()
