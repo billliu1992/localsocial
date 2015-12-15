@@ -13,8 +13,8 @@ def create_new_post(author, body, privacy, location):
 
 	return new_post
 
-def get_posts(page_num=1, post_per_page=10, max_id = None):
+def get_post_feed(user, location, max_dist=25, page_num=1, post_per_page=10, max_id = None):
 	if(page_num < 1):
 		page_num = 1
 		
-	return post_dao.get_posts(post_per_page, (page_num - 1) * post_per_page, max_id)
+	return post_dao.get_post_feed(location, max_dist, post_per_page, (page_num - 1) * post_per_page, max_id)

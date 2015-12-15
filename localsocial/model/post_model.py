@@ -29,7 +29,7 @@ class Post(object):
 	def to_json_dict(self):
 		post_dict = self.__dict__
 
-		post_dict['post_date'] = str(post_dict['post_date'])
+		post_dict['post_date'] = post_dict['post_date'].isoformat("T")
 		post_dict['location'] = post_dict['location'].to_json_dict()
 
 		return post_dict

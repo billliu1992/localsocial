@@ -29,7 +29,7 @@ define(
 				return (
 					<div className="home-feed-area">
 						<NewPostForm onSubmit={ this.submitPost } />
-						<Feed posts={ this.state.posts } />
+						<Feed posts={ this.state.posts } location={ this.state.location } />
 					</div>
 				);
 			},
@@ -37,7 +37,7 @@ define(
 			getNewPosts() {
 				PostService.getPosts().then(
 					(data) => {
-						this.setState({ posts : data.posts });
+						this.setState({ posts : data.posts, location : data.current_location });
 					},
 					(error) => {
 						// TODO error state

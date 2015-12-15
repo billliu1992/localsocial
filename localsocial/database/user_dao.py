@@ -68,6 +68,8 @@ def get_user_by_id(user_id):
 			access_token, access_secret, login_platform, platform_id)
 
 		returned_user.user_id = user_id
+	else:
+		raise Exception("No user found in database")
 
 	return returned_user
 

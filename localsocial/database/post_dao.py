@@ -37,6 +37,64 @@ self.event_name = event_name
 self.picture_id = picture_id
 """
 
+def get_post_feed(current_location, range, limit, skip, max_id=None):
+	cursor = db_conn.cursor()
+
+	current_long = current_location.longitude
+	current_lat = current_location.latitude
+
+	if(max_id == None):
+		cursor.execute("""
+			SELECT
+			postId, authorId, authorName, postBody, postDate, privacy, cityName, longitude, latitude,
+			eventId, eventName, eventLocation, eventStart, eventEnd,
+			imageId
+			FROM posts
+			WHERE sqrt((longitude - %s) ^ 2 + (latitude - %s) ^ 2) < %s
+			ORDER BY postId DESC
+			LIMIT %s OFFSET %s;""", (current_long, current_lat, range, limit, skip)) 
+	else:
+		cursor.execute("""
+			SELECT
+			postId, authorId, authorName, postBody, postDate, privacy, cityName, longitude, latitude,
+			eventId, eventName, eventLocation, eventStart, eventEnd,
+			imageId
+			FROM posts
+			WHERE sqrt((longitude - %s) ^ 2 + (latitude - %s) ^ 2) < %s AND postId < %s
+			ORDER BY postId DESC
+			LIMIT %s OFFSET %s;""", (current_long, current_lat, range, max_id, limit, skip))
+
+	db_conn.commit()
+
+	post_rows = cursor.fetchall()
+
+	post_objects = []
+
+	for row in post_rows:
+		(post_id, author_id, author_name, post_body, post_date, privacy, city_name,
+			longitude, latitude, event_id, event_name, event_location, event_start,
+			event_end, image_id) = row
+
+		post_location = Location(city_name, longitude, latitude)
+
+		if(event_id != None):
+			new_post = EventPost(author_id, author_name, post_body, post_date, 
+				privacy, post_location, event_id,
+				event_name, event_location, event_start, event_end)
+
+		elif(image_id != None):
+			new_post = ImagePost(author_id, author_name, post_body, post_date, 
+				privacy, post_location, image_id)
+		else:
+			new_post = Post(author_id, author_name, post_body, post_date, 
+				privacy, post_location)
+
+		new_post.post_id = post_id
+
+		post_objects.append(new_post)
+
+	return post_objects
+
 def get_posts(limit, skip, max_id=None):
 	cursor = db_conn.cursor()
 
@@ -46,7 +104,8 @@ def get_posts(limit, skip, max_id=None):
 			postId, authorId, authorName, postBody, postDate, privacy, cityName, longitude, latitude,
 			eventId, eventName, eventLocation, eventStart, eventEnd,
 			imageId
-			FROM posts ORDER BY postId DESC LIMIT %s OFFSET %s;""", (limit, skip))
+			FROM posts
+			ORDER BY postId DESC LIMIT %s OFFSET %s;""", (limit, skip))
 	else:
 		cursor.execute("""
 			SELECT 
