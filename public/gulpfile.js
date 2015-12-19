@@ -9,12 +9,12 @@ gulp.task('clean', () => {
 		]);
 });
 
-gulp.task('html', () => {
+gulp.task('html', ['clean'], () => {
 	return gulp.src('app/**/*.html')
 		.pipe(gulp.dest('target/'));
 });
 
-gulp.task('javascript', () => {
+gulp.task('javascript', ['clean'],  () => {
 	return gulp.src('app/**/*.js')
 		.pipe(babel(
 			{
@@ -26,7 +26,7 @@ gulp.task('javascript', () => {
 		.pipe(gulp.dest('target/'));
 });
 
-gulp.task('less', () => {
+gulp.task('less', ['clean'],  () => {
 	return gulp.src('app/**/*.less')
 		.pipe(less())
 		.pipe(gulp.dest('target/'));
