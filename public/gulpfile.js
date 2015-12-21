@@ -32,6 +32,11 @@ gulp.task('less', ['clean'],  () => {
 		.pipe(gulp.dest('target/'));
 });
 
-gulp.task('build-dev', ['clean', 'html', 'javascript', 'less']);
+gulp.task('bower', ['clean'], () => {
+	return gulp.src('bower_components/**/*')
+		.pipe(gulp.dest('target/bower_components'));
+});
+
+gulp.task('build-dev', ['clean', 'bower', 'html', 'javascript', 'less']);
 
 gulp.task('default', ['build-dev']);
