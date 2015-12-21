@@ -1,0 +1,52 @@
+@import (reference) "app/common";
+
+#post-form {
+	.do-side-padding() {
+		padding-left: 2em;
+		padding-right: 2em;
+	}
+
+	.post-body {
+		.do-side-padding();
+
+		padding-top: 1em;
+		padding-bottom: .5em;
+
+		.post-author-info {
+			width: 20%;
+			display: inline-block;
+			vertical-align: top;
+		}
+
+		textarea {
+			width: 80%;
+			height: 5em;
+			padding: .3em;
+
+			resize: none;
+
+			border: none;
+			background-color: white;
+
+			margin: 0;
+			box-sizing: border-box;
+		}
+
+	}
+
+	.post-privacy-settings {
+		.do-side-padding();
+
+		padding-top: .5em;
+		padding-bottom: .5em;
+
+	}
+	
+	.post-buttons {
+		.do-side-padding();
+		padding-top: .5em;
+		padding-bottom: .5em;
+
+		background-color: @lightGreen;
+	}
+}

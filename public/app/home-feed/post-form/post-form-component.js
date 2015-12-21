@@ -12,12 +12,16 @@ define(['react'], function(React) {
 		},
 		render() {
 			return (
-				<form onSubmit={this.submitNewPost }>
-					<fieldset>
-						<textarea value={this.state.postBody} onChange={ this.updatePostBody }>
+				<form id="post-form" className="pod" onSubmit={this.submitNewPost }>
+					<fieldset className="post-body">
+						<div className="post-author-info">
+							Portrait
+						</div>
+						
+						<textarea value={this.state.postBody} onChange={ this.updatePostBody } placeholder="Say something">
 						</textarea>
 					</fieldset>
-					<fieldset>
+					<fieldset className="post-privacy-settings">
 						<select value={this.state.privacyDropdown} onChange={ this.updatePrivacyDropdown }>
 							<option value="public">Public</option>
 							<option value="friends">Friends Only</option>
@@ -29,7 +33,8 @@ define(['react'], function(React) {
 						Only show city name
 						<input type="checkbox" checked={ this.state.privacyCityName } onChange={ this.updatePrivacyCityName } />
 					</fieldset>
-					<fieldset>
+					<fieldset className="post-buttons">
+						<button>Cancel</button>
 						<button>Submit</button>
 					</fieldset>
 				</form>

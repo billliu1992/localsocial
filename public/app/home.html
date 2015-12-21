@@ -3,13 +3,32 @@
 	<head>
 		<script data-main="home.js" src="bower_components/requirejs/require.js"></script>
 
+		<link rel="stylesheet" href="home.css"></link>
+		<link rel="stylesheet" href="home-feed/post-form/post-form.css"></link>
+
 		<title>Localsocial Home</title>
 	</head>
 
 	<body>
-		<a href="/login/facebook">Login</a>
-		<button type="button" onclick="doGeolocation();">Geolocation</button>
-		<section id="post-feed">
-		</section>
+		<nav>
+			<div class="contained">
+				<a href="/login/facebook">Login</a>
+				<button type="button" onclick="doGeolocation();">Geolocation</button>
+			</div>
+		</nav>
+
+		<main class="contained main-content">
+			<div class="left-bar">
+				<aside class="your-profile">
+					Your profile here
+				</aside>
+				<aside class="your-location">
+				</aside>
+				<aside class="legal-misc">
+					&copy; 2015 Bill Liu
+				</aside>
+			</div>
+			<section id="post-feed"></section>
+		</main>
 	</body>
 </html>

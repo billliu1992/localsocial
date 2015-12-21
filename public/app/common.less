@@ -1,0 +1,35 @@
+@backgroundWhite: #FFF;
+@lightGreen: #D9FFE6;
+@medGreen: #6AEB95;
+@darkGreen: #29cc60;
+@darkerGreen: #39BF66;
+@darkestGreen: #268044;
+
+
+.contained { 
+	max-width: 800px;
+	margin: 0 auto;
+}
+
+@podBorderWidth: 1px;
+@podBorderRadius: 5px;
+@podColor: @medGreen;
+.pod {
+	background-color: white;
+
+	border-radius: @podBorderRadius;
+	border: 1px solid @podColor;
+
+	overflow: hidden;
+
+
+	.pod-section {
+		border-style: solid;
+		border-color: @podColor;
+		border-width: 0 0 @podBorderWidth 0;
+
+		&:last-child {
+			border-width: 0;
+		}
+	}
+}
