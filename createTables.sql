@@ -1,17 +1,30 @@
-CREATE TYPE platform AS ENUM ('facebook', 'twitter', 'instagram');
+DROP TABLE IF EXISTS posts;
+DROP TYPE IF EXISTS privacyValues;
+DROP TABLE IF EXISTS platformLink;
+DROP TYPE IF EXISTS platform;
+DROP TABLE IF EXISTS users;
 
 CREATE TABLE users (
 	userId			SERIAL PRIMARY KEY,
-	accessToken		VARCHAR(250) NOT NULL,
-	accessSecret	VARCHAR(250),
-	loginPlatform	platform NOT NULL,
-	platformId		VARCHAR(75),
+	hash			VARCHAR(60) NOT NULL,
+	salt			VARCHAR(60) NOT NULL,
+
+	email			VARCHAR(60) UNIQUE NOT NULL,
+	phone			BIGINT CHECK(phone > 0),
 
 	firstName		VARCHAR(30) NOT NULL,
 	lastName		VARCHAR(30) NOT NULL,
 	nickName		VARCHAR(30),
-	portrait		VARCHAR(30),
-	UNIQUE(loginPlatform, platformId)
+	portrait		VARCHAR(30)
+);
+
+CREATE TYPE platform AS ENUM ('facebook', 'twitter', 'instagram');;
+
+CREATE TABLE platformLink (
+	userId			INTEGER REFERENCES users (userId) NOT NULL,
+	loginPlatform	platform NOT NULL,
+	externalId		VARCHAR(75) NOT NULL,
+	UNIQUE(loginPlatform, externalId)
 );
 
 CREATE TYPE privacyValues as ENUM ('public', 'hide_last_name', 'hide_location', 'hide_both', 'friends');

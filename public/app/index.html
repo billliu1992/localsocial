@@ -4,6 +4,34 @@
 		<title>Localsocial</title>
 	</head>
 	<body>
-		Hello
+		Login Form:
+
+		<form action="/user/login" method="POST">
+			Email
+			<input type="text" name="email" />
+			Pass
+			<input type="password" name="password" />
+
+			<button>Submit</button>
+		</form>
+
+		<form action="/user/create" method="POST">
+			Email
+			<input type="email" name="email" />
+			Phone
+			<input type="text" name="phone" />
+			First
+			<input type="text" name="first-name" />
+			Last
+			<input type="text" name="last-name" />
+			Nick
+			<input type="text" name="nick-name" />
+			Password
+			<input type="password" name="password" />
+			Confirm
+			<input type="password" name="confirm-password" />
+
+			<button>Submit</button>
+		</form>
 	</body>
 </html>
