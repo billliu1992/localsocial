@@ -1,8 +1,10 @@
 define([
 	'components/post-service',
+	'home-feed/feed/post/replies/replies-component',
 	'react'
 ], function(
 	PostService,
+	Replies,
 	React
 ) {
 	'use strict';
@@ -16,7 +18,6 @@ define([
 				return PostService.getDistance(postCoords, feedCoords, true);
 			}
 		},
-		
 		render() {
 			var dateObject = new Date(this.props.post['post_date']);
 
@@ -30,6 +31,7 @@ define([
 					<span>{ dateObject.toString() }</span>
 					<span>{ this.props.post['privacy'] }</span>
 					<hr />
+					<Replies replies={this.props.post.replies} location={this.props.post.location} postId={this.props.post.post_id} />
 				</div>
 			);
 		}

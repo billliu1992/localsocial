@@ -51,3 +51,17 @@ CREATE TABLE posts (
 	-- Image values
 	imageId			VARCHAR(30)
 );
+
+CREATE TABLE replies (
+	replyId			SERIAL PRIMARY KEY,
+	postId			INTEGER REFERENCES posts (postId) NOT NULL,
+	authorId		INTEGER REFERENCES users (userId) NOT NULL,
+	authorName		VARCHAR(60) NOT NULL,
+	replyBody		TEXT NOT NULL,
+	replyDate		TIMESTAMPTZ,
+	cityName		TEXT NOT NULL,
+	longitude		DOUBLE PRECISION NOT NULL,
+	latitude		DOUBLE PRECISION NOT NULL,
+
+	edited			BOOLEAN NOT NULL
+);
