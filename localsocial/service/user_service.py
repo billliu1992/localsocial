@@ -1,5 +1,5 @@
 from localsocial.model.user_model import User
-from localsocial.database import user_dao, ext_platform_dao
+from localsocial.database import user_dao, ext_platform_dao, user_relations_dao
 from localsocial.service import facebook_service, auth_service
 
 def login_user_facebook(access_token):
@@ -35,3 +35,21 @@ def create_new_user(user_obj, new_password):
 
 def get_user_by_id(user_id):
 	return user_dao.get_user_by_id(user_id)
+
+def get_followers(user_id):
+	return user_relations_dao.get_follows(user_id)
+
+def get_following(user_id):
+	return user_relations_dao.get_follows(user_id, reverse=True)
+
+def get_friends(user_id):
+	return user_relations_dao.get_friends(user_id, mutual=True)
+
+def get_friend_requests(user_id):
+	return user_relations_dao.get_friends(user_id, reverse=True, not_mutual=True)
+
+def create_follow(requester_id, requested_id):
+	return user_relations_dao.create_follow(requester_id, requested_id)
+
+def create_friend(requester_id, requested_id):
+	return user_relations_dao.create_friend(requester_id, requested_id)

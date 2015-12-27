@@ -9,6 +9,30 @@
 	<body>
 		<a href="/login/facebook">Login</a>
 		<button type="button" onclick="doGeolocation();">Geolocation</button>
+
+		<section id="friend-follow-debug">
+			<script>
+				function doFriend(event) {
+					var userId = document.getElementById('debug-user-id').value;
+
+					event.target.action = '/user/' + userId + '/follows/request';
+					event.target.method = 'POST';
+					console.log("HIHIHI");
+				}
+
+				function doFollow(event) {
+					var userId = document.getElementById('debug-user-id').value;
+
+					event.target.action = '/user/' + userId + '/friends/request';
+					event.target.method = 'POST';
+					console.log("HIHIHI");
+				}
+			</script>
+			<input type="text" id="debug-user-id" />
+			<form onSubmit="doFriend(event)" method="POST"><button>Friend</button></form>
+			<form onSubmit="doFollow(event)" method="POST"><button>Follow</button></form>
+		</section>
+
 		<section id="post-feed">
 		</section>
 	</body>

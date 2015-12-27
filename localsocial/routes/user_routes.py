@@ -1,10 +1,10 @@
 from localsocial import app
-from localsocial.decorator.user_decorator import login_required
+from localsocial.decorator.user_decorator import login_required, query_user
 from localsocial.decorator.route_decorator import api_endpoint
 from localsocial.service import facebook_service, user_service 
 from localsocial.model.user_model import User
 
-from flask import redirect, request, session
+from flask import redirect, request, session, g
 
 @app.route('/user/login/facebook')
 def facebook_login():
@@ -65,9 +65,59 @@ def create_user():
 		return { "success" : True }
 
 
-@api_endpoint('/user/me')
+@api_endpoint('/user/<queried_user_identifier>')
 @login_required
-def get_current_user():
+@query_user(get_object = True)
+def get_user(queried_user_identifier):
+	requested_user = g.queried_user
+
+	return requested_user.to_json_dict()
+	
+@api_endpoint('/user/<queried_user_identifier>/friends', methods=("GET",))
+@login_required
+@query_user()
+def get_friends(queried_user_identifier):
+	queried_user_id = g.queried_user_id
+
+	return user_service.get_friends(queried_user_id)
+
+@api_endpoint('/user/me/friends/request', methods=("GET",))
+@login_required
+def get_friend_requests():
 	current_user = g.user
 
-	return current_user.to_json_dict()
+	return user_service.get_friend_requests(current_user.user_id)
+
+@api_endpoint('/user/<queried_user_identifier>/follows', methods=("GET",))
+@login_required
+@query_user()
+def get_followers(queried_user_identifier):
+	queried_user_id = g.queried_user_id
+
+	return user_service.get_followers(queried_user_id)
+
+@api_endpoint('/user/<queried_user_identifier>/follows/followers', methods=("GET",))
+@login_required
+@query_user()
+def get_following(queried_user_identifier):
+	queried_user_id = g.queried_user_id
+
+	return user_service.get_following(queried_user_id)
+
+@api_endpoint('/user/<queried_user_identifier>/friends/request', methods=("POST",))
+@login_required
+@query_user(self_check = True)
+def create_friend(queried_user_identifier):
+	current_user = g.user
+	queried_user_id = g.queried_user_id
+	
+	return user_service.create_friend(current_user.user_id, queried_user_id)
+
+@api_endpoint('/user/<queried_user_identifier>/follows/request', methods=("POST",))
+@login_required
+@query_user(self_check = True)
+def create_follow(queried_user_identifier):
+	current_user = g.user
+	queried_user_id = g.queried_user_id
+
+	return user_service.create_follow(current_user.user_id, queried_user_id)
