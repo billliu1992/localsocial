@@ -65,3 +65,15 @@ CREATE TABLE replies (
 
 	edited			BOOLEAN NOT NULL
 );
+
+CREATE TABLE userFollows (
+	firstUserId			INTEGER REFERENCES users (userId) NOT NULL,
+	secondUserId		INTEGER REFERENCES users (userId) NOT NULL,
+	UNIQUE(firstUserId, secondUserId)
+);
+
+CREATE TABLE userFriends (
+	firstUserId			INTEGER REFERENCES users (userId) NOT NULL,
+	secondUserId		INTEGER REFERENCES users (userId) NOT NULL,
+	UNIQUE(firstUserId, secondUserId)
+);

@@ -71,3 +71,11 @@ def get_current_user():
 	current_user = g.user
 
 	return current_user.to_json_dict()
+
+@api_endpoint('/user/<int:user_id>/friend', methods=("POST",))
+def create_friend():
+	pass
+
+@api_endpoint('/user/<int:user_id>/follow', methods=("POST",))
+def create_follow():
+	pass

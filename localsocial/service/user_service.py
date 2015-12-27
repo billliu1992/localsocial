@@ -32,6 +32,3 @@ def create_new_user(user_obj, new_password):
 	password_hash, salt = auth_service.hash_password(new_password)
 
 	return user_dao.create_user_by_email(user_obj, password_hash, salt)
-
-def get_user_by_id(user_id):
-	return user_dao.get_user_by_id(user_id)
