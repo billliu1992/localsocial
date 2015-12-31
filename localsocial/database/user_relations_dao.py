@@ -1,6 +1,6 @@
 from psycopg2.extensions import AsIs
 
-from localsocial.database.db import db_conn
+from localsocial.database.db import db_conn, handled_execute
 
 FRIENDS_TABLE = "userFriends"
 FOLLOWS_TABLE = "userFollows"
@@ -12,14 +12,10 @@ def create_follow(user_id1, user_id2):
 	return create_relationship(user_id1, user_id2, FOLLOWS_TABLE)
 
 def create_relationship(user_id1, user_id2, relation_type):
-	cursor = db_conn.cursor()
-
-	cursor.execute("""
+	handled_execute(db_conn, """
 		INSERT INTO %s (firstUserId, secondUserId)
 		VALUES (%s, %s)
 		""", (AsIs(relation_type), user_id1, user_id2))
-
-	db_conn.commit()
 
 	return True
 
@@ -30,14 +26,10 @@ def delete_follow(user_id1, user_id2):
 	return delete_relationship(user_id1, user_id2, FOLLOWS_TABLE)
 
 def delete_relationship(user_id1, user_id2, relation_type):
-	cursor = db_conn.cursor()
-
-	cursor.execute("""
+	handled_execute(db_conn, """
 		DELETE FROM %s
 		WHERE firstUserId = %s, secondUserId = %s;
 		""", (AsIs(relation_type), user_id1, user_id2))
-
-	db_conn.commit()
 
 	return True
 
@@ -48,8 +40,6 @@ def get_follows(user_id, **kwargs):
 	return get_relationships(user_id, FOLLOWS_TABLE, **kwargs)
 
 def get_relationships(user_id, relation_type, **kwargs):
-	cursor = db_conn.cursor()
-
 	reverse = kwargs.get('reverse', False)
 	mutual = kwargs.get('mutual', False)
 	not_mutual = kwargs.get('not_mutual', False)
@@ -64,25 +54,23 @@ def get_relationships(user_id, relation_type, **kwargs):
 		query_params["target"] = AsIs("secondUserId")
 
 	if mutual:
-		cursor.execute("""
+		cursor = handled_execute(db_conn, """
 			SELECT %(target)s FROM %(table)s
 			WHERE %(initiator)s = %(user_id)s AND %(target)s IN
 				(SELECT %(initiator)s FROM %(table)s
 					WHERE %(target)s = %(user_id)s)
 			""", query_params)
 	elif not_mutual:
-		cursor.execute("""
+		cursor = handled_execute(db_conn, """
 			SELECT %(target)s FROM %(table)s
 			WHERE %(initiator)s = %(user_id)s AND NOT %(target)s IN
 				(SELECT %(initiator)s FROM %(table)s
 					WHERE %(target)s = %(user_id)s)
 			""", query_params)
 	else:
-		cursor.execute("""
+		cursor = handled_execute(db_conn, """
 			SELECT %(target)s FROM %(table)s WHERE %(initiator)s = %(user_id)s
 			""", query_params)
-
-	db_conn.commit()
 
 	result_rows = cursor.fetchall()
 

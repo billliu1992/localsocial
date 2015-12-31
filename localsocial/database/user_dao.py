@@ -1,6 +1,7 @@
+from localsocial.exceptions import DAOException
 from localsocial.model.user_model import User
 from localsocial.model.user_credentials_model import UserCredentials
-from localsocial.database.db import db_conn
+from localsocial.database.db import db_conn, handled_execute
 
 from psycopg2.extensions import AsIs
 
@@ -30,13 +31,10 @@ from psycopg2.extensions import AsIs
 	"""
 
 def get_user_by_field(field, value):
-	cursor = db_conn.cursor()
-
-	cursor.execute("""SELECT userId, email, phone,
+	cursor = handled_execute(db_conn, """
+			SELECT userId, email, phone,
 			firstName,lastName,nickName,portrait
 			FROM users WHERE %s=%s;""", (AsIs(field), value))
-
-	db_conn.commit()
 
 	user_row = cursor.fetchone()
 
@@ -49,7 +47,7 @@ def get_user_by_field(field, value):
 
 		returned_user.user_id = user_id
 	else:
-		raise Exception("No user found in database")
+		raise DAOException("No user found in database with field " + str(field) + " with value " + str(value))
 
 	return returned_user
 
@@ -64,15 +62,11 @@ def get_user_by_id(user_id):
 
 
 def create_user_by_field(user_obj, field_name, field_value, password_hash, salt):
-	cursor = db_conn.cursor()
-
-	cursor.execute("""INSERT INTO users 
+	cursor = handled_execute(db_conn, """INSERT INTO users 
 		(%s, hash, salt, firstName, lastName, nickName, portrait) 
 		VALUES (%s, %s, %s, %s, %s, %s, %s)
 		RETURNING userId;""",
 		(AsIs(field_name), field_value, password_hash, salt, user_obj.first_name, user_obj.last_name, user_obj.nick_name, user_obj.portrait))
-
-	db_conn.commit()
 
 	last_id = cursor.fetchone()[0]
 
@@ -87,12 +81,8 @@ def create_user_by_phone(user_obj, password_hash, salt):
 	return create_user_by_field(user_obj, 'phone', user_obj.phone, password_hash, salt)
 
 def get_credentials_by_field(field_name, field_value):
-	cursor = db_conn.cursor()
-
-	cursor.execute("""SELECT userId, hash, salt from users WHERE %s=%s;
+	cursor = handled_execute(db_conn, """SELECT userId, hash, salt from users WHERE %s=%s;
 		""",(AsIs(field_name), field_value))
-
-	db_conn.commit()
 
 	row = cursor.fetchone()
 	if row != None:
@@ -100,7 +90,7 @@ def get_credentials_by_field(field_name, field_value):
 
 		return UserCredentials(userId, password_hash, salt)
 	else:
-		raise Exception("No user found in database")
+		raise DAOException("No user found in database with field " + str(field_name) + " with value " + str(field_value) + " when searching credentials")
 
 def get_credentials_by_email(email):
 	return get_credentials_by_field('email', email)
@@ -109,23 +99,17 @@ def get_credentials_by_phone(phone):
 	return get_credentials_by_field('phone', phone)
 
 def update_user(user_obj):
-	cursor = db_conn.cursor()
-	cursor.execute("""UPDATE users SET 
+	cursor = handled_execute(db_conn, """UPDATE users SET 
 		email = %s, phone = %s, firstName = %s, lastName = %s,
 		nickName = %s, portrait = %s
 		WHERE userId=%s;""",
 		(user_obj.email, user_obj.phone, user_obj.first_name, 
 			user_obj.last_name, user_obj.last_name, user_obj.nick_name, user_obj.portrait, user_obj.user_id))
 
-	db_conn.commit()
-
 	return user_obj
 
 def update_user_credentials(user_obj, new_hash, new_salt):
-	cursor = db_conn.cursor()
-	cursor.execute("""UPDATE users SET hash=%s, salt=%s WHERE userId=%s;""",
+	cursor = handled_execute(db_conn, """UPDATE users SET hash=%s, salt=%s WHERE userId=%s;""",
 		(new_hash, new_salt, user_obj.user_id))
-
-	db_conn.commit()
 
 	return user_obj

@@ -2,15 +2,11 @@ from localsocial.database.db import db_conn
 from localsocial.model.user_model import User
 
 def search_user_by_name(query, limit):
-	cursor = db_conn.cursor()
-
-	cursor.execute("""
+	cursor = handled_execute(db_conn, """
 		SELECT userId, email, phone, firstName,lastName,nickName,portrait FROM users
 		WHERE concat(firstName, ' ', lastName) LIKE %s
 		LIMIT %s;
 		""", ("%" + query + "%", limit))
-
-	db_conn.commit()
 
 	user_rows = cursor.fetchall()
 

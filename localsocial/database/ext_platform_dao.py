@@ -1,4 +1,4 @@
-from localsocial.database.db import db_conn
+from localsocial.database.db import db_conn, handled_execute
 
 """
 	CREATE TABLE platformLink (
@@ -8,21 +8,15 @@ from localsocial.database.db import db_conn
 """
 
 def create_external_link(userId, platform, externalId):
-	cursor = db_conn.cursor()
-
-	cursor.execute("""
+	cursor = handled_execute(db_conn, """
 		INSERT INTO platformLink (userId, loginPlatform, externalId)
 		VALUES (%s, %s, %s);
 		""", (userId, platform, externalId))
 
-	db_conn.commit()
-
 	return userId
 
 def get_external_link(platform, externalId):
-	cursor = db_conn.cursor()
-
-	result = cursor.execute("""
+	cursor = handled_execute(db_conn, """
 		SELECT userId FROM platformLink
 		WHERE loginPlatform=%s AND externalId=%s;
 		""", (platform, externalId))

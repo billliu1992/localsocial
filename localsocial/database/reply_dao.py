@@ -1,4 +1,4 @@
-from localsocial.database.db import db_conn
+from localsocial.database.db import db_conn, handled_execute
 from localsocial.model.reply_model import Reply
 from localsocial.model.location_model import Location
 
@@ -25,14 +25,10 @@ self.post_id = post_id
 """
 
 def get_replies_by_post_id(post_id):
-	cursor = db_conn.cursor()
-
-	cursor.execute("""
+	cursor = handled_execute(db_conn, """
 		SELECT replyId, postId, authorId, authorName, replyBody, replyDate, cityName, longitude, latitude, edited FROM replies
 		WHERE postId=%s;
 		""", (post_id,))
-
-	db_conn.commit()
 
 	rows = cursor.fetchall()
 
@@ -52,19 +48,12 @@ def get_replies_by_post_id(post_id):
 
 
 def create_reply(reply):
-	cursor = db_conn.cursor()
-
-	print((reply.post_id, reply.author_id, reply.author_name, reply.reply_body, 
-			reply.reply_date, reply.city, reply.longitude, reply.latitude, reply.edited))
-
-	cursor.execute("""
+	cursor = handled_execute(db_conn, """
 		INSERT INTO replies (postId, authorId, authorName, replyBody, replyDate, cityName, longitude, latitude, edited)
 		VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
 		RETURNING replyId;
 		""", (reply.post_id, reply.author_id, reply.author_name, reply.reply_body, 
 			reply.reply_date, reply.city, reply.longitude, reply.latitude, reply.edited))
-
-	db_conn.commit()
 
 	new_reply_id = cursor.fetchone()[0]
 
@@ -76,9 +65,9 @@ def create_reply(reply):
 
 def update_reply(reply):
 	if reply.reply_id == -1:
-		raise Exception("Need to create reply before updating")
+		raise DAOException("Need to create reply before updating")
 
-	cursor.execute("""
+	cursor = handled_execute(db_conn, """
 		UPDATE replies SET
 		postId = %s, authorId = %s, authorName = %s, replyBody = %s, 
 		replyDate = %s, cityName = %s, longitude = %s, latitude = %s, edited = %s
@@ -86,7 +75,5 @@ def update_reply(reply):
 		""", (reply.post_id, reply.author_id, reply.author_name, reply.reply_body, 
 			reply.reply_date, reply.city, reply.longitude, reply.latitude,
 			reply.edited, reply.reply_id))
-
-	db_conn.commit()
 
 	return reply
