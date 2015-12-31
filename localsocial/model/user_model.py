@@ -15,10 +15,11 @@ class User():
 
 	def to_json_dict(self):
 		return {
-				"firstName" : self.first_name,
-				"lastName" : self.last_name,
-				"nickName" : self.nick_name,
-				"portrait" : self.portrait,
-				"email" : self.email,
-				"phone" : self.phone
-			}
+			"userId" : self.user_id,
+			"firstName" : self.first_name,
+			"lastName" : self.last_name,
+			"nickName" : self.nick_name,
+			"portrait" : self.portrait,
+			"email" : self.email,
+			"phone" : self.phone
+		}
