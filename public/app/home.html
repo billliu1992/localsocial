@@ -5,6 +5,7 @@
 
 		<link rel="stylesheet" href="home.css"></link>
 		<link rel="stylesheet" href="home-feed/post-form/post-form.css"></link>
+		<link rel="stylesheet" href="home-feed/feed/post/post.css"></link>
 
 		<title>Localsocial Home</title>
 	</head>
@@ -16,6 +17,29 @@
 				<button type="button" onclick="doGeolocation();">Geolocation</button>
 			</div>
 		</nav>
+
+		<section id="friend-follow-debug">
+			<script>
+				function doFriend(event) {
+					var userId = document.getElementById('debug-user-id').value;
+
+					event.target.action = '/user/' + userId + '/follows/request';
+					event.target.method = 'POST';
+					console.log("HIHIHI");
+				}
+
+				function doFollow(event) {
+					var userId = document.getElementById('debug-user-id').value;
+
+					event.target.action = '/user/' + userId + '/friends/request';
+					event.target.method = 'POST';
+					console.log("HIHIHI");
+				}
+			</script>
+			<input type="text" id="debug-user-id" />
+			<form onSubmit="doFriend(event)" method="POST"><button>Friend</button></form>
+			<form onSubmit="doFollow(event)" method="POST"><button>Follow</button></form>
+		</section>
 
 		<main class="contained main-content">
 			<div class="left-bar">

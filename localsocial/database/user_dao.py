@@ -1,16 +1,22 @@
+from localsocial.exceptions import DAOException
 from localsocial.model.user_model import User
-from localsocial.database.db import db_conn
+from localsocial.model.user_credentials_model import UserCredentials
+from localsocial.database.db import db_conn, handled_execute
+
+from psycopg2.extensions import AsIs
 
 """
-	accessToken		VARCHAR(50) NOT NULL,
-	accessSecret	VARCHAR(50),
-	loginPlatform	platform NOT NULL,
-	platformId		VARCHAR(75)
+	userId			SERIAL PRIMARY KEY,
+	hash			VARCHAR(60) NOT NULL,
+	salt			VARCHAR(60) NOT NULL,
+
+	email			VARCHAR(60) UNIQUENOT NULL,
+	phone			BIGINT CHECK(phone > 0),
 
 	firstName		VARCHAR(30) NOT NULL,
 	lastName		VARCHAR(30) NOT NULL,
 	nickName		VARCHAR(30),
-	portrait		VARCHAR(30) NOT NULL
+	portrait		VARCHAR(30)
 
 		self.first_name = f_name
 		self.last_name = l_name
@@ -24,91 +30,86 @@ from localsocial.database.db import db_conn
 
 	"""
 
-def get_user_by_platform_id(platform, plat_id):
-	cursor = db_conn.cursor()
-
-	cursor.execute("""SELECT userId,accessToken,accessSecret,loginPlatform,platformId,
-			firstName,lastName,nickName,portrait 
-		FROM users WHERE loginPlatform=%s AND platformId=%s;
-		""", (platform,plat_id))
-
-	db_conn.commit()
-
-	user_row = cursor.fetchone()
-
-	returned_user = None
-	if(user_row != None):
-		(user_id, access_token, access_secret, login_platform, platform_id,
-			first_name, last_name, nick_name, portrait) = user_row
-
-		returned_user = User(first_name, last_name, nick_name, portrait,
-			access_token, access_secret, login_platform, platform_id)
-
-		returned_user.user_id = user_id
-
-	return returned_user
-
-def get_user_by_id(user_id):
-	cursor = db_conn.cursor()
-
-	cursor.execute("""SELECT userId,accessToken,accessSecret,loginPlatform,platformId,
+def get_user_by_field(field, value):
+	cursor = handled_execute(db_conn, """
+			SELECT userId, email, phone,
 			firstName,lastName,nickName,portrait
-			FROM users WHERE userId=%s;""", (user_id,))
-
-	db_conn.commit()
+			FROM users WHERE %s=%s;""", (AsIs(field), value))
 
 	user_row = cursor.fetchone()
 
 	returned_user = None
 	if(user_row != None):
-		(user_id, access_token, access_secret, login_platform, platform_id,
-			first_name, last_name, nick_name, portrait) = user_row
+		(user_id, email, phone, first_name, last_name,
+			nick_name, portrait) = user_row
 
-		returned_user = User(first_name, last_name, nick_name, portrait,
-			access_token, access_secret, login_platform, platform_id)
+		returned_user = User(email, phone, first_name, last_name, nick_name, portrait)
 
 		returned_user.user_id = user_id
 	else:
-		raise Exception("No user found in database")
+		raise DAOException("No user found in database with field " + str(field) + " with value " + str(value))
 
 	return returned_user
 
+def get_user_by_email(email):
+	return get_user_by_field('email', email)
 
-def create_user(user_obj):
-	cursor = db_conn.cursor()
+def get_user_by_phone(phone):
+	return get_user_by_field('phone', phone)
 
-	cursor.execute("""INSERT INTO users 
-		(accessToken, accessSecret, loginPlatform, platformId, firstName, lastName, nickName, portrait) 
-		VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+def get_user_by_id(user_id):
+	return get_user_by_field('userId', user_id)
+
+
+def create_user_by_field(user_obj, field_name, field_value, password_hash, salt):
+	cursor = handled_execute(db_conn, """INSERT INTO users 
+		(%s, hash, salt, firstName, lastName, nickName, portrait) 
+		VALUES (%s, %s, %s, %s, %s, %s, %s)
 		RETURNING userId;""",
-		(user_obj.access_token, user_obj.access_secret, user_obj.login_platform, user_obj.platform_id,
-			user_obj.first_name, user_obj.last_name, user_obj.nick_name, user_obj.portrait))
-
-	db_conn.commit()
+		(AsIs(field_name), field_value, password_hash, salt, user_obj.first_name, user_obj.last_name, user_obj.nick_name, user_obj.portrait))
 
 	last_id = cursor.fetchone()[0]
 
-	user_obj.id = last_id
+	user_obj.user_id = last_id
 
 	return user_obj
 
+def create_user_by_email(user_obj, password_hash, salt):
+	return create_user_by_field(user_obj, 'email', user_obj.email, password_hash, salt)
+
+def create_user_by_phone(user_obj, password_hash, salt):
+	return create_user_by_field(user_obj, 'phone', user_obj.phone, password_hash, salt)
+
+def get_credentials_by_field(field_name, field_value):
+	cursor = handled_execute(db_conn, """SELECT userId, hash, salt from users WHERE %s=%s;
+		""",(AsIs(field_name), field_value))
+
+	row = cursor.fetchone()
+	if row != None:
+		userId, password_hash, salt = row
+
+		return UserCredentials(userId, password_hash, salt)
+	else:
+		raise DAOException("No user found in database with field " + str(field_name) + " with value " + str(field_value) + " when searching credentials")
+
+def get_credentials_by_email(email):
+	return get_credentials_by_field('email', email)
+
+def get_credentials_by_phone(phone):
+	return get_credentials_by_field('phone', phone)
+
 def update_user(user_obj):
-	cursor = db_conn.cursor()
-	cursor.execute("""UPDATE users SET 
-		accessToken=%s,
-		accessSecret=%s,
-		loginPlatform=%s,
-		platformId=%s,
-		firstName=%s,
-		lastName=%s,
-		nickName=%s,
-		portrait=%s
+	cursor = handled_execute(db_conn, """UPDATE users SET 
+		email = %s, phone = %s, firstName = %s, lastName = %s,
+		nickName = %s, portrait = %s
 		WHERE userId=%s;""",
-		(user_obj.access_token, user_obj.access_secret, user_obj.login_platform, user_obj.platform_id,
-			user_obj.first_name, user_obj.last_name, user_obj.last_name, user_obj.portrait))
+		(user_obj.email, user_obj.phone, user_obj.first_name, 
+			user_obj.last_name, user_obj.last_name, user_obj.nick_name, user_obj.portrait, user_obj.user_id))
 
-	db_conn.commit()
+	return user_obj
 
-	last_id = cursor.fetchone()[0]
+def update_user_credentials(user_obj, new_hash, new_salt):
+	cursor = handled_execute(db_conn, """UPDATE users SET hash=%s, salt=%s WHERE userId=%s;""",
+		(new_hash, new_salt, user_obj.user_id))
 
 	return user_obj

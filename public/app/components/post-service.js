@@ -32,6 +32,16 @@ define(['axios', 'components/coordinates-model'], function(axios, Coordinates) {
 				.catch((response) => ({ status: response.status, data: response.data }));
 		},
 
+		saveReply(postId, data) {
+			return axios.post('/post/' + postId + '/reply', transformObjectToForm(data), {
+				headers: {
+					'Content-Type' : 'application/x-www-form-urlencoded'
+				}
+			})
+			.then((response) => response.data)
+			.catch((response) => ({ status: response.status, data: response.data}));
+		},
+
 		// Distance approximation: http://www.movable-type.co.uk/scripts/latlong.html
 		getDistance(coord1, coord2, isMetric) {
 			var radius = isMetric ? 6371 /* meters */ : 3959 /* miles */;

@@ -1,4 +1,4 @@
-from localsocial.database.db import db_conn
+from localsocial.database.db import db_conn, handled_execute
 from localsocial.model.location_model import Location
 from localsocial.model.post_model import Post, EventPost, ImagePost
 
@@ -38,13 +38,11 @@ self.picture_id = picture_id
 """
 
 def get_post_feed(current_location, range, limit, skip, max_id=None):
-	cursor = db_conn.cursor()
-
 	current_long = current_location.longitude
 	current_lat = current_location.latitude
 
 	if(max_id == None):
-		cursor.execute("""
+		cursor = handled_execute(db_conn, """
 			SELECT
 			postId, authorId, authorName, postBody, postDate, privacy, cityName, longitude, latitude,
 			eventId, eventName, eventLocation, eventStart, eventEnd,
@@ -54,7 +52,7 @@ def get_post_feed(current_location, range, limit, skip, max_id=None):
 			ORDER BY postId DESC
 			LIMIT %s OFFSET %s;""", (current_long, current_lat, range, limit, skip)) 
 	else:
-		cursor.execute("""
+		cursor = handled_execute(db_conn, """
 			SELECT
 			postId, authorId, authorName, postBody, postDate, privacy, cityName, longitude, latitude,
 			eventId, eventName, eventLocation, eventStart, eventEnd,
@@ -63,8 +61,6 @@ def get_post_feed(current_location, range, limit, skip, max_id=None):
 			WHERE sqrt((longitude - %s) ^ 2 + (latitude - %s) ^ 2) < %s AND postId < %s
 			ORDER BY postId DESC
 			LIMIT %s OFFSET %s;""", (current_long, current_lat, range, max_id, limit, skip))
-
-	db_conn.commit()
 
 	post_rows = cursor.fetchall()
 
@@ -96,10 +92,8 @@ def get_post_feed(current_location, range, limit, skip, max_id=None):
 	return post_objects
 
 def get_posts(limit, skip, max_id=None):
-	cursor = db_conn.cursor()
-
 	if(max_id == None):
-		cursor.execute("""
+		cursor = handled_execute(db_conn, """
 			SELECT 
 			postId, authorId, authorName, postBody, postDate, privacy, cityName, longitude, latitude,
 			eventId, eventName, eventLocation, eventStart, eventEnd,
@@ -107,14 +101,12 @@ def get_posts(limit, skip, max_id=None):
 			FROM posts
 			ORDER BY postId DESC LIMIT %s OFFSET %s;""", (limit, skip))
 	else:
-		cursor.execute("""
+		cursor = handled_execute(db_conn, """
 			SELECT 
 			postId, authorId, authorName, postBody, postDate, privacy, cityName, longitude, latitude,
 			eventId, eventName, eventLocation, eventStart, eventEnd,
 			imageId
 			FROM posts WHERE postId <= %s ORDER BY postId DESC LIMIT %s OFFSET %s;""", (max_id, limit, skip))
-
-	db_conn.commit()
 
 	post_rows = cursor.fetchall()
 
@@ -146,16 +138,12 @@ def get_posts(limit, skip, max_id=None):
 	return post_objects
 
 def create_post(post):
-	cursor = db_conn.cursor()
-
-	cursor.execute("""
+	cursor = handled_execute(db_conn, """
 		INSERT INTO posts 
 		(authorId, authorName, postBody, postDate, privacy, cityName, longitude, latitude)
 		VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING postId;
 		""", (post.author_id, post.author_name, post.body, post.post_date, post.privacy, post.city, 
 			post.longitude, post.latitude))
-
-	db_conn.commit()
 
 	last_id = cursor.fetchone()[0]
 
