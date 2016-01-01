@@ -1,4 +1,7 @@
 @backgroundWhite: #FFF;
+@lightGray: #aaa;
+@darkGray: #333;
+
 @lightGreen: #D9FFE6;
 @medGreen: #6AEB95;
 @darkGreen: #29cc60;
@@ -18,10 +21,13 @@
 	background-color: white;
 
 	border-radius: @podBorderRadius;
-	border: 1px solid @podColor;
+	border: 1px solid #ddd;
 
 	overflow: hidden;
 
+	&.important {
+		border-color: @podColor;
+	}
 
 	.pod-section {
 		border-style: solid;

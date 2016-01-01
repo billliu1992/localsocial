@@ -11,31 +11,37 @@ define(['react'], function(React) {
 			}
 		},
 		render() {
+			var privacyClassName = "post-privacy-settings";
+
+			if(this.state.privacyDropdown === 'public')
+				privacyClassName += " is-public";
+
 			return (
-				<form id="post-form" className="pod" onSubmit={this.submitNewPost }>
+				<form id="post-form" className="pod important" onSubmit={this.submitNewPost }>
 					<fieldset className="post-body">
-						<div className="post-author-info">
-							Portrait
-						</div>
+						<img className="post-author-info portrait large" src="/portrait/test" />
 						
 						<textarea value={this.state.postBody} onChange={ this.updatePostBody } placeholder="Say something">
 						</textarea>
 					</fieldset>
-					<fieldset className="post-privacy-settings">
+					<fieldset className={ privacyClassName }>
 						<select value={this.state.privacyDropdown} onChange={ this.updatePrivacyDropdown }>
 							<option value="public">Public</option>
 							<option value="friends">Friends Only</option>
 						</select>
 
-						Only show last initial { this.state.privacyLastName } 
-						<input type="checkbox" checked={ this.state.privacyLastName } onChange={ this.updatePrivacyLastName } />
+						<span className="privacy-option">						
+							<input id="privacy-name" type="checkbox" checked={ this.state.privacyLastName } onChange={ this.updatePrivacyLastName } />
+							<label htmlFor="privacy-name">Only show last initial</label>
+						</span>
 
-						Only show city name
-						<input type="checkbox" checked={ this.state.privacyCityName } onChange={ this.updatePrivacyCityName } />
+						<span className="privacy-option">
+							<input id="privacy-city" type="checkbox" checked={ this.state.privacyCityName } onChange={ this.updatePrivacyCityName } />
+							<label htmlFor="privacy-city">Only show city name</label>
+						</span>
 					</fieldset>
 					<fieldset className="post-buttons">
-						<button>Cancel</button>
-						<button>Submit</button>
+						<button className="medium">Submit</button>
 					</fieldset>
 				</form>
 			);

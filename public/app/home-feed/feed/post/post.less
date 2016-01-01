@@ -1,0 +1,49 @@
+@import (reference) 'app/common';
+
+.feed-post {
+	margin-top: 1.5em;
+	padding: .5em;
+
+	.portrait, .post-header {
+		display: inline-block;
+	}
+
+
+	.portrait {
+		width: 3em;
+		height: 3em;
+
+		border-radius: 5px;	// TODO: Pixels or ems?
+	}
+	.post-header {
+		width: 80%;
+		padding-left: .8em;
+		vertical-align: top;
+
+		.post-author {
+			color: @darkGreen;
+		}
+
+		.post-info {
+			font-size: .8em;
+			color: @lightGray;
+		}
+
+		.post-private {
+			padding-left: 1em;
+		}
+
+		.post-location {
+		}
+
+		.post-date {
+			padding-left: .5em;
+
+			box-sizing: border-box;
+		}
+	}
+
+	.post-body {
+		margin: .6em 0 .3em;
+	}
+}

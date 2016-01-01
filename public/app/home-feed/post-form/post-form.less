@@ -13,15 +13,16 @@
 		padding-bottom: .5em;
 
 		.post-author-info {
-			width: 20%;
 			display: inline-block;
 			vertical-align: top;
+			width: 4em;
+			height: 4em;
 		}
 
 		textarea {
 			width: 80%;
 			height: 5em;
-			padding: .3em;
+			padding: .3em .3em .3em 1em;
 
 			resize: none;
 
@@ -40,6 +41,19 @@
 		padding-top: .5em;
 		padding-bottom: .5em;
 
+		select, input, label {
+			vertical-align: middle;
+			font-size: .8em;
+		}
+
+		.privacy-option {
+			display: none;
+			margin-left: 1em;
+		}
+
+		&.is-public .privacy-option {
+			display: inline-block;;
+		}
 	}
 	
 	.post-buttons {
@@ -47,6 +61,12 @@
 		padding-top: .5em;
 		padding-bottom: .5em;
 
+		text-align: right;
+
 		background-color: @lightGreen;
+	
+		button {
+			margin: 0 .5em;
+		}
 	}
 }
