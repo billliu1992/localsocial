@@ -64,11 +64,11 @@ define([
 				<div className="feed-post pod">
 					<img className="portrait" src="/portrait/test" />
 					<div className="post-header">
-						<div class="post-header-row">
+						<div className="post-header-row">
 							<span className="post-author">{ this.props.post['author_name'] }</span>
 							<span className="post-private post-info">{ this.formatPrivacyForDisplay(this.props.post['privacy']) }</span>
 						</div>
-						<div class="post-header-row">
+						<div className="post-header-row">
 							<span className="post-location post-info">{ this.formatDistanceForDisplay(this.props.post['location'], this.props.location) }</span>
 							<span className="post-date post-info">{ this.formatTimeForDisplay(dateObject) }</span>
 						</div>

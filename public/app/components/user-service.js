@@ -1,11 +1,17 @@
-define(['axios', 'components/coordinates-model'], function(axios, Coordinates) {
+define(['axios', 'components/coordinates-model', 'components/log-service'], function(axios, Coordinates, LogService) {
 	'use strict';
 
-	var UserService = function() {
-		this.location = null;	
-	}
+	var location = null;
 
-	UserService.prototype = {
+	var userPromise = axios.get('/user/me')
+		.then(
+			(response) => response.data,
+			(response) => {
+				LogService.log('Could not get user, status: ' + response.status);
+			}
+		);
+
+	var UserService = {
 		setCustomLocation(location) {
 			if(!(location instanceof Coordinates)) {
 				throw 'Argument must be instance of Coordinates';
@@ -15,9 +21,20 @@ define(['axios', 'components/coordinates-model'], function(axios, Coordinates) {
 
 		},
 		getCustomLocation() {
-			return this.location
+			return this.location;
+		},
+
+		getUserProfile() {
+			return userPromise;
+		},
+		sendFriendRequest(userId) {
+			return axios.post('/user/' + userId + '/friends/request').then((response) => true, (response) => false);
+		},
+		sendFollowRequest(userId) {
+			return axios.post('/user/' + userId + '/follows/request').then((response) => true, (response) => false);
 		}
+
 	}
 
-	return new UserService;
+	return UserService;
 });

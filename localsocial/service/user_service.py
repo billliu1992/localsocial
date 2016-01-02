@@ -45,8 +45,11 @@ def get_following(user_id):
 def get_friends(user_id):
 	return user_relations_dao.get_friends(user_id, mutual=True)
 
-def get_friend_requests(user_id):
+def get_friend_requests_pending(user_id):
 	return user_relations_dao.get_friends(user_id, reverse=True, not_mutual=True)
+
+def get_friend_requests_sent(user_id):
+	return user_relations_dao.get_friends(user_id, not_mutual=True)
 
 def create_follow(requester_id, requested_id):
 	return user_relations_dao.create_follow(requester_id, requested_id)

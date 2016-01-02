@@ -1,4 +1,4 @@
-from localsocial.database.db import db_conn
+from localsocial.database.db import db_conn, handled_execute
 from localsocial.model.user_model import User
 
 def search_user_by_name(query, limit):

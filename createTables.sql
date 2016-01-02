@@ -15,10 +15,11 @@ CREATE TABLE users (
 	firstName		VARCHAR(30) NOT NULL,
 	lastName		VARCHAR(30) NOT NULL,
 	nickName		VARCHAR(30),
+	biography		TEXT,
 	portrait		VARCHAR(30)
 );
 
-CREATE TYPE platform AS ENUM ('facebook', 'twitter', 'instagram');;
+CREATE TYPE platform AS ENUM ('facebook', 'twitter', 'instagram');
 
 CREATE TABLE platformLink (
 	userId			INTEGER REFERENCES users (userId) NOT NULL,
@@ -50,6 +51,12 @@ CREATE TABLE posts (
 
 	-- Image values
 	imageId			VARCHAR(30)
+);
+
+CREATE TABLE likes (
+	postId			INTEGER REFERENCES posts (postId) NOT NULL,
+	likerId			INTEGER REFERENCES users (postId) NOT NULL,
+	UNIQUE(postId, likerId)
 );
 
 CREATE TABLE replies (

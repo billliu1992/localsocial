@@ -86,7 +86,7 @@ def get_friends(queried_user_identifier):
 def get_friend_requests():
 	current_user = g.user
 
-	return user_service.get_friend_requests(current_user.user_id)
+	return user_service.get_friend_requests_pending(current_user.user_id)
 
 @api_endpoint('/user/<queried_user_identifier>/follows', methods=("GET",))
 @login_required
