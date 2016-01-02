@@ -1,0 +1,22 @@
+@import (reference) 'app/common';
+
+.quick-results {
+	display: none;
+
+	position: absolute;
+	top: 100%;
+	width: 100%;
+
+	border: 1px solid @darkestGreen;
+	border-top: none;
+
+	background-color: @backgroundWhite;
+}
+
+.focused .quick-results {
+	display: block;
+}
+
+.empty .quick-results {
+	display: none;
+}

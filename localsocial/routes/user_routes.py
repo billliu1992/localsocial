@@ -86,7 +86,7 @@ def get_friends(queried_user_identifier):
 def get_friend_requests():
 	current_user = g.user
 
-	return user_service.get_friend_requests(current_user.user_id)
+	return user_service.get_friend_requests_pending(current_user.user_id)
 
 @api_endpoint('/user/<queried_user_identifier>/follows', methods=("GET",))
 @login_required
@@ -121,3 +121,21 @@ def create_follow(queried_user_identifier):
 	queried_user_id = g.queried_user_id
 
 	return user_service.create_follow(current_user.user_id, queried_user_id)
+
+@api_endpoint('/user/<queried_user_identifier>/friends/request', methods=("DELETE",))
+@login_required
+@query_user(self_check = True)
+def delete_friend(queried_user_identifier):
+	current_user = g.user
+	queried_user_id = g.queried_user_id
+	
+	return user_service.de,ete_friend(current_user.user_id, queried_user_id)
+
+@api_endpoint('/user/<queried_user_identifier>/follows/request', methods=("DELETE",))
+@login_required
+@query_user(self_check = True)
+def delete_follow(queried_user_identifier):
+	current_user = g.user
+	queried_user_id = g.queried_user_id
+
+	return user_service.delete_follow(current_user.user_id, queried_user_id)

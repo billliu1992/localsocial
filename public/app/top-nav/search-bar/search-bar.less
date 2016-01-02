@@ -1,0 +1,32 @@
+@import (reference) 'app/common';
+
+.search-bar {
+	position: relative;
+	padding: .5em 0;	// Used for centering the search bar in the nav bar. TODO: do something else
+	height: 100%;
+	box-sizing: border-box;
+
+	input, button {
+		line-height: 1.5em;
+	}
+
+	input {
+		background-color: @backgroundWhite;
+		border: 1px solid #999;
+		border-radius: 3px;
+		padding-left: .5em;
+
+		width: 30em;
+	}
+
+	.do-query {
+		position: absolute;
+		right: 0;
+		background: none;
+
+		//We have a border for nothing so the button better aligns with the entire search bar
+		border: 1px solid transparent;
+
+		color: #777;
+	}
+}

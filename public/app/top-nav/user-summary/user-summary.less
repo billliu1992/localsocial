@@ -1,0 +1,67 @@
+@import (reference) 'app/common';
+
+.user-summary {
+	position: relative;
+	padding: .25em;	// Also used for centering the user summary in the nav bar. TODO: do something else
+	box-sizing: border-box;
+	cursor: pointer;
+
+	img, .user-name {
+		vertical-align: middle;
+	}
+
+	img {
+		width: 2em;
+		height: 2em;
+		border-radius: 3px;
+	}
+
+	.user-name {
+		margin-left: .5em;
+	}
+
+	&:hover {
+		background-color: @lightGreen;
+
+		.user-dropdown {
+			display: block;
+		}
+	}
+
+	@dropdownBackground: @backgroundWhite;
+	@dropdownBorder: @darkestGreen;
+	.user-dropdown {
+		width: 100%;
+		box-sizing: border-box;
+
+		position: absolute;
+		top: 100%;
+		left: 0;
+		display: none;
+
+		background-color: @dropdownBackground;
+		border: 1px solid @dropdownBorder;
+		border-top: none;
+
+		.dropdown-option {
+			cursor: pointer;
+			text-align: center;
+			padding: .25em 1em;
+			color: @darkestGreen;
+			font-size: .8em;
+
+			&:hover {
+				background-color: @lightGreen;
+			}
+
+			&:first-child {;
+				padding-top: .5em;
+				position: relative;	// Get the background on top of the :before arrow
+			}
+
+			&:last-child {
+				padding-bottom: .5em;
+			}
+		}
+	}
+}

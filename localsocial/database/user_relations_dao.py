@@ -28,7 +28,7 @@ def delete_follow(user_id1, user_id2):
 def delete_relationship(user_id1, user_id2, relation_type):
 	handled_execute(db_conn, """
 		DELETE FROM %s
-		WHERE firstUserId = %s, secondUserId = %s;
+		WHERE firstUserId = %s AND secondUserId = %s;
 		""", (AsIs(relation_type), user_id1, user_id2))
 
 	return True
