@@ -12,7 +12,7 @@ define([
 				</div>;
 			}
 			else {
-				var resultsElements = this.props.results.map((entry) => <UserEntry key={entry.user_id} user={entry} />);
+				var resultsElements = this.props.results.map((entry) => <UserEntry key={entry.user_id} entry={entry} onChange={this.props.onChange} />);
 				
 				return <div className="quick-results">
 					{ resultsElements }

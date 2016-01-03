@@ -30,8 +30,14 @@ define(['axios', 'components/coordinates-model', 'components/log-service'], func
 		sendFriendRequest(userId) {
 			return axios.post('/user/' + userId + '/friends/request').then((response) => true, (response) => false);
 		},
-		sendFollowRequest(userId) {
+		sendFollow(userId) {
 			return axios.post('/user/' + userId + '/follows/request').then((response) => true, (response) => false);
+		},
+		deleteFriend(userId) {
+			return axios.delete('/user/' + userId + '/friends/request').then((response) => true, (response) => false);
+		},
+		deleteFollow(userId) {
+			return axios.delete('/user/' + userId + '/follows/request').then((response) => true, (response) => false);
 		}
 
 	}

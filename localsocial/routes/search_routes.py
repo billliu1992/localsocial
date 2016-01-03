@@ -17,5 +17,8 @@ def do_search_query():
 		return { "results" : [], "tooshort" : True }
 	else:
 		users_list = search_service.query_users(current_user, query, limit)
-			
-		return { "results" : users_list }
+		json_dict_list = []
+		for user_entry in users_list:
+			json_dict_list.append(user_entry.to_json_dict())
+		
+		return { "results" : json_dict_list }

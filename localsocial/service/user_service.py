@@ -56,3 +56,9 @@ def create_follow(requester_id, requested_id):
 
 def create_friend(requester_id, requested_id):
 	return user_relations_dao.create_friend(requester_id, requested_id)
+
+def delete_follow(requester_id, requested_id):
+	return user_relations_dao.delete_follow(requester_id, requested_id)
+
+def delete_friend(requester_id, requested_id):
+	return user_relations_dao.delete_friend(requester_id, requested_id) and user_relations_dao.delete_friend(requested_id, requester_id)

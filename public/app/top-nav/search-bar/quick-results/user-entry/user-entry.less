@@ -1,8 +1,42 @@
 @import (reference) 'app/common';
 
 .user-entry {
+	padding: .3em 1em;
+	box-sizing: border-box;
+	display: flex;
+	justify-content: space-between;
+	flex-wrap: nowrap;
+	align-items: center;
+
 	img {
 		width: 1.5em;
 		height: 1.5em;
+	}
+
+	.user-name {
+		padding-left: 1em;
+		width: 100%;
+
+		color: @medGreen;
+	}
+
+	.user-control {
+		font-size: .7em;
+		color: @darkGreen;
+
+		.friend, .follow {
+			cursor: pointer;
+		}
+
+		.follow {
+			margin-right: 1em;
+		}
+
+		.friend {
+			white-space: nowrap;
+			&.is-friend, &.request-sent {
+				color: @lightGray;
+			}
+		}
 	}
 }

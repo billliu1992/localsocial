@@ -9,6 +9,8 @@ define([
 		return new Promise((resolve, reject) => resolve({ results : [] }));
 	}
 
+	var logger = LogService.createNewLogger('SearchService');
+
 	var SearchService = {
 		MIN_QUERY_LENGTH : 3,
 		search(query) {
@@ -19,7 +21,7 @@ define([
 			return axios.get('/search?limit=5&query=' + query).then(
 				(response) => response.data,
 				(response) => {
-					LogService.log('Failed to search: ' + response.status);
+					logger.log('Failed to search: ' + response.status);
 				}
 			);
 		}
