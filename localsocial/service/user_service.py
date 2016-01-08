@@ -36,6 +36,12 @@ def create_new_user(user_obj, new_password):
 def get_user_by_id(user_id):
 	return user_dao.get_user_by_id(user_id)
 
+def get_users_by_ids(user_ids):
+	if(len(user_ids) < 1):
+		return []
+	else:
+		return user_dao.get_users_by_ids(user_ids)
+
 def get_followers(user_id):
 	return user_relations_dao.get_follows(user_id)
 

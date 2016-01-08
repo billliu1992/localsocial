@@ -1,7 +1,7 @@
 from localsocial import app
 from localsocial.decorator.user_decorator import login_required, query_user
 from localsocial.decorator.route_decorator import api_endpoint
-from localsocial.service import facebook_service, user_service 
+from localsocial.service import facebook_service, user_service, post_service
 from localsocial.model.user_model import User
 
 from flask import redirect, request, session, g
@@ -72,6 +72,37 @@ def get_user(queried_user_identifier):
 	requested_user = g.queried_user
 
 	return requested_user.to_json_dict()
+
+@api_endpoint('/user/<queried_user_identifier>/profile')
+@login_required
+@query_user(get_object = True)
+def get_user_profile(queried_user_identifier):
+	requested_user = g.queried_user
+	requested_user_id = g.queried_user_id
+	current_user = g.user
+
+	posts = post_service.get_posts_by_user(current_user.user_id, requested_user_id)
+	friends = user_service.get_friends(requested_user_id)
+	followers = user_service.get_followers(requested_user_id)
+
+	friend_objs = user_service.get_users_by_ids(friends)
+	friend_json_dicts = []
+	for friend in friend_objs:
+		friend_json_dicts.append(friend.to_json_dict())
+
+	post_json_dicts = []
+	for post in posts:
+		post_json_dicts.append(post.to_json_dict())
+
+	# Build the result
+	result_json_dict = requested_user.to_json_dict()
+	result_json_dict['friends'] = friend_json_dicts
+	result_json_dict['posts'] = post_json_dicts
+	result_json_dict['follower_count'] = len(followers)
+
+	return result_json_dict
+
+
 	
 @api_endpoint('/user/<queried_user_identifier>/friends', methods=("GET",))
 @login_required

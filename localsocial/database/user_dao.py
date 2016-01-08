@@ -60,6 +60,21 @@ def get_user_by_phone(phone):
 def get_user_by_id(user_id):
 	return get_user_by_field('userId', user_id)
 
+def get_users_by_ids(user_ids):
+	cursor = handled_execute(db_conn, """
+		SELECT userId, email, phone, firstName, lastName, nickName, portrait
+		FROM users WHERE userId = ANY (%s)""", (user_ids,))
+
+	user_rows = cursor.fetchall()
+	user_objs = []
+	for row in user_rows:
+		(user_id, email, phone, first_name, last_name,
+			nick_name, portrait) = row
+
+		user_objs.append(User(email, phone, first_name, last_name, nick_name, portrait))
+
+	return user_objs
+
 
 def create_user_by_field(user_obj, field_name, field_value, password_hash, salt):
 	cursor = handled_execute(db_conn, """INSERT INTO users 
