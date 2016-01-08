@@ -24,8 +24,13 @@ define(['axios', 'components/coordinates-model', 'components/log-service'], func
 			return this.location;
 		},
 
-		getUserProfile() {
+		getCurrentUserProfile() {
 			return userPromise;
+		},
+		getUserProfile(userId) {
+			return axios.get('/user/' + userId).then((response) => response.data, (response) => {
+				LogService.log('Could not get user at ' + userId + response.status);
+			});
 		},
 		sendFriendRequest(userId) {
 			return axios.post('/user/' + userId + '/friends/request').then((response) => true, (response) => false);
