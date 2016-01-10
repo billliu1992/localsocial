@@ -1,0 +1,77 @@
+@import (reference) 'app/common';
+
+@infoWidth: 15em;
+@feedWidth: 20em;
+@sidePadding: 2em;
+@betweenPadding: 1em;
+
+.user-profile-popup {
+	height: 80%;
+	min-height: 35em;
+	max-height: 45em;
+	width: (@infoWidth + @feedWidth + @sidePadding * 2 + @betweenPadding);
+
+	text-align: left;
+	padding: 1em @sidePadding;
+	box-sizing: border-box;
+	background-color: @backgroundGray;
+
+	display: flex;
+	flex-flow: column wrap;
+
+	h1 {
+		font-size: 1.5em;
+		font-weight: normal;
+		margin: 0;
+	}
+
+	h2 {
+		font-size: 1em;
+		font-weight: normal;
+		margin: 0;
+		color: @medGreen;
+	}
+
+	.profile-portrait {
+		width: 8em;
+		height: 8em;
+	}
+
+	.profile-info {
+		width: @infoWidth;
+		flex-basis: 6em;
+
+		.profile-name {
+			font-size: 1.5em;
+		}
+
+		.profile-followers {
+			font-size: .7em;
+			color: @lightGray;
+		}
+	}
+
+	.friends {
+		.friend-portrait {
+			width: 2.5em;
+			height: 2.5em;
+		}
+	}
+
+	.profile-feed {
+		flex: 0 1 100%;
+		width: @feedWidth;
+
+		h2 {
+			margin-bottom: .2em;
+		}
+
+		.feed-post {
+			&:first-child {
+				margin-top: 0;
+			}
+
+			margin-top: .5em;
+		}
+	}
+}

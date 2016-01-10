@@ -11,7 +11,7 @@ define([
 
 	var Post = React.createClass({
 		formatDistanceForDisplay(postCoords, feedCoords) {
-			if(feedCoords.city !== postCoords.city) {
+			if(!feedCoords || feedCoords.city !== postCoords.city) {
 				return postCoords.city;
 			}
 			else {

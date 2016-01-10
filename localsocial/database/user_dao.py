@@ -71,7 +71,10 @@ def get_users_by_ids(user_ids):
 		(user_id, email, phone, first_name, last_name,
 			nick_name, portrait) = row
 
-		user_objs.append(User(email, phone, first_name, last_name, nick_name, portrait))
+		user_obj = User(email, phone, first_name, last_name, nick_name, portrait)
+		user_obj.user_id = user_id
+
+		user_objs.append(user_obj)
 
 	return user_objs
 

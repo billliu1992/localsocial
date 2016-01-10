@@ -65,11 +65,10 @@ def create_user():
 		return { "success" : True }
 
 
-@api_endpoint('/user/<queried_user_identifier>')
+@api_endpoint('/user/me')
 @login_required
-@query_user(get_object = True)
-def get_user(queried_user_identifier):
-	requested_user = g.queried_user
+def get_my_info():
+	requested_user = g.user
 
 	return requested_user.to_json_dict()
 

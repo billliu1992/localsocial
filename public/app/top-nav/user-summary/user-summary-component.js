@@ -17,7 +17,7 @@ define([
 			}
 		},
 		componentWillMount() {
-			UserService.getCurrentUserProfile().then((profile) => {
+			UserService.getCurrentUserInfo().then((profile) => {
 				this.setState({
 					profile
 				});

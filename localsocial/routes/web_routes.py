@@ -3,7 +3,7 @@ from localsocial import app
 
 @app.route('/')
 def serve_index_page():
-	return redirect('/web/index.html')
+	return redirect('/web/home.html')
 
 @app.route('/portrait/test')
 def serve_test_portrait():

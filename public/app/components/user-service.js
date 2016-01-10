@@ -24,11 +24,11 @@ define(['axios', 'components/coordinates-model', 'components/log-service'], func
 			return this.location;
 		},
 
-		getCurrentUserProfile() {
+		getCurrentUserInfo() {
 			return userPromise;
 		},
 		getUserProfile(userId) {
-			return axios.get('/user/' + userId).then((response) => response.data, (response) => {
+			return axios.get('/user/' + userId + '/profile').then((response) => response.data, (response) => {
 				LogService.log('Could not get user at ' + userId + response.status);
 			});
 		},
