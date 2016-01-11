@@ -1,4 +1,4 @@
-from localsocial.model.user_model import User
+from localsocial.model.user_model import User, Friendship
 from localsocial.database import user_dao, ext_platform_dao, user_relations_dao
 from localsocial.service import facebook_service, auth_service
 
@@ -41,6 +41,12 @@ def get_users_by_ids(user_ids):
 		return []
 	else:
 		return user_dao.get_users_by_ids(user_ids)
+
+def get_friendship_status(user_id1, user_id2):
+	if user_id1 == user_id2:
+		return Friendship.SELF
+	
+	return user_relations_dao.get_friendship_status(user_id1, user_id2)
 
 def get_followers(user_id):
 	return user_relations_dao.get_follows(user_id)

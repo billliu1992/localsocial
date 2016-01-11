@@ -19,13 +19,13 @@ define([
 			var component = this;
 			
 			UserService.getUserProfile(this.props.userId).then(function(profile) {
-				console.log(profile);
 				component.setState({ profile });
 			});
 		},
 		render() {
-
 			if(this.state.profile) {
+				var currentUser = this.state.profile.current_user_info;
+
 				var friendsElements = this.state.profile.friends.map((friend) => {
 					return <div className="friend-entry">
 						<img className="friend-portrait" src="/portrait/test" />
@@ -43,16 +43,13 @@ define([
 
 				return <div className="user-profile-popup">
 					<img className="profile-portrait" src="/portrait/test" />
-					<div className="profile-info">
-						<h1 className="profile-name">{ this.state.profile.firstName + ' ' + this.state.profile.lastName }</h1>
-						<div className="profile-followers">{ followersString }</div>
-					</div>
+					<UserRelationStatus following={currentUser.following} friendship={currentUser.friendship_status}/>
 					<div className="friends">
 						<h2>Friends</h2>
 						{ friendsElements }
 					</div>
 					<div className="profile-feed">
-						<Feed posts={this.state.profile.posts} location={ null } />
+						<Feed posts={this.state.profile.posts} location={ current_user.location } />
 					</div>
 				</div>
 			}

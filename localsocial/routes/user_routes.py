@@ -1,6 +1,6 @@
 from localsocial import app
 from localsocial.decorator.user_decorator import login_required, query_user
-from localsocial.decorator.route_decorator import api_endpoint
+from localsocial.decorator.route_decorator import api_endpoint, location_endpoint
 from localsocial.service import facebook_service, user_service, post_service
 from localsocial.model.user_model import User
 
@@ -74,11 +74,13 @@ def get_my_info():
 
 @api_endpoint('/user/<queried_user_identifier>/profile')
 @login_required
+@location_endpoint
 @query_user(get_object = True)
 def get_user_profile(queried_user_identifier):
 	requested_user = g.queried_user
 	requested_user_id = g.queried_user_id
 	current_user = g.user
+	current_location = g.user_location
 
 	posts = post_service.get_posts_by_user(current_user.user_id, requested_user_id)
 	friends = user_service.get_friends(requested_user_id)
@@ -98,6 +100,11 @@ def get_user_profile(queried_user_identifier):
 	result_json_dict['friends'] = friend_json_dicts
 	result_json_dict['posts'] = post_json_dicts
 	result_json_dict['follower_count'] = len(followers)
+	result_json_dict['current_user_info'] = {
+		"location" : current_location.to_json_dict(),
+		"following" : current_user.user_id in followers,
+		"friendship_status" : user_service.get_friendship_status(current_user.user_id, requested_user_id)
+	}
 
 	return result_json_dict
 

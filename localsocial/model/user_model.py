@@ -1,3 +1,10 @@
+class Friendship():
+	FRIENDS = 'friends'
+	REQUEST_PENDING = 'pending'
+	REQUEST_SENT = 'sent'
+	NOTHING = 'nothing'
+	SELF = 'self'
+
 class User():
 	def __init__(self, email, phone, f_name, l_name, n_name, portrait):
 		self.user_id = -1
