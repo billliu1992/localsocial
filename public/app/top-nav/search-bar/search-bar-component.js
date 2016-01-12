@@ -24,8 +24,8 @@ define([
 				searchClassName += ' empty';
 			}
 
-			return <div className={ searchClassName } onClick={this.remainFocused}>
-				<input className="search-input-bar" type="text" placeholder="Search" onChange={this.updateSearchQuery} onBlur={this.doBlur} onFocus={this.doFocus} />
+			return <div className={ searchClassName } onBlur={this.doBlur}>
+				<input className="search-input-bar" type="text" placeholder="Search" onChange={this.updateSearchQuery} onFocus={this.doFocus} />
 				<button className="do-query">Go</button>
 				<QuickResultsComponent results={this.state.results} onChange={this.searchCurrentQuery} />
 			</div>;

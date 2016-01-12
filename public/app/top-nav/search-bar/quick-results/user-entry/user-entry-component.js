@@ -1,8 +1,12 @@
 define([
+	'profile-popup/profile-popup-component',
 	'components/user-service',
+	'components/popup-service',
 	'react'
 ], function(
+	ProfilePopup,
 	UserService,
+	PopupService,
 	React
 ) {
 	var UserEntry = React.createClass({
@@ -30,8 +34,14 @@ define([
 				friendElement = <span className='friend'>{friendText}</span>
 			}
 
+			var component = this;
+			var openProfile = function(event) {
+				event.preventDefault();
+				PopupService.showPopup(ProfilePopup, { userId : component.props.entry['user_id'] })
+			};
 
-			return <div className="user-entry">
+
+			return <div className="user-entry" onMouseDown={openProfile}>
 				<img src="/portrait/test" />
 				<span className="user-name">{this.props.entry.name}</span>
 				<span className="user-info">

@@ -49,6 +49,7 @@ def get_posts_by_user(current_user_id, searched_user_id, limit, offset, max_id):
 				AND authorId IN (SELECT firstUserId FROM userFriends WHERE secondUserId = %(current_user_id)s)
 				AND %(current_user_id)s IN (SELECT firstUserId FROM userFriends WHERE secondUserId = authorId))
 			AND (%(max_id)s = NULL OR postId < %(max_id)s)
+		ORDER BY postId DESC
 		LIMIT %(limit)s OFFSET %(offset)s;
 		""", { "searched_user" : searched_user_id, "current_user_id" : current_user_id, "max_id" : max_id, "limit" : limit, "offset" : offset})
 

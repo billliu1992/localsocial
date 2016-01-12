@@ -3,6 +3,8 @@ define(['axios', 'components/coordinates-model', 'components/log-service'], func
 
 	var location = null;
 
+	var log = LogService.createNewLogger('UserService');
+
 	var userPromise = axios.get('/user/me')
 		.then(
 			(response) => response.data,
@@ -29,7 +31,7 @@ define(['axios', 'components/coordinates-model', 'components/log-service'], func
 		},
 		getUserProfile(userId) {
 			return axios.get('/user/' + userId + '/profile').then((response) => response.data, (response) => {
-				LogService.log('Could not get user at ' + userId + response.status);
+				log.log('Could not get user at ' + userId + response.status);
 			});
 		},
 		sendFriendRequest(userId) {

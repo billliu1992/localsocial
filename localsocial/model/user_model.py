@@ -1,7 +1,7 @@
 class Friendship():
 	FRIENDS = 'friends'
-	REQUEST_PENDING = 'pending'
-	REQUEST_SENT = 'sent'
+	PENDING = 'pending'
+	SENT = 'sent'
 	NOTHING = 'nothing'
 	SELF = 'self'
 
