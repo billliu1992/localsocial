@@ -108,6 +108,19 @@ def get_user_profile(queried_user_identifier):
 
 	return result_json_dict
 
+@api_endpoint("/user/me/biography", methods=("POST",))
+@login_required
+def set_user_biography():
+	current_user = g.user
+
+	new_biography = request.form.get("biography", "")
+
+	update_status = user_service.set_user_biography(current_user, new_biography)
+
+	if not update_status:
+		return { error : True }
+	else:
+		return { error : False }
 
 	
 @api_endpoint('/user/<queried_user_identifier>/friends', methods=("GET",))

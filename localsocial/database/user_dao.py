@@ -33,7 +33,7 @@ from psycopg2.extensions import AsIs
 def get_user_by_field(field, value):
 	cursor = handled_execute(db_conn, """
 			SELECT userId, email, phone,
-			firstName,lastName,nickName,portrait
+			firstName,lastName,nickName,portrait,biography
 			FROM users WHERE %s=%s;""", (AsIs(field), value))
 
 	user_row = cursor.fetchone()
@@ -41,9 +41,9 @@ def get_user_by_field(field, value):
 	returned_user = None
 	if(user_row != None):
 		(user_id, email, phone, first_name, last_name,
-			nick_name, portrait) = user_row
+			nick_name, portrait, biography) = user_row
 
-		returned_user = User(email, phone, first_name, last_name, nick_name, portrait)
+		returned_user = User(email, phone, first_name, last_name, nick_name, portrait, biography)
 
 		returned_user.user_id = user_id
 	else:
@@ -62,16 +62,16 @@ def get_user_by_id(user_id):
 
 def get_users_by_ids(user_ids):
 	cursor = handled_execute(db_conn, """
-		SELECT userId, email, phone, firstName, lastName, nickName, portrait
+		SELECT userId, email, phone, firstName, lastName, nickName, portrait, biography
 		FROM users WHERE userId = ANY (%s)""", (user_ids,))
 
 	user_rows = cursor.fetchall()
 	user_objs = []
 	for row in user_rows:
 		(user_id, email, phone, first_name, last_name,
-			nick_name, portrait) = row
+			nick_name, portrait, biography) = row
 
-		user_obj = User(email, phone, first_name, last_name, nick_name, portrait)
+		user_obj = User(email, phone, first_name, last_name, nick_name, portrait, biography)
 		user_obj.user_id = user_id
 
 		user_objs.append(user_obj)
@@ -129,5 +129,11 @@ def update_user(user_obj):
 def update_user_credentials(user_obj, new_hash, new_salt):
 	cursor = handled_execute(db_conn, """UPDATE users SET hash=%s, salt=%s WHERE userId=%s;""",
 		(new_hash, new_salt, user_obj.user_id))
+
+	return user_obj
+
+def update_user_biography(user_obj, new_biography):
+	cursor = handled_execute(db_conn, """UPDATE users SET biography=%s WHERE userId=%s""",
+		(new_biography, user_obj.user_id))
 
 	return user_obj

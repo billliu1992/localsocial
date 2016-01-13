@@ -6,7 +6,7 @@ class Friendship():
 	SELF = 'self'
 
 class User():
-	def __init__(self, email, phone, f_name, l_name, n_name, portrait):
+	def __init__(self, email, phone, f_name, l_name, n_name, portrait, biography):
 		self.user_id = -1
 		self.email = email
 		self.phone = phone
@@ -28,5 +28,6 @@ class User():
 			"nickName" : self.nick_name,
 			"portrait" : self.portrait,
 			"email" : self.email,
-			"phone" : self.phone
+			"phone" : self.phone,
+			"biography" : self.biography
 		}

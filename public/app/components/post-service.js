@@ -1,15 +1,13 @@
-define(['axios', 'components/coordinates-model'], function(axios, Coordinates) {
+define([
+	'components/api-service',
+	'components/coordinates-model'
+	'axios',
+], function(
+	APIService,
+	Coordinates,
+	axios
+) {
 	'use strict;'
-
-	var transformObjectToForm = function(formObject) {
-		var builtString = '';
-
-		for(var formEntry in formObject) {
-			builtString += encodeURIComponent(formEntry) + '=' + encodeURIComponent(formObject[formEntry]) + '&';
-		}
-
-		return builtString.substring(0, builtString.length - 1);
-	};
 
 	var degreesToRadians = function(degrees) {
 		return degrees * (Math.PI / 180);
@@ -17,29 +15,28 @@ define(['axios', 'components/coordinates-model'], function(axios, Coordinates) {
 
 	var PostService = {
 		getPosts() {
-			return axios.get('/post')
-				.then((response) => response.data)
+			return APIService.filterResponse(axios.get('/post'))
 				.catch((response) => ({ status: response.status, data: response.data }));
 		},
 
 		savePost(data) {
-			return axios.post('/post', transformObjectToForm(data), {
+			return APIService.filterResponse(
+				axios.post('/post', APIService.transformObjectToForm(data), {
 					headers : {
 						'Content-Type' : 'application/x-www-form-urlencoded'
 					}
 				})
-				.then((response) => response.data)
-				.catch((response) => ({ status: response.status, data: response.data }));
+			).catch((response) => ({ status: response.status, data: response.data }));
 		},
 
 		saveReply(postId, data) {
-			return axios.post('/post/' + postId + '/reply', transformObjectToForm(data), {
-				headers: {
-					'Content-Type' : 'application/x-www-form-urlencoded'
-				}
-			})
-			.then((response) => response.data)
-			.catch((response) => ({ status: response.status, data: response.data}));
+			return APIService.filterResponse(
+				axios.post('/post/' + postId + '/reply', APIService.transformObjectToForm(data), {
+					headers: {
+						'Content-Type' : 'application/x-www-form-urlencoded'
+					}
+				})
+			).catch((response) => ({ status: response.status, data: response.data}));
 		},
 
 		// Distance approximation: http://www.movable-type.co.uk/scripts/latlong.html

@@ -15,7 +15,7 @@ CREATE TABLE users (
 	firstName		VARCHAR(30) NOT NULL,
 	lastName		VARCHAR(30) NOT NULL,
 	nickName		VARCHAR(30),
-	biography		TEXT,
+	biography		TEXT CHECK(char_length(biography) <= 300),
 	portrait		VARCHAR(30)
 );
 

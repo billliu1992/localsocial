@@ -1,2 +1,27 @@
 @import (reference) 'app/common';
 
+.user-relation-info {
+	font-size: .7em;
+	color: @lightGray;
+
+	&.confirm {
+		display: block;
+	}
+
+	a {
+		color: @medGreen;
+		cursor: pointer;
+
+		&:active {
+			color: @darkGreen;
+		}
+	}
+
+	.confirm-deletion {
+		display: none;
+
+		a {
+			margin-left: 1em;
+		}		
+	}
+}

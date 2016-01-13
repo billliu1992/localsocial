@@ -1,16 +1,20 @@
 define([
+	'components/user-service',
 	'react'
 ], function(
+	UserService,
 	React
 ) {
 	'use strict';
 
 	var UserRelationStatus = React.createClass({
 		render() {
+			var component = this;
+
 			var followElement = null;
 			if(this.props.following) {
 				var deleteFollow = function() {
-					UserService.deleteFollow(this.state.userId).then(() => this.props.updateProfile());
+					UserService.deleteFollow(component.props.userId).then(() => component.props.updateProfile());
 				}
 
 				followElement = <div className="following-status user-relation-status">
@@ -20,7 +24,7 @@ define([
 			}
 			else {
 				var sendFollow = function() {
-					UserService.sendFollow(this.state.userId).then(() => this.props.updateProfile());
+					UserService.sendFollow(component.props.userId).then(() => component.props.updateProfile());
 				}
 
 				followElement = <div className="following-status user-relation-status">
@@ -31,10 +35,10 @@ define([
 			var friendElement = null;
 			var confirmClass = '';
 			var deleteFriend = function() {
-				UserService.deleteFriend(this.state.userId).then(() => this.props.updateProfile());
+				UserService.deleteFriend(component.props.userId).then(() => component.props.updateProfile());
 			}
 			var acceptFriend = function() {
-				UserService.sendFriendRequest(this.state.userId).then(() => this.props.updateProfile());
+				UserService.sendFriendRequest(component.props.userId).then(() => component.props.updateProfile());
 			}
 			var doConfirm = function() {
 				confirmClass = ' confirm';
@@ -46,7 +50,7 @@ define([
 				case 'friends':
 					friendElement = <div className="friend-status user-relation-status">
 						<div>Friends</div>
-						<a onClick={confirmAction}>Unfriend</a>
+						<a onClick={doConfirm}>Unfriend</a>
 					</div>;
 					break;
 				case 'pending':
@@ -70,7 +74,7 @@ define([
 			return <div className={'user-relation-info' + confirmClass}>
 				{ followElement }
 				{ friendElement }
-				<span>Are you sure?
+				<span className="confirm-deletion">Are you sure?
 					<a onClick={deleteFriend}>Yes</a>
 					<a onClick={cancelConfirm}>No</a>
 				</span>

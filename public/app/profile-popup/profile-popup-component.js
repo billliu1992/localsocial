@@ -29,9 +29,9 @@ define([
 				var currentUser = this.state.profile.current_user_info;
 
 				var friendsElements = this.state.profile.friends.map((friend) => {
-					return <div className="friend-entry">
+					return <div key={friend.user_id} className="friend-entry">
 						<img className="friend-portrait" src="/portrait/test" />
-						<div key={friend.user_id} className="friend-name">{ friend.firstName + ' ' + friend.lastName }</div>
+						<div className="friend-name">{ friend.firstName + ' ' + friend.lastName }</div>
 					</div>;
 				});
 

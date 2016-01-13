@@ -1,17 +1,24 @@
-define(['axios', 'components/coordinates-model', 'components/log-service'], function(axios, Coordinates, LogService) {
+define([
+	'axios',
+	'components/api-service',
+	'components/coordinates-model',
+	'components/log-service'
+], function(
+	axios,
+	APIService,
+	Coordinates,
+	LogService
+) {
 	'use strict';
 
 	var location = null;
 
 	var log = LogService.createNewLogger('UserService');
 
-	var userPromise = axios.get('/user/me')
-		.then(
-			(response) => response.data,
-			(response) => {
-				LogService.log('Could not get user, status: ' + response.status);
-			}
-		);
+	var userPromise = APIService.filterResponse(axios.get('/user/me'))
+		.catch((response) => {
+			log.log('Could not get user, status: ' + response.status);
+		});
 
 	var UserService = {
 		setCustomLocation(location) {
@@ -25,28 +32,37 @@ define(['axios', 'components/coordinates-model', 'components/log-service'], func
 		getCustomLocation() {
 			return this.location;
 		},
-
 		getCurrentUserInfo() {
 			return userPromise;
 		},
+		updateBiography(biography) {
+			return APIService.filterResponse(
+				axios.post('/user/me/biography', 
+					APIService.transformObjectToForm({
+						biography 
+					})
+				)
+			);
+		},
 		getUserProfile(userId) {
-			return axios.get('/user/' + userId + '/profile').then((response) => response.data, (response) => {
-				log.log('Could not get user at ' + userId + response.status);
-			});
+			return APIService.filterResponse(axios.get('/user/' + userId + '/profile').then((response) => response.data)
+				.catch((response) => {
+					log.log('Could not get user at ' + userId + response.status);
+				})
+			);
 		},
 		sendFriendRequest(userId) {
-			return axios.post('/user/' + userId + '/friends/request').then((response) => true, (response) => false);
+			return axios.post('/user/' + userId + '/friends/request').then(() => true, () => false);
 		},
 		sendFollow(userId) {
-			return axios.post('/user/' + userId + '/follows/request').then((response) => true, (response) => false);
+			return axios.post('/user/' + userId + '/follows/request').then(() => true, () => false);
 		},
 		deleteFriend(userId) {
-			return axios.delete('/user/' + userId + '/friends/request').then((response) => true, (response) => false);
+			return axios.delete('/user/' + userId + '/friends/request').then(() => true, () => false);
 		},
 		deleteFollow(userId) {
-			return axios.delete('/user/' + userId + '/follows/request').then((response) => true, (response) => false);
+			return axios.delete('/user/' + userId + '/follows/request').then(() => true, () => false);
 		}
-
 	}
 
 	return UserService;
