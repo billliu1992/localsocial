@@ -57,7 +57,7 @@ def create_user():
 	if password != confirm_password:
 		return { "success" : False, "reason" : "password" }
 	else:
-		new_user = User(email, phone, first_name, last_name, nick_name, portrait)
+		new_user = User(email, phone, first_name, last_name, nick_name, portrait, "")
 
 		new_user = user_service.create_new_user(new_user, password)
 		session["user_id"] = new_user.user_id
@@ -105,6 +105,8 @@ def get_user_profile(queried_user_identifier):
 		"following" : current_user.user_id in followers,
 		"friendship_status" : user_service.get_friendship_status(current_user.user_id, requested_user_id)
 	}
+	if current_user.user_id == requested_user_id:
+		result_json_dict["self"] = current_user.user_id == requested_user_id
 
 	return result_json_dict
 
@@ -118,9 +120,9 @@ def set_user_biography():
 	update_status = user_service.set_user_biography(current_user, new_biography)
 
 	if not update_status:
-		return { error : True }
+		return { "error" : True }
 	else:
-		return { error : False }
+		return { "error" : False }
 
 	
 @api_endpoint('/user/<queried_user_identifier>/friends', methods=("GET",))
@@ -179,7 +181,7 @@ def delete_friend(queried_user_identifier):
 	current_user = g.user
 	queried_user_id = g.queried_user_id
 	
-	return user_service.de,ete_friend(current_user.user_id, queried_user_id)
+	return user_service.delete_friend(current_user.user_id, queried_user_id)
 
 @api_endpoint('/user/<queried_user_identifier>/follows/request', methods=("DELETE",))
 @login_required

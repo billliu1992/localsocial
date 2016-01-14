@@ -45,11 +45,10 @@ define([
 			);
 		},
 		getUserProfile(userId) {
-			return APIService.filterResponse(axios.get('/user/' + userId + '/profile').then((response) => response.data)
+			return APIService.filterResponse(axios.get('/user/' + userId + '/profile'))
 				.catch((response) => {
 					log.log('Could not get user at ' + userId + response.status);
 				})
-			);
 		},
 		sendFriendRequest(userId) {
 			return axios.post('/user/' + userId + '/friends/request').then(() => true, () => false);

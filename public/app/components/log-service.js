@@ -16,10 +16,12 @@ define([], function() {
 	Logger.prototype = {
 		log() {
 			if(logDebugEnabled) {
-				var newArguments = arguments;
-				newArguments.shift(decorateFilename(this.filename));
+				var newArguments = [decorateFilename(this.filename)];
+				for(var argument of arguments) {
+					newArguments.push(argument);
+				}
 				
-				console.log.apply(window, newArguments);
+				console.log.apply(console, newArguments);
 			}
 		}
 	}

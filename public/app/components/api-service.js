@@ -16,7 +16,9 @@ define([
 		filterResponse(responsePromise) {
 			return responsePromise.then((response) => {
 				return response.data
-			}
+			});
 		}
 	};
+
+	return APIService;
 });

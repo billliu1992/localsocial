@@ -56,10 +56,10 @@ def get_friendship_status(user_id1, user_id2):
 	
 	return user_relations_dao.get_friendship_status(user_id1, user_id2)
 
-def get_followers(user_id):
+def get_following(user_id):
 	return user_relations_dao.get_follows(user_id)
 
-def get_following(user_id):
+def get_followers(user_id):
 	return user_relations_dao.get_follows(user_id, reverse=True)
 
 def get_friends(user_id):

@@ -1,7 +1,7 @@
 define([
 	'components/api-service',
-	'components/coordinates-model'
-	'axios',
+	'components/coordinates-model',
+	'axios'
 ], function(
 	APIService,
 	Coordinates,

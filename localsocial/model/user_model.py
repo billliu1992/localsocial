@@ -14,6 +14,7 @@ class User():
 		self.last_name = l_name
 		self.nick_name = n_name
 		self.portrait = portrait
+		self.biography = biography
 
 
 	@property

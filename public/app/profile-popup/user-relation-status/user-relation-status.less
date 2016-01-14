@@ -5,23 +5,31 @@
 	color: @lightGray;
 
 	&.confirm {
-		display: block;
+		.friend-status a {
+			display: none;
+		}
+
+		.confirm-deletion {
+			display: block;
+		}
 	}
 
-	a {
-		color: @medGreen;
-		cursor: pointer;
+	.following-status {
+		margin-bottom: .5em;
+	}
 
-		&:active {
-			color: @darkGreen;
-		}
+	.friend-status a {
+		display: inline-block;
+		margin-right: .5em;
+		margin-bottom: 1em;
 	}
 
 	.confirm-deletion {
 		display: none;
+		margin-bottom: 1em;
 
 		a {
-			margin-left: 1em;
+			margin-left: .5em;
 		}		
 	}
 }

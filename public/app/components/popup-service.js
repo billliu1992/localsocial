@@ -15,8 +15,10 @@ define([
 	var popupContainerElem = document.querySelector(POPUP_SELECTOR);
 	var popupOverlayElem = document.querySelector(OVERLAY_SELECTOR);
 
+	var CurrentPopupClass = null;
+
 	var renderPopupElement = function(PopupReactClass, props) {
-		ReactDOM.render(<PopupReactClass {...props} />, popupContainerElem);
+		var element = ReactDOM.render(<PopupReactClass {...props} />, popupContainerElem);
 	};
 	var destroyPopupElement = function() {
 		return ReactDOM.unmountComponentAtNode(popupContainerElem);
@@ -26,7 +28,9 @@ define([
 		popupWrapperElem.className = popupWrapperElem.className.substring(0, hiddenIndex);
 	};
 	var doHidePopupClass = function() {
-		popupWrapperElem.className += 'hidden';
+		if(popupWrapperElem.className.indexOf('hidden') === -1) {
+			popupWrapperElem.className += 'hidden';
+		}
 	};
 
 	popupOverlayElem.addEventListener('click', function() {
@@ -39,6 +43,8 @@ define([
 
 	var PopupService = {
 		showPopup(PopupReactClass, props, showCallback, hideCallback) {
+			CurrentPopupClass = PopupReactClass;
+
 			renderPopupElement(PopupReactClass, props);
 			doShowPopupClass();
 
@@ -47,6 +53,15 @@ define([
 			}
 			if(showCallback) {
 				showCallback();
+			}
+		},
+		updatePopup(newProps, callback) {
+			renderPopupElement(CurrentPopupClass, newProps);
+
+			doShowPopupClass();
+
+			if(callback) {
+				callback();
 			}
 		},
 		destroyPopup(secondHideCallback) {

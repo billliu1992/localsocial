@@ -3,7 +3,7 @@
 @infoWidth: 15em;
 @feedWidth: 20em;
 @sidePadding: 2em;
-@betweenPadding: 1em;
+@betweenPadding: 2em;
 
 .user-profile-popup {
 	height: 80%;
@@ -32,35 +32,29 @@
 		color: @medGreen;
 	}
 
+	.profile-info {
+		width: @infoWidth;
+	}
+
 	.profile-portrait {
 		width: 8em;
 		height: 8em;
 	}
 
-	.profile-info {
-		width: @infoWidth;
-		margin-bottom: 1em;
-
-		.profile-name {
-			font-size: 1.5em;
-		}
-
-		.profile-followers {
-			font-size: .7em;
-			color: @lightGray;
-		}
+	.profile-name {
+		font-size: 1.5em;
 	}
 
-	.friends {
-		.friend-portrait {
-			width: 2.5em;
-			height: 2.5em;
-		}
+	.profile-followers {
+		font-size: .7em;
+		color: @lightGray;
+		margin-bottom: .8em;
 	}
 
 	.profile-feed {
 		flex: 0 1 100%;
 		width: @feedWidth;
+		align-self: flex-end;
 
 		h2 {
 			margin-bottom: .2em;

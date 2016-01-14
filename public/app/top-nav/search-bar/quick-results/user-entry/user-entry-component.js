@@ -9,6 +9,8 @@ define([
 	PopupService,
 	React
 ) {
+	'use strict';
+
 	var UserEntry = React.createClass({
 		render() {
 			var followElement = false;
@@ -34,14 +36,11 @@ define([
 				friendElement = <span className='friend'>{friendText}</span>
 			}
 
-			var component = this;
-			var openProfile = function(event) {
+			var preventDefault = function(event) {
 				event.preventDefault();
-				PopupService.showPopup(ProfilePopup, { userId : component.props.entry['user_id'] })
 			};
 
-
-			return <div className="user-entry" onMouseDown={openProfile}>
+			return <div className="user-entry" onMouseDown={preventDefault} onMouseUp={this.openProfile}>
 				<img src="/portrait/test" />
 				<span className="user-name">{this.props.entry.name}</span>
 				<span className="user-info">
@@ -49,6 +48,10 @@ define([
 					{ friendElement }
 				</span>
 			</div>;
+		},
+		openProfile(event) {
+			PopupService.showPopup(ProfilePopup, { userId : this.props.entry['user_id'] });
+			this.props.onClick();
 		}
 	});
 
