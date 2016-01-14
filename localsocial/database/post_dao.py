@@ -37,6 +37,52 @@ self.event_name = event_name
 self.picture_id = picture_id
 """
 
+def get_posts_by_user(current_user_id, searched_user_id, limit, offset, max_id):
+	cursor = handled_execute(db_conn, """
+		SELECT
+		postId, authorId, authorName, postBody, postDate, privacy, cityName, longitude, latitude,
+		eventId, eventName, eventLocation, eventStart, eventEnd,
+		imageId
+		FROM posts
+		WHERE (authorId = %(searched_user)s AND privacy != 'friends')
+			OR (authorId = %(searched_user)s
+				AND authorId IN (SELECT firstUserId FROM userFriends WHERE secondUserId = %(current_user_id)s)
+				AND %(current_user_id)s IN (SELECT firstUserId FROM userFriends WHERE secondUserId = authorId))
+			AND (%(max_id)s = NULL OR postId < %(max_id)s)
+		ORDER BY postId DESC
+		LIMIT %(limit)s OFFSET %(offset)s;
+		""", { "searched_user" : searched_user_id, "current_user_id" : current_user_id, "max_id" : max_id, "limit" : limit, "offset" : offset})
+
+	post_rows = cursor.fetchall()
+
+	post_objects = []
+
+	for row in post_rows:
+		(post_id, author_id, author_name, post_body, post_date, privacy, city_name,
+			longitude, latitude, event_id, event_name, event_location, event_start,
+			event_end, image_id) = row
+
+		post_location = Location(city_name, longitude, latitude)
+
+		if(event_id != None):
+			new_post = EventPost(author_id, author_name, post_body, post_date, 
+				privacy, post_location, event_id,
+				event_name, event_location, event_start, event_end)
+
+		elif(image_id != None):
+			new_post = ImagePost(author_id, author_name, post_body, post_date, 
+				privacy, post_location, image_id)
+		else:
+			new_post = Post(author_id, author_name, post_body, post_date, 
+				privacy, post_location)
+
+		new_post.post_id = post_id
+
+		post_objects.append(new_post)
+
+	return post_objects
+
+
 def get_post_feed(current_location, range, limit, skip, max_id=None):
 	current_long = current_location.longitude
 	current_lat = current_location.latitude

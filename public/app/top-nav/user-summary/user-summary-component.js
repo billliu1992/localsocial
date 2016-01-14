@@ -1,8 +1,12 @@
 define([
+	'profile-popup/profile-popup-component',
 	'components/user-service',
+	'components/popup-service',
 	'react'
 ], function(
+	ProfilePopup,
 	UserService,
+	PopupService,
 	React
 ) {
 	var UserSummary = React.createClass({
@@ -13,7 +17,7 @@ define([
 			}
 		},
 		componentWillMount() {
-			UserService.getUserProfile().then((profile) => {
+			UserService.getCurrentUserInfo().then((profile) => {
 				this.setState({
 					profile
 				});
@@ -29,12 +33,15 @@ define([
 					<span className="user-name">{ this.state.profile.firstName + ' ' + this.state.profile.lastName }</span>
 					
 					<div className="user-dropdown">
-						<div className="dropdown-option profile">Profile</div>
+						<div className="dropdown-option profile" onClick={this.showProfilePopup}>Profile</div>
 						<div className="dropdown-option settings">Settings</div>
 						<div className="dropdown-option log-out">Log Out</div>
 					</div>
 				</div>;
 			}
+		},
+		showProfilePopup() {
+			PopupService.showPopup(ProfilePopup, { userId : 'me' });
 		}
 	});
 

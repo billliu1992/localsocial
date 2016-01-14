@@ -1,6 +1,7 @@
 from psycopg2.extensions import AsIs
 
 from localsocial.database.db import db_conn, handled_execute
+from localsocial.model.user_model import Friendship
 
 FRIENDS_TABLE = "userFriends"
 FOLLOWS_TABLE = "userFollows"
@@ -38,6 +39,27 @@ def get_friends(user_id, **kwargs):
 
 def get_follows(user_id, **kwargs):
 	return get_relationships(user_id, FOLLOWS_TABLE, **kwargs)
+
+def get_friendship_status(user_id1, user_id2):
+	cursor = handled_execute(db_conn, """
+		SELECT firstUserId FROM userFriends WHERE
+			(firstUserId = %(first_user_id)s AND secondUserId = %(second_user_id)s)
+			OR (firstUserId = %(second_user_id)s AND secondUserId = %(first_user_id)s);
+		""", { "first_user_id" : user_id1, "second_user_id" : user_id2 })
+
+	result_rows = cursor.fetchall()
+
+	if len(result_rows) == 2:
+		return Friendship.FRIENDS
+	elif len(result_rows) == 0:
+		return Friendship.NOTHING
+	else:
+		initiator = result_rows[0][0]
+
+		if initiator == user_id1:
+			return Friendship.SENT
+		else:
+			return Friendship.PENDING
 
 def get_relationships(user_id, relation_type, **kwargs):
 	reverse = kwargs.get('reverse', False)

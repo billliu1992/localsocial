@@ -11,36 +11,17 @@
 		<link rel="stylesheet" href="top-nav/search-bar/quick-results/quick-results.css"></link>
 		<link rel="stylesheet" href="top-nav/search-bar/quick-results/user-entry/user-entry.css"></link>
 		<link rel="stylesheet" href="top-nav/user-summary/user-summary.css"></link>
+		<link rel="stylesheet" href="popup/popup.css"></link>
+		<link rel="stylesheet" href="profile-popup/profile-popup.css"></link>
+		<link rel="stylesheet" href="profile-popup/user-relation-status/user-relation-status.css"></link>
+		<link rel="stylesheet" href="profile-popup/biography/biography.css"></link>
+		<link rel="stylesheet" href="profile-popup/friends-list/friends-list.css"></link>
 
 		<title>Localsocial Home</title>
 	</head>
 
 	<body>
 		<nav id="top-nav-bar"></nav>
-
-		<section id="friend-follow-debug">
-			<script>
-				function doFriend(event) {
-					var userId = document.getElementById('debug-user-id').value;
-
-					event.target.action = '/user/' + userId + '/follows/request';
-					event.target.method = 'POST';
-					console.log("HIHIHI");
-				}
-
-				function doFollow(event) {
-					var userId = document.getElementById('debug-user-id').value;
-
-					event.target.action = '/user/' + userId + '/friends/request';
-					event.target.method = 'POST';
-					console.log("HIHIHI");
-				}
-			</script>
-			<input type="text" id="debug-user-id" />
-			<form onSubmit="doFriend(event)" method="POST"><button>Friend</button></form>
-			<form onSubmit="doFollow(event)" method="POST"><button>Follow</button></form>
-		</section>
-
 		<main class="contained main-content">
 			<div class="left-bar">
 				<aside class="your-profile">
@@ -54,5 +35,10 @@
 			</div>
 			<section id="post-feed"></section>
 		</main>
+
+		<section id="popup-wrapper">
+			<div id="popup-overlay"></div>
+			<div id="popup"></div>
+		</section>
 	</body>
 </html>

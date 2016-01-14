@@ -24,10 +24,10 @@ define([
 				searchClassName += ' empty';
 			}
 
-			return <div className={ searchClassName } onClick={this.remainFocused}>
-				<input className="search-input-bar" type="text" placeholder="Search" onChange={this.updateSearchQuery} onBlur={this.doBlur} onFocus={this.doFocus} />
+			return <div className={ searchClassName } onBlur={this.doBlur}>
+				<input className="search-input-bar" type="text" placeholder="Search" onChange={this.updateSearchQuery} onFocus={this.doFocus} />
 				<button className="do-query">Go</button>
-				<QuickResultsComponent results={this.state.results} onChange={this.searchCurrentQuery} />
+				<QuickResultsComponent results={this.state.results} onClick={this.doBlur} />
 			</div>;
 		},
 		updateSearchQuery(event) {
@@ -50,12 +50,10 @@ define([
 		},
 		doFocus() {
 			this.setState({ isFocused : true });
+			this.searchCurrentQuery();
 		},
 		doBlur() {
 			this.setState({ isFocused : false });
-		},
-		remainFocused(event) {
-			event.currentTarget.querySelector('.search-input-bar').focus();
 		}
 	});
 

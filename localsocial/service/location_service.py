@@ -1,6 +1,7 @@
 import requests
 
 from localsocial.model.location_model import Location
+from localsocial.exceptions import ServiceException 
 
 def get_geoip_location(ip):
 	geoip_request = requests.get("https://freegeoip.net/json/#localsocialwebapp")
@@ -10,5 +11,5 @@ def get_geoip_location(ip):
 
 		return Location(request_dict["city"], request_dict["longitude"], request_dict["latitude"])
 	else:
-		raise Exception("Error getting geoip. Status code " + geoip_request.status_code)
+		raise ServiceException("Error getting geoip. Status code " + str(geoip_request.status_code))
 		

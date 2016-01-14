@@ -1,6 +1,8 @@
-from localsocial.model.user_model import User
+from localsocial.model.user_model import User, Friendship
 from localsocial.database import user_dao, ext_platform_dao, user_relations_dao
 from localsocial.service import facebook_service, auth_service
+
+BIOGRAPHY_MAX_LENGTH = 300
 
 def login_user_facebook(access_token):
 	user_info = facebook_service.get_user_info(access_token)
@@ -36,10 +38,28 @@ def create_new_user(user_obj, new_password):
 def get_user_by_id(user_id):
 	return user_dao.get_user_by_id(user_id)
 
-def get_followers(user_id):
-	return user_relations_dao.get_follows(user_id)
+def get_users_by_ids(user_ids):
+	if(len(user_ids) < 1):
+		return []
+	else:
+		return user_dao.get_users_by_ids(user_ids)
+
+def set_user_biography(user_obj, new_biography):
+	if(len(new_biography) > BIOGRAPHY_MAX_LENGTH):
+		return False
+	else:
+		return user_dao.update_user_biography(user_obj, new_biography)
+
+def get_friendship_status(user_id1, user_id2):
+	if user_id1 == user_id2:
+		return Friendship.SELF
+	
+	return user_relations_dao.get_friendship_status(user_id1, user_id2)
 
 def get_following(user_id):
+	return user_relations_dao.get_follows(user_id)
+
+def get_followers(user_id):
 	return user_relations_dao.get_follows(user_id, reverse=True)
 
 def get_friends(user_id):

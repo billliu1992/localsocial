@@ -1,5 +1,12 @@
+class Friendship():
+	FRIENDS = 'friends'
+	PENDING = 'pending'
+	SENT = 'sent'
+	NOTHING = 'nothing'
+	SELF = 'self'
+
 class User():
-	def __init__(self, email, phone, f_name, l_name, n_name, portrait):
+	def __init__(self, email, phone, f_name, l_name, n_name, portrait, biography):
 		self.user_id = -1
 		self.email = email
 		self.phone = phone
@@ -7,6 +14,7 @@ class User():
 		self.last_name = l_name
 		self.nick_name = n_name
 		self.portrait = portrait
+		self.biography = biography
 
 
 	@property
@@ -21,5 +29,6 @@ class User():
 			"nickName" : self.nick_name,
 			"portrait" : self.portrait,
 			"email" : self.email,
-			"phone" : self.phone
+			"phone" : self.phone,
+			"biography" : self.biography
 		}

@@ -1,7 +1,7 @@
 from localsocial import app
 from localsocial.decorator.user_decorator import login_required, query_user
-from localsocial.decorator.route_decorator import api_endpoint
-from localsocial.service import facebook_service, user_service 
+from localsocial.decorator.route_decorator import api_endpoint, location_endpoint
+from localsocial.service import facebook_service, user_service, post_service
 from localsocial.model.user_model import User
 
 from flask import redirect, request, session, g
@@ -57,7 +57,7 @@ def create_user():
 	if password != confirm_password:
 		return { "success" : False, "reason" : "password" }
 	else:
-		new_user = User(email, phone, first_name, last_name, nick_name, portrait)
+		new_user = User(email, phone, first_name, last_name, nick_name, portrait, "")
 
 		new_user = user_service.create_new_user(new_user, password)
 		session["user_id"] = new_user.user_id
@@ -65,13 +65,65 @@ def create_user():
 		return { "success" : True }
 
 
-@api_endpoint('/user/<queried_user_identifier>')
+@api_endpoint('/user/me')
 @login_required
-@query_user(get_object = True)
-def get_user(queried_user_identifier):
-	requested_user = g.queried_user
+def get_my_info():
+	requested_user = g.user
 
 	return requested_user.to_json_dict()
+
+@api_endpoint('/user/<queried_user_identifier>/profile')
+@login_required
+@location_endpoint
+@query_user(get_object = True)
+def get_user_profile(queried_user_identifier):
+	requested_user = g.queried_user
+	requested_user_id = g.queried_user_id
+	current_user = g.user
+	current_location = g.user_location
+
+	posts = post_service.get_posts_by_user(current_user.user_id, requested_user_id)
+	friends = user_service.get_friends(requested_user_id)
+	followers = user_service.get_followers(requested_user_id)
+
+	friend_objs = user_service.get_users_by_ids(friends)
+	friend_json_dicts = []
+	for friend in friend_objs:
+		friend_json_dicts.append(friend.to_json_dict())
+
+	post_json_dicts = []
+	for post in posts:
+		post_json_dicts.append(post.to_json_dict())
+
+	# Build the result
+	result_json_dict = requested_user.to_json_dict()
+	result_json_dict['friends'] = friend_json_dicts
+	result_json_dict['posts'] = post_json_dicts
+	result_json_dict['follower_count'] = len(followers)
+	result_json_dict['current_user_info'] = {
+		"location" : current_location.to_json_dict(),
+		"following" : current_user.user_id in followers,
+		"friendship_status" : user_service.get_friendship_status(current_user.user_id, requested_user_id)
+	}
+	if current_user.user_id == requested_user_id:
+		result_json_dict["self"] = current_user.user_id == requested_user_id
+
+	return result_json_dict
+
+@api_endpoint("/user/me/biography", methods=("POST",))
+@login_required
+def set_user_biography():
+	current_user = g.user
+
+	new_biography = request.form.get("biography", "")
+
+	update_status = user_service.set_user_biography(current_user, new_biography)
+
+	if not update_status:
+		return { "error" : True }
+	else:
+		return { "error" : False }
+
 	
 @api_endpoint('/user/<queried_user_identifier>/friends', methods=("GET",))
 @login_required
@@ -129,7 +181,7 @@ def delete_friend(queried_user_identifier):
 	current_user = g.user
 	queried_user_id = g.queried_user_id
 	
-	return user_service.de,ete_friend(current_user.user_id, queried_user_id)
+	return user_service.delete_friend(current_user.user_id, queried_user_id)
 
 @api_endpoint('/user/<queried_user_identifier>/follows/request', methods=("DELETE",))
 @login_required

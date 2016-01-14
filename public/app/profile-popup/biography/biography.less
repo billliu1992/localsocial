@@ -1,0 +1,41 @@
+@import (reference) 'app/common';
+
+.biography {
+	color: @lightGray;
+	margin-bottom: .5em;
+
+	h2 {
+		display: inline-block;
+	}
+
+	button {
+		margin-right: .5em;
+	}
+
+	.edit-button {
+		font-size: .7em;
+		margin-left: 1em;
+	}
+
+	.biography-text {
+		margin-bottom: .5em;
+		font-size: .8em;
+
+		&.empty {
+			font-style: italic;
+		}
+	}
+
+	.biography-edit {
+		display: block;
+		resize: none;
+		font-size: .8em;
+		height: 5em;
+		width: 100%;
+		margin: .5em 0;
+		box-sizing: border-box;
+
+		animation-name: slideout;
+		animation-duration: 4s;
+	}
+}

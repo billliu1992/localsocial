@@ -1,0 +1,35 @@
+@import (reference) 'app/common';
+
+.user-relation-info {
+	font-size: .7em;
+	color: @lightGray;
+
+	&.confirm {
+		.friend-status a {
+			display: none;
+		}
+
+		.confirm-deletion {
+			display: block;
+		}
+	}
+
+	.following-status {
+		margin-bottom: .5em;
+	}
+
+	.friend-status a {
+		display: inline-block;
+		margin-right: .5em;
+		margin-bottom: 1em;
+	}
+
+	.confirm-deletion {
+		display: none;
+		margin-bottom: 1em;
+
+		a {
+			margin-left: .5em;
+		}		
+	}
+}
