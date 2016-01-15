@@ -29,16 +29,6 @@ define(['react'], function(React) {
 							<option value="public">Public</option>
 							<option value="friends">Friends Only</option>
 						</select>
-
-						<span className="privacy-option">						
-							<input id="privacy-name" type="checkbox" checked={ this.state.privacyLastName } onChange={ this.updatePrivacyLastName } />
-							<label htmlFor="privacy-name">Only show last initial</label>
-						</span>
-
-						<span className="privacy-option">
-							<input id="privacy-city" type="checkbox" checked={ this.state.privacyCityName } onChange={ this.updatePrivacyCityName } />
-							<label htmlFor="privacy-city">Only show city name</label>
-						</span>
 					</fieldset>
 					<fieldset className="post-buttons">
 						<button className="medium">Submit</button>

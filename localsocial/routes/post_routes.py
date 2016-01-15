@@ -28,7 +28,7 @@ def get_posts():
 	page_num = request.args.get('page_num', 0)
 	post_per_page = request.args.get('post_per_page', 10)
 
-	current_posts = post_service.get_post_feed(current_user, current_location, max_dist, page_num, post_per_page, max_id)
+	current_posts = post_service.get_post_feed(current_user.user_id, current_location, max_dist, page_num, post_per_page, max_id)
 
 	output_json = {
 		"error" : False,

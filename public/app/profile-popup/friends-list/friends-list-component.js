@@ -1,8 +1,6 @@
 define([
-	'components/popup-service',
 	'react'
 ], function(
-	PopupService,
 	React
 ) {
 	'use strict';
@@ -10,13 +8,9 @@ define([
 	var FriendsList = React.createClass({
 		render() {
 			var friendsElements = this.props.friends.map((friend) => {
-				var openProfile = function() {
-					PopupService.updatePopup({ userId : friend.userId });
-				}
-
-				return <div key={friend.userId} onClick={openProfile} className="friend-entry">
+				return <div key={friend['user_id']} onClick={() => this.props.showProfilePopup(friend['user_id'])} className="friend-entry">
 					<img className="friend-portrait" src="/portrait/test" />
-					<div className="friend-name">{ friend.firstName + ' ' + friend.lastName }</div>
+					<div className="friend-name">{ friend['first_name'] + ' ' + friend['last_name'] }</div>
 				</div>;
 			});
 

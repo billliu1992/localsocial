@@ -23,17 +23,17 @@ def create_new_reply(author, body, parent_post_id, location):
 
 	return new_reply
 
-def get_posts_by_user(current_user_id, searched_user_id, page_num=1, post_per_page=10, max_id=None):
+def get_posts_by_user(searched_user, are_friends, page_num=1, post_per_page=10, max_id=None):
 	if page_num < 1:
 		page_num = 1
 
-	return post_dao.get_posts_by_user(current_user_id, searched_user_id, post_per_page, (page_num - 1) * post_per_page, max_id)
+	return post_dao.get_posts_by_user(searched_user, are_friends, post_per_page, (page_num - 1) * post_per_page, max_id)
 
-def get_post_feed(user, location, max_dist=25, page_num=1, post_per_page=10, max_id = None):
+def get_post_feed(current_user_id, location, max_dist=25, page_num=1, post_per_page=10, max_id = None):
 	if(page_num < 1):
 		page_num = 1
 		
-	return post_dao.get_post_feed(location, max_dist, post_per_page, (page_num - 1) * post_per_page, max_id)
+	return post_dao.get_post_feed(current_user_id, location, max_dist, post_per_page, (page_num - 1) * post_per_page, max_id)
 
 def get_post_replies(post):
 	return reply_dao.get_replies_by_post_id(post.post_id)

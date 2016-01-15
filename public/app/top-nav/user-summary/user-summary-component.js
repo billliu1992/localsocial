@@ -30,7 +30,7 @@ define([
 			else {
 				return <div className="user-summary">
 					<img src="/portrait/test" />
-					<span className="user-name">{ this.state.profile.firstName + ' ' + this.state.profile.lastName }</span>
+					<span className="user-name">{ this.state.profile['first_name'] + ' ' + this.state.profile['last_name'] }</span>
 					
 					<div className="user-dropdown">
 						<div className="dropdown-option profile" onClick={this.showProfilePopup}>Profile</div>

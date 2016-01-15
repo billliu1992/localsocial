@@ -32,21 +32,21 @@ define([
 				return numberOfUnits + ' ' + unitName + ' ago';
 			}
 
-			if(difference / (1000 * 60 * 60 * 60 * 24 * 365) >= 1) {
-				return buildString(difference, (1000 * 60 * 60 * 60 * 24 * 365), "year");
+			if(difference / (1000 * 60 * 60 * 24 * 365) >= 1) {
+				return buildString(difference, (1000 * 60 * 60 * 24 * 365), "year");
 			}
-			else if(difference / (1000 * 60 * 60 * 60 * 24 * 30) >= 1) {
+			else if(difference / (1000 * 60 * 60 * 24 * 30) >= 1) {
 				// We naively assume each month is 30 days
-				return buildString(difference, (1000 * 60 * 60 * 60 * 24 * 30), "month");
+				return buildString(difference, (1000 * 60 * 60 * 24 * 30), "month");
 			}
-			else if(difference / (1000 * 60 * 60 * 60 * 24) >= 1) {
-				return buildString(difference, (1000 * 60 * 60 * 60 * 24), "day");
-			}
-			else if(difference / (1000 * 60 * 60 * 60) >= 1) {
-				return buildString(difference, (1000 * 60 * 60 * 60), "hour");
+			else if(difference / (1000 * 60 * 60 * 24) >= 1) {
+				return buildString(difference, (1000 * 60 * 60 * 24), "day");
 			}
 			else if(difference / (1000 * 60 * 60) >= 1) {
-				return buildString(difference, (1000 * 60 * 60), "minute");
+				return buildString(difference, (1000 * 60 * 60), "hour");
+			}
+			else if(difference / (1000 * 60 * 60) >= 1) {
+				return buildString(difference, (1000 * 60), "minute");
 			}
 			else {
 				return "less than a minute ago";
@@ -65,7 +65,7 @@ define([
 					<img className="portrait" src="/portrait/test" />
 					<div className="post-header">
 						<div className="post-header-row">
-							<span className="post-author">{ this.props.post['author_name'] }</span>
+							<a className="post-author" onClick={this.showUserProfile}>{ this.props.post['author_name'] }</a>
 							<span className="post-private post-info">{ this.formatPrivacyForDisplay(this.props.post['privacy']) }</span>
 						</div>
 						<div className="post-header-row">
@@ -78,6 +78,9 @@ define([
 					</div>
 				</div>
 			);
+		},
+		showUserProfile() {
+			this.props.showProfile(this.props.post['author_id']);
 		}
 	});
 

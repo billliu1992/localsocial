@@ -6,17 +6,27 @@ DROP TABLE IF EXISTS users;
 
 CREATE TABLE users (
 	userId			SERIAL PRIMARY KEY,
+
+	-- Password
 	hash			VARCHAR(60) NOT NULL,
 	salt			VARCHAR(60) NOT NULL,
 
+	-- Identifiers
 	email			VARCHAR(60) UNIQUE NOT NULL,
 	phone			BIGINT CHECK(phone > 0),
 
+	-- Public Fields
 	firstName		VARCHAR(30) NOT NULL,
 	lastName		VARCHAR(30) NOT NULL,
 	nickName		VARCHAR(30),
 	biography		TEXT CHECK(char_length(biography) <= 300),
 	portrait		VARCHAR(30)
+
+	-- Preferences
+	showLastName			BOOLEAN NOT NULL,
+	showExactLocation		BOOLEAN NOT NULL,
+	searchableByName		BOOLEAN NOT NULL,
+	useBrowserGeolocation	BOOLEAN NOT NULL
 );
 
 CREATE TYPE platform AS ENUM ('facebook', 'twitter', 'instagram');
@@ -28,13 +38,12 @@ CREATE TABLE platformLink (
 	UNIQUE(loginPlatform, externalId)
 );
 
-CREATE TYPE privacyValues as ENUM ('public', 'hide_last_name', 'hide_location', 'hide_both', 'friends');
+CREATE TYPE privacyValues as ENUM ('public', 'friends');
 
 CREATE TABLE posts (
 	-- General post values
 	postId			SERIAL PRIMARY KEY,
 	authorId		INTEGER REFERENCES users (userId) NOT NULL,
-	authorName		VARCHAR(60) NOT NULL,
 	postBody		TEXT NOT NULL,
 	postDate		TIMESTAMPTZ,
 	privacy			privacyValues NOT NULL,

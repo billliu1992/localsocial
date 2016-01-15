@@ -1,6 +1,8 @@
 define([
+	'components/popup-service',
 	'react'
 ], function(
+	PopupService,
 	React
 ) {
 	'use strict';
@@ -14,11 +16,14 @@ define([
 
 			return (
 				<div>
-					Author: <span>{ this.props.reply.author_name }</span>
+					Author: <span onClick={this.showUserProfile}>{ this.props.reply.author_name }</span>
 					{ locationElement }
 					<div> { this.props.reply.reply_body } </div>
 				</div>
 			);
+		},
+		showUserProfile() {
+			//PopupService.showPopup('profile-popup/profile-popup-component', { userId : this.props.entry['user_id'] });
 		}
 	});
 

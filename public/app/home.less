@@ -68,6 +68,12 @@ fieldset {
 	margin: 0;
 }
 
+input[type='text'], textarea {
+	&:focus {
+		outline: none;
+	}
+}
+
 nav#top-nav-bar {
 	background-color: @backgroundWhite;
 	border-bottom: 1px solid @medGreen;

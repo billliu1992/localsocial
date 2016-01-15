@@ -11,7 +11,7 @@ requirejs.config({
 var doGeolocation = function() {
 };
 
-requirejs(['babel-polyfill', 
+requirejs(['babel-polyfill',
 	'home-feed/home-feed-component',
 	'top-nav/top-nav-component',
 	'react',

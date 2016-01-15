@@ -2,7 +2,7 @@ from localsocial import app
 from localsocial.decorator.user_decorator import login_required, query_user
 from localsocial.decorator.route_decorator import api_endpoint, location_endpoint
 from localsocial.service import facebook_service, user_service, post_service
-from localsocial.model.user_model import User
+from localsocial.model.user_model import User, Friendship
 
 from flask import redirect, request, session, g
 
@@ -70,7 +70,7 @@ def create_user():
 def get_my_info():
 	requested_user = g.user
 
-	return requested_user.to_json_dict()
+	return requested_user.to_json_dict(private=True)
 
 @api_endpoint('/user/<queried_user_identifier>/profile')
 @login_required
@@ -82,7 +82,10 @@ def get_user_profile(queried_user_identifier):
 	current_user = g.user
 	current_location = g.user_location
 
-	posts = post_service.get_posts_by_user(current_user.user_id, requested_user_id)
+	friendship_status = user_service.get_friendship_status(current_user.user_id, requested_user_id)
+	are_friends = friendship_status == Friendship.FRIENDS
+
+	posts = post_service.get_posts_by_user(requested_user, are_friends)
 	friends = user_service.get_friends(requested_user_id)
 	followers = user_service.get_followers(requested_user_id)
 
@@ -103,7 +106,7 @@ def get_user_profile(queried_user_identifier):
 	result_json_dict['current_user_info'] = {
 		"location" : current_location.to_json_dict(),
 		"following" : current_user.user_id in followers,
-		"friendship_status" : user_service.get_friendship_status(current_user.user_id, requested_user_id)
+		"friendship_status" : friendship_status
 	}
 	if current_user.user_id == requested_user_id:
 		result_json_dict["self"] = current_user.user_id == requested_user_id
