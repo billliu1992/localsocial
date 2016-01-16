@@ -1,9 +1,11 @@
 define([
+	'settings-popup/settings-popup-component',
 	'profile-popup/profile-popup-component',
 	'components/user-service',
 	'components/popup-service',
 	'react'
 ], function(
+	SettingsPopup,
 	ProfilePopup,
 	UserService,
 	PopupService,
@@ -34,7 +36,7 @@ define([
 					
 					<div className="user-dropdown">
 						<div className="dropdown-option profile" onClick={this.showProfilePopup}>Profile</div>
-						<div className="dropdown-option settings">Settings</div>
+						<div className="dropdown-option settings" onClick={this.showSettingsPopup}>Settings</div>
 						<div className="dropdown-option log-out">Log Out</div>
 					</div>
 				</div>;
@@ -42,6 +44,9 @@ define([
 		},
 		showProfilePopup() {
 			PopupService.showPopup(ProfilePopup, { userId : 'me' });
+		},
+		showSettingsPopup() {
+			PopupService.showPopup(SettingsPopup, { userId : 'me' });
 		}
 	});
 
