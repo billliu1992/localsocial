@@ -51,9 +51,8 @@ class UserCredentials:
 		raise Exception("Tried to JSONify user credentials. This is not allowed to prevent accidentally sending them out!")
 
 class UserPreferences:
-	def __init__(self, show_last_name, exact_location, name_search, browser_geo):
+	def __init__(self, show_last_name, name_search, browser_geo):
 		self.show_last_name = show_last_name
-		self.exact_location = exact_location
 		self.name_search = name_search
 		self.browser_geo = browser_geo
 

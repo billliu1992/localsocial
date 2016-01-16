@@ -1,0 +1,110 @@
+@import (reference) 'app/common';
+
+@sidePadding : 8%;
+
+.edit-user-settings {
+	background: @backgroundGray;
+	text-align: left;
+	width: 25em;
+
+	h2 {
+		font-size: 1.2em;
+		color: @medGreen;
+
+		padding: .7em @sidePadding;
+		margin: 0;
+		font-weight: normal;
+	}
+
+	.settings-tab-selector {
+		display: flex;
+		justify-content: space-between;
+		background-color: @lightGreen;
+
+		span {
+			display: inline-block;
+			flex-basis: 33%;
+			text-align: center;
+			padding: .3em 0;
+			color: @darkerGreen;
+			cursor: pointer;
+		
+			&:hover {
+				color: @darkestGreen;
+			}
+		}
+	}
+
+	.settings-message {
+		margin-top: .1em;
+		font-size: .8em;
+		padding: 0 @sidePadding;
+
+		line-height: 1.5em;
+		height: 1.5em;
+		vertical-align: middle;
+
+		visibility: hidden;
+
+		&.success {
+			background-color: @lightGreen;
+			color: @darkGreen;
+
+			visibility: visible;
+		}
+
+		&.error {
+			background-color: @lightRed;
+			color: @medRed;
+
+			visibility: visible;
+		}
+	}
+
+	.settings-section {
+		padding: .2em @sidePadding 1em;;
+
+		button {
+			margin-right: 1em;
+		}
+	}
+
+	&.personal {
+		.settings-tab-selector .personal {
+			background-color: @medGreen;
+			color: @darkestGreen;
+		}
+
+		.settings-section {
+			&.privacy, &.password {
+				display: none;
+			}
+		}
+	}
+
+	&.privacy {
+		.settings-tab-selector .privacy {
+			background-color: @medGreen;
+			color: @darkestGreen;
+		}
+
+		.settings-section {
+			&.personal, &.password {
+				display: none;
+			}
+		}
+	}
+
+	&.password {
+		.settings-tab-selector .password {
+			background-color: @medGreen;
+			color: @darkestGreen;
+		}
+
+		.settings-section {
+			&.privacy, &.personal {
+				display: none;
+			}
+		}
+	}
+}

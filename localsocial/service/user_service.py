@@ -1,9 +1,17 @@
+import re
+
 from localsocial.model.user_model import User, Friendship, UserPreferences
 from localsocial.database import user_dao, ext_platform_dao, user_relations_dao
 from localsocial.service import facebook_service, auth_service
 
 BIOGRAPHY_MAX_LENGTH = 300
-DEFAULT_PREFS = UserPreferences(True, True, True, False)
+
+def convert_text_to_num(in_string):
+	only_numbers = "".join(char for char in in_string if char.isdecimal())
+	if len(only_numbers) == 0:
+		return None
+	else:
+		return int(only_numbers)
 
 def login_user_facebook(access_token):
 	user_info = facebook_service.get_user_info(access_token)
@@ -34,7 +42,7 @@ def create_new_user(user_obj, new_password):
 	#TODO create user by phone as well
 	password_hash, salt = auth_service.hash_password(new_password)
 
-	return user_dao.create_user_by_email(user_obj, DEFAULT_PREFS, password_hash, salt)
+	return user_dao.create_user_by_email(user_obj, password_hash, salt)
 
 def get_user_by_id(user_id):
 	return user_dao.get_user_by_id(user_id)
@@ -47,6 +55,17 @@ def get_users_by_ids(user_ids):
 
 def update_user(user_obj):
 	return user_dao.update_user(user_obj)
+
+def update_user_credentials(user_obj, old_password, new_password):
+	credentials = user_dao.get_credentials_by_email(user_obj.email)
+
+	if auth_service.check_password(old_password, credentials.password_hash, credentials.salt):
+		hashed, salt = auth_service.hash_password(new_password)
+
+		return user_dao.update_user_credentials(user_obj, hashed, salt)
+	else:
+		return False
+
 
 def set_user_biography(user_obj, new_biography):
 	if(len(new_biography) > BIOGRAPHY_MAX_LENGTH):

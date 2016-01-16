@@ -1,0 +1,45 @@
+@import (reference) 'app/common';
+
+.settings-field {
+	margin-bottom: 1em;
+
+	label, a {
+		font-size: .7em;
+	}
+
+	a {
+		padding-left: 1em;
+	}
+
+	.value-wrapper {
+		height: 1.2em;
+
+		@fieldValueHeight: 1.2em;
+
+		.current-value {
+			font-size: @fieldValueHeight;
+			height: 100%;
+
+			&.empty {
+				color: @lightGray;
+				font-style: italic;
+			}
+		}
+
+		input[type="text"], input[type="password"], input[type="email"] {
+			padding: 0 .5em;
+			margin: 0;
+			box-sizing: border-box;
+			border: 1px solid @medGreen;
+			border-radius: 3px;
+			display: block;
+
+			width: 100%;
+			height: 100%;
+		}
+
+		input[readonly] {
+			background-color: #ddd;
+		}
+	}
+}

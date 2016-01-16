@@ -2,9 +2,11 @@ from localsocial import app
 from localsocial.decorator.user_decorator import login_required, query_user
 from localsocial.decorator.route_decorator import api_endpoint, location_endpoint
 from localsocial.service import facebook_service, user_service, post_service
-from localsocial.model.user_model import User, Friendship
+from localsocial.model.user_model import User, Friendship, UserPreferences
 
 from flask import redirect, request, session, g
+
+DEFAULT_PREFS = UserPreferences(True, True, False)
 
 @app.route('/user/login/facebook')
 def facebook_login():
@@ -36,9 +38,13 @@ def do_login():
 
 	try:
 		user_id = user_service.login(email, password)
-		session["user_id"] = user_id
 
-		return { "success" : True }
+		if user_id != None:
+			session["user_id"] = user_id
+
+			return { "success" : True }
+		else:
+			return { "success" : False }
 	except:
 		return { "success" : False }
 
@@ -57,7 +63,8 @@ def create_user():
 	if password != confirm_password:
 		return { "success" : False, "reason" : "password" }
 	else:
-		new_user = User(email, phone, first_name, last_name, nick_name, portrait, "")
+		phone = user_service.convert_text_to_num(phone)
+		new_user = User(email, phone, first_name, last_name, nick_name, portrait, "", DEFAULT_PREFS)
 
 		new_user = user_service.create_new_user(new_user, password)
 		session["user_id"] = new_user.user_id
@@ -65,12 +72,59 @@ def create_user():
 		return { "success" : True }
 
 
-@api_endpoint('/user/me')
+@api_endpoint('/user/me', methods=("GET",))
 @login_required
 def get_my_info():
 	requested_user = g.user
 
 	return requested_user.to_json_dict(private=True)
+
+@api_endpoint('/user/me', methods=("POST",))
+@login_required
+def update_user_info():
+	requested_user = g.user
+
+	if "email" in request.form:
+		requested_user.email = request.form["email"]
+	elif "phone" in request.form:
+		phone = request.form["phone"]
+		phone = user_service.convert_text_to_num(phone)
+
+		print(phone)
+
+		requested_user.phone = phone
+	elif "first_name" in request.form:
+		requested_user.first_name = request.form["first_name"]
+	elif "last_name" in request.form:
+		requested_user.last_name = request.form["last_name"]
+	elif "nick_name" in request.form:
+		requested_user.nick_name = request.form["nick_name"]
+	elif "show_last_name" in request.form:
+		requested_user.preferences.show_last_name = request.form["show_last_name"] == "true"
+	elif "name_search" in request.form:
+		requested_user.preferences.name_search = request.form["name_search"] == "true"
+	elif "browser_geo" in request.form:
+		requested_user.preferences.browser_geo = request.form["browser_geo"] == "true"
+
+	updated_user = user_service.update_user(requested_user)
+
+	return { "success" :  True, "user" : updated_user.to_json_dict(private=True) }
+
+@api_endpoint('/user/me/password', methods=("POST",))
+@login_required
+def update_password():
+	requested_user = g.user
+
+	current = request.form.get("current", "")
+	password = request.form.get("password", "")
+	confirm = request.form.get("confirm", "")
+
+	if password == confirm:
+		change_result = user_service.update_user_credentials(requested_user, current, password)
+
+		return { "success" : change_result, "reason" : "authentication" }
+	else:
+		return { "success" : False, "reason" : "confirm" }
 
 @api_endpoint('/user/<queried_user_identifier>/profile')
 @login_required
