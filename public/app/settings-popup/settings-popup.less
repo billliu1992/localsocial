@@ -1,0 +1,30 @@
+@import (reference) 'app/common';
+
+.edit-user-settings {
+	background: @backgroundGray;
+	text-align: left;
+
+	&.personal {
+		.settings-section {
+			&.privacy, &.password {
+				display: none;
+			}
+		}
+	}
+
+	&.privacy {
+		.settings-section {
+			&.personal, &.password {
+				display: none;
+			}
+		}
+	}
+
+	&.password {
+		.settings-section {
+			&.privacy, &.personal {
+				display: none;
+			}
+		}
+	}
+}

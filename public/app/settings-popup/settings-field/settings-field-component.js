@@ -13,11 +13,16 @@ define([
 			var inputElement = null;
 			var editingText = null;
 			if(this.state.editing) {
-				inputElement = <input type={this.props.type} value={this.props.user[this.props.field]} onChange={this.changeValue} />;
+				var textValue = this.props.oldValues[this.props.field];
+				if(typeof this.props.newValues[this.props.field] !== 'undefined') {
+					textValue = this.props.newValues[this.props.field];
+				}
+
+				inputElement = <input type={this.props.type} value={textValue} onChange={this.changeValue} />;
 				editingText = 'Cancel';
 			}
 			else {
-				inputElement = <div>{this.props.value}</div>;
+				inputElement = <div>{this.props.oldValues[this.props.field]}</div>;
 				editingText = 'Edit';
 			}
 
@@ -28,12 +33,16 @@ define([
 			</fieldset>;
 		},
 		toggleMode() {
+			if(this.state.editing) {
+				this.props.cancelUpdate(this.props.field);
+			}
+
 			this.setState({
 				editing : !this.state.editing
 			});
 		},
 		changeValue(event) {
-			this.props.updateProfileField(this.props.field, event.target.value);
+			this.props.updateField(this.props.field, event.target.value);
 		}
 	});
 

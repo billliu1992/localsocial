@@ -35,6 +35,16 @@ define([
 		getCurrentUserInfo() {
 			return userPromise;
 		},
+		updateCurrentUserInfo(newInfo) {
+			var promise =  APIService.filterResponse(axios.post('/user/me',
+				APIService.transformObjectToForm(newInfo)));
+
+			userPromise = promise.then((result) => {
+				return result.user;
+			});
+
+			return promise;
+		},
 		updateBiography(biography) {
 			return APIService.filterResponse(
 				axios.post('/user/me/biography', 

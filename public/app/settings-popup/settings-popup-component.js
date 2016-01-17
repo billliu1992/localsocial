@@ -1,17 +1,32 @@
 define([
-	'settings-popup/settings-field/settings-field-component',
+	'settings-popup/change-password/change-password-component',
+	'settings-popup/personal-info/personal-info-component',
+	'settings-popup/privacy-settings/privacy-settings-component',
 	'components/user-service',
+	'components/popup-service',
 	'react'
 ], function(
-	SettingsField,
+	ChangePassword,
+	PersonalInfo,
+	PrivacySettings,
 	UserService,
+	PopupService,
 	React
 ) {
 	'use strict';
 
+	var SettingsTabs = {
+		PERSONAL : 'personal',
+		PRIVACY : 'privacy',
+		PASSWORD : 'password'
+	}
+
 	var SettingsPopup = React.createClass({
 		getInitialState() {
-			return { user : null };
+			return { 
+				user : null,
+				tab : 'personal'
+			};
 		},
 		componentWillMount() {
 			UserService.getCurrentUserInfo().then((user) => {
@@ -25,34 +40,35 @@ define([
 				return <div>Loading</div>;
 			}
 			else {
-				return <div class="edit-profile">
-					<SettingsField field="email" label="Email" type="email" user={this.state.user} updateProfileField={this.updateProfileField} />
-					<SettingsField field="phone" label="Phone" type="text" user={this.state.user} updateProfileField={this.updateProfileField} />
-					
-
-					<SettingsField field="first-name" label="First name" type="text" user={this.state.user} updateProfileField={this.updateProfileField} />
-					
-					<SettingsField field="last-name" label="Last name" type="text" user={this.state.user} updateProfileField={this.updateProfileField} />
-					
-					<SettingsField field="nick-name" label="Nick name" type="text" user={this.state.user} updateProfileField={this.updateProfileField} />
-
-					<SettingsField field="show-last-name" label="Show last name" type="checkbox" user={this.state.user} updateProfileField={this.updateProfileField} />
-					
-					<SettingsField field="exact-location" label="Show coordinates" type="checkbox" user={this.state.user} updateProfileField={this.updateProfileField} />
-					
-					<SettingsField field="name-search" label="Searchable by name" type="checkbox" user={this.state.user} updateProfileField={this.updateProfileField} />
-					
-					<SettingsField field="browser-geo" label="Use browser geolocation" type="checkbox" user={this.state.user} updateProfileField={this.updateProfileField} />
-				
-					<button>Save</button><button>Cancel</button>
-				</div>
+				return <div className={"edit-user-settings " + this.state.tab}>
+					<h1>Settings</h1>
+					<div className="settings-tab-selector">
+						<span onClick={this.changeSettingsTab(SettingsTabs.PERSONAL)}>Personal Info</span>
+						<span onClick={this.changeSettingsTab(SettingsTabs.PRIVACY)}>Privacy</span>
+						<span onClick={this.changeSettingsTab(SettingsTabs.PASSWORD)}>Password</span>
+					</div>
+					{/*<ChangePassword data={this.state.user} updateInfo={this.updateUserInfo} />*/}
+					<PersonalInfo data={this.state.user} updateInfo={this.updateUserInfo}/>
+					{/*<PrivacySettings data={this.state.user.preferences} updateInfo={this.updateUserInfo}/>*/}
+				</div>;
 			}
-
 		},
-		updateProfileField(fieldName, fieldValue) {
-			this.state.user[fieldName] = fieldValue;
+		updatePassword() {
 		},
-		saveProfileField() {
+		updateUserInfo(newInfo) {
+			UserService.updateCurrentUserInfo(newInfo).then((result) => {
+				this.setState({
+					user : result.user
+				});
+			});
+		},
+		changeSettingsTab(tab) {
+			return () => {
+				this.setState({ tab });
+			};
+		},
+		closeSettingsPopup() {
+			PopupService.destroyPopup();
 		}
 	});
 

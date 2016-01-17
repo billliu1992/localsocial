@@ -65,12 +65,40 @@ def create_user():
 		return { "success" : True }
 
 
-@api_endpoint('/user/me')
+@api_endpoint('/user/me', methods=("GET",))
 @login_required
 def get_my_info():
 	requested_user = g.user
 
 	return requested_user.to_json_dict(private=True)
+
+@api_endpoint('/user/me', methods=("POST",))
+@login_required
+def update_user_info():
+	requested_user = g.user
+
+	if "email" in request.form:
+		requested_user.email = request.form["email"]
+	elif "phone" in request.form:
+		requested_user.phone = request.form["phone"]
+	elif "first_name" in request.form:
+		requested_user.first_name = request.form["first_name"]
+	elif "last_name" in request.form:
+		requested_user.last_name = request.form["last_name"]
+	elif "nick_name" in request.form:
+		requested_user.nick_name = request.form["nick_name"]
+	elif "show_last_name" in request.form:
+		requested_user.preferences.show_last_name = request.form["show_last_name"]
+	elif "exact_location" in request.form:
+		requested_user.preferences.exact_location = request.form["exact_location"]
+	elif "name_search" in request.form:
+		requested_user.preferences.name_search = request.form["name_search"]
+	elif "browser_geo" in request.form:
+		requested_user.preferences.browser_geo = request.form["browser_geo"]
+
+	updated_user = user_service.update_user(requested_user)
+
+	return { "success" :  True, user : updated_user}
 
 @api_endpoint('/user/<queried_user_identifier>/profile')
 @login_required
