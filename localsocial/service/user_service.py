@@ -3,7 +3,6 @@ from localsocial.database import user_dao, ext_platform_dao, user_relations_dao
 from localsocial.service import facebook_service, auth_service
 
 BIOGRAPHY_MAX_LENGTH = 300
-DEFAULT_PREFS = UserPreferences(True, True, True, False)
 
 def login_user_facebook(access_token):
 	user_info = facebook_service.get_user_info(access_token)
@@ -34,7 +33,7 @@ def create_new_user(user_obj, new_password):
 	#TODO create user by phone as well
 	password_hash, salt = auth_service.hash_password(new_password)
 
-	return user_dao.create_user_by_email(user_obj, DEFAULT_PREFS, password_hash, salt)
+	return user_dao.create_user_by_email(user_obj, password_hash, salt)
 
 def get_user_by_id(user_id):
 	return user_dao.get_user_by_id(user_id)

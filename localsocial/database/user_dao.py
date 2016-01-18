@@ -56,14 +56,14 @@ def get_users_by_ids(user_ids):
 	return user_objs
 
 
-def create_user_by_field(user_obj, prefs_obj, field_name, field_value, password_hash, salt):
+def create_user_by_field(user_obj, field_name, field_value, password_hash, salt):
 	cursor = handled_execute(db_conn, """INSERT INTO users 
 		(%s, hash, salt, firstName, lastName, nickName, portrait,
-			showLastName, showExactLocation, searchableByName, useBrowserGeolocation) 
+			showLastName, searchableByName, useBrowserGeolocation) 
 		VALUES (%s, %s, %s, %s, %s, %s, %s)
 		RETURNING userId;""",
 		(AsIs(field_name), field_value, password_hash, salt, user_obj.first_name, user_obj.last_name, user_obj.nick_name, user_obj.portrait,
-			prefs_obj.show_last_name, prefs_obj.exact_location, prefs_obj.name_search, prefs_obj.browser_geo))
+			user_obj.preferences.show_last_name, user_obj.preferences.name_search, user_obj.preferences.browser_geo))
 
 	last_id = cursor.fetchone()[0]
 
@@ -71,10 +71,10 @@ def create_user_by_field(user_obj, prefs_obj, field_name, field_value, password_
 
 	return user_obj
 
-def create_user_by_email(user_obj, preferences_obj, password_hash, salt):
+def create_user_by_email(user_obj, password_hash, salt):
 	return create_user_by_field(user_obj, 'email', user_obj.email, password_hash, salt)
 
-def create_user_by_phone(user_obj, preferences_obj, password_hash, salt):
+def create_user_by_phone(user_obj, password_hash, salt):
 	return create_user_by_field(user_obj, 'phone', user_obj.phone, password_hash, salt)
 
 def get_credentials_by_field(field_name, field_value):

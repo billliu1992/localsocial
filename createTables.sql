@@ -1,9 +1,3 @@
-DROP TABLE IF EXISTS posts;
-DROP TYPE IF EXISTS privacyValues;
-DROP TABLE IF EXISTS platformLink;
-DROP TYPE IF EXISTS platform;
-DROP TABLE IF EXISTS users;
-
 CREATE TABLE users (
 	userId			SERIAL PRIMARY KEY,
 
@@ -20,11 +14,10 @@ CREATE TABLE users (
 	lastName		VARCHAR(30) NOT NULL,
 	nickName		VARCHAR(30),
 	biography		TEXT CHECK(char_length(biography) <= 300),
-	portrait		VARCHAR(30)
+	portrait		VARCHAR(30),
 
 	-- Preferences
 	showLastName			BOOLEAN NOT NULL,
-	showExactLocation		BOOLEAN NOT NULL,
 	searchableByName		BOOLEAN NOT NULL,
 	useBrowserGeolocation	BOOLEAN NOT NULL
 );
@@ -38,7 +31,7 @@ CREATE TABLE platformLink (
 	UNIQUE(loginPlatform, externalId)
 );
 
-CREATE TYPE privacyValues as ENUM ('public', 'friends');
+CREATE TYPE privacyValues as ENUM ('public', 'hide_location', 'friends');
 
 CREATE TABLE posts (
 	-- General post values
@@ -64,7 +57,7 @@ CREATE TABLE posts (
 
 CREATE TABLE likes (
 	postId			INTEGER REFERENCES posts (postId) NOT NULL,
-	likerId			INTEGER REFERENCES users (postId) NOT NULL,
+	likerId			INTEGER REFERENCES users (userId) NOT NULL,
 	UNIQUE(postId, likerId)
 );
 
@@ -72,7 +65,7 @@ CREATE TABLE replies (
 	replyId			SERIAL PRIMARY KEY,
 	postId			INTEGER REFERENCES posts (postId) NOT NULL,
 	authorId		INTEGER REFERENCES users (userId) NOT NULL,
-	authorName		VARCHAR(60) NOT NULL,
+	authorName		TEXT NOT NULL,
 	replyBody		TEXT NOT NULL,
 	replyDate		TIMESTAMPTZ,
 	cityName		TEXT NOT NULL,

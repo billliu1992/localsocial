@@ -6,6 +6,8 @@ from localsocial.model.user_model import User, Friendship
 
 from flask import redirect, request, session, g
 
+DEFAULT_PREFS = UserPreferences(True, True, False)
+
 @app.route('/user/login/facebook')
 def facebook_login():
 	return redirect(facebook_service.get_auth_redirect(app.config["FB_APP_ID"], "http://localhost:5000/login/facebook/callback"))	#Config-itize
@@ -57,7 +59,7 @@ def create_user():
 	if password != confirm_password:
 		return { "success" : False, "reason" : "password" }
 	else:
-		new_user = User(email, phone, first_name, last_name, nick_name, portrait, "")
+		new_user = User(email, phone, first_name, last_name, nick_name, portrait, "", DEFAULT_PREFS)
 
 		new_user = user_service.create_new_user(new_user, password)
 		session["user_id"] = new_user.user_id
