@@ -9,20 +9,38 @@ define([
 				editing : false
 			}
 		},
+		componentWillReceiveProps(nextProps) {
+			this.setState({
+				editing : typeof nextProps.newValues[this.props.field] !== 'undefined'
+			});
+		},
 		render() {
 			var inputElement = null;
 			var editingText = null;
 			if(this.state.editing) {
-				var textValue = this.props.oldValues[this.props.field];
+				var fieldValue = this.props.oldValues[this.props.field];
 				if(typeof this.props.newValues[this.props.field] !== 'undefined') {
-					textValue = this.props.newValues[this.props.field];
+					fieldValue = this.props.newValues[this.props.field];
 				}
 
-				inputElement = <input type={this.props.type} value={textValue} onChange={this.changeValue} />;
+				if(this.props.type === 'text' || this.props.type === 'email') {
+					inputElement = <input type={this.props.type} value={fieldValue} onChange={this.onChangeValue} />;
+				}
+				else if(this.props.type === 'checkbox') {
+					inputElement = <input type={this.props.type} checked={fieldValue} onChange={this.onChangeValue} />;
+				}
 				editingText = 'Cancel';
 			}
 			else {
-				inputElement = <div>{this.props.oldValues[this.props.field]}</div>;
+				var fieldValue = this.props.oldValues[this.props.field];
+				if(fieldValue === true) {
+					fieldValue = 'Yes';
+				}
+				else if(fieldValue === false) {
+					fieldValue = 'No';
+				}
+
+				inputElement = <div>{ fieldValue }</div>;
 				editingText = 'Edit';
 			}
 
@@ -36,13 +54,20 @@ define([
 			if(this.state.editing) {
 				this.props.cancelUpdate(this.props.field);
 			}
-
-			this.setState({
-				editing : !this.state.editing
-			});
+			else {
+				this.updateValue(this.props.oldValues[this.props.field]);
+			}
 		},
-		changeValue(event) {
-			this.props.updateField(this.props.field, event.target.value);
+		onChangeValue(event) {
+			if(this.props.type === 'checkbox') {
+				this.updateValue(event.target.checked);
+			}
+			else {
+				this.updateValue(event.target.checked);
+			}
+		},
+		updateValue(newValue) {
+			this.props.updateField(this.props.field, newValue);
 		}
 	});
 

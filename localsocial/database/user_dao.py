@@ -7,7 +7,7 @@ from psycopg2.extensions import AsIs
 def get_user_by_field(field, value):
 	cursor = handled_execute(db_conn, """
 			SELECT userId,email,phone,firstName,lastName,nickName,portrait,biography,
-			showLastName,showExactLocation,searchableByName,useBrowserGeolocation
+			showLastName,searchableByName,useBrowserGeolocation
 			FROM users WHERE %s=%s;""", (AsIs(field), value))
 
 	user_row = cursor.fetchone()
@@ -15,9 +15,9 @@ def get_user_by_field(field, value):
 	returned_user = None
 	if(user_row != None):
 		(user_id, email, phone, first_name, last_name, nick_name, portrait, biography,
-			show_last_name, exact_location, name_search, browser_geo) = user_row
+			show_last_name, name_search, browser_geo) = user_row
 
-		returned_prefs = UserPreferences(show_last_name, exact_location, name_search, browser_geo)
+		returned_prefs = UserPreferences(show_last_name, name_search, browser_geo)
 		returned_user = User(email, phone, first_name, last_name, nick_name, portrait, biography, returned_prefs)
 
 		returned_user.user_id = user_id
@@ -38,16 +38,16 @@ def get_user_by_id(user_id):
 def get_users_by_ids(user_ids):
 	cursor = handled_execute(db_conn, """
 		SELECT userId,email,phone,firstName,lastName,nickName,portrait,biography,
-		showLastName,showExactLocation,searchableByName,useBrowserGeolocation
+		showLastName,searchableByName,useBrowserGeolocation
 		FROM users WHERE userId = ANY (%s)""", (user_ids,))
 
 	user_rows = cursor.fetchall()
 	user_objs = []
 	for row in user_rows:
 		(user_id, email, phone, first_name, last_name, nick_name, portrait, biography,
-			show_last_name, exact_location, name_search, browser_geo) = row
+			show_last_name, name_search, browser_geo) = row
 
-		user_prefs = UserPreferences(show_last_name, exact_location, name_search, browser_geo)
+		user_prefs = UserPreferences(show_last_name, name_search, browser_geo)
 		user_obj = User(email, phone, first_name, last_name, nick_name, portrait, biography, user_prefs)
 		user_obj.user_id = user_id
 
@@ -98,11 +98,11 @@ def get_credentials_by_phone(phone):
 def update_user(user_obj):
 	cursor = handled_execute(db_conn, """UPDATE users SET 
 		email=%s, phone=%s, firstName=%s, lastName=%s, nickName=%s, portrait=%s,
-		showLastName=%s, showExactLocation=%s, searchableByName=%s, useBrowserGeolocation=%s
+		showLastName=%s, searchableByName=%s, useBrowserGeolocation=%s
 		WHERE userId=%s;""",
 		(user_obj.email, user_obj.phone, user_obj.first_name, user_obj.last_name, user_obj.nick_name,
-			user_obj.portrait, user_obj.user_id, user_obj.preferences.show_last_name, user_obj.preferences.exact_location,
-			user_obj.preferences.name_search, user_obj.preferences.browser_geo))
+			user_obj.portrait, user_obj.preferences.show_last_name,	user_obj.preferences.name_search,
+			user_obj.preferences.browser_geo, user_obj.user_id))
 
 	return user_obj
 

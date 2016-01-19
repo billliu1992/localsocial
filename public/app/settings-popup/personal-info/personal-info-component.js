@@ -35,7 +35,7 @@ define([
 			delete this.state.data[field];
 		},
 		submitData() {
-			console.log(this.state.data);
+			this.props.updateInfo(this.state.data);
 		}
 	});
 

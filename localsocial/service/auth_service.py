@@ -16,3 +16,7 @@ def check_password(password, test_hash, salt):
 
 
 	return hashed == test_hash
+
+def check_password_strength(password):
+	#TODO Implement
+	return True

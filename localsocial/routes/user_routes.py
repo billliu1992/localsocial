@@ -2,7 +2,7 @@ from localsocial import app
 from localsocial.decorator.user_decorator import login_required, query_user
 from localsocial.decorator.route_decorator import api_endpoint, location_endpoint
 from localsocial.service import facebook_service, user_service, post_service
-from localsocial.model.user_model import User, Friendship
+from localsocial.model.user_model import User, Friendship, UserPreferences
 
 from flask import redirect, request, session, g
 
@@ -90,17 +90,29 @@ def update_user_info():
 	elif "nick_name" in request.form:
 		requested_user.nick_name = request.form["nick_name"]
 	elif "show_last_name" in request.form:
-		requested_user.preferences.show_last_name = request.form["show_last_name"]
-	elif "exact_location" in request.form:
-		requested_user.preferences.exact_location = request.form["exact_location"]
+		requested_user.preferences.show_last_name = request.form["show_last_name"] == "true"
 	elif "name_search" in request.form:
-		requested_user.preferences.name_search = request.form["name_search"]
+		requested_user.preferences.name_search = request.form["name_search"] == "true"
 	elif "browser_geo" in request.form:
-		requested_user.preferences.browser_geo = request.form["browser_geo"]
+		requested_user.preferences.browser_geo = request.form["browser_geo"] == "true"
 
 	updated_user = user_service.update_user(requested_user)
 
-	return { "success" :  True, user : updated_user}
+	return { "success" :  True, "user" : updated_user.to_json_dict(private=True) }
+
+@api_endpoint('/user/me/password', methods=("POST",))
+@login_required
+def update_password():
+	requested_user = g.user
+
+	if "password" in request.form and auth_service.check_password_strength(request.form["password"]):
+		password_hash, salt = auth_service.hash_password(request.form["password"])
+
+		user_service.update_user_credentials(requested_user, password_hash, salt)
+
+		return { "success" : True }
+	else:
+		return { "success" : False }
 
 @api_endpoint('/user/<queried_user_identifier>/profile')
 @login_required

@@ -47,13 +47,14 @@ define([
 						<span onClick={this.changeSettingsTab(SettingsTabs.PRIVACY)}>Privacy</span>
 						<span onClick={this.changeSettingsTab(SettingsTabs.PASSWORD)}>Password</span>
 					</div>
-					{/*<ChangePassword data={this.state.user} updateInfo={this.updateUserInfo} />*/}
-					<PersonalInfo data={this.state.user} updateInfo={this.updateUserInfo}/>
-					{/*<PrivacySettings data={this.state.user.preferences} updateInfo={this.updateUserInfo}/>*/}
+					<ChangePassword data={this.state.user} updateInfo={this.updatePassword} />
+					{/* <PersonalInfo data={this.state.user} updateInfo={this.updateUserInfo}/> */}
+					<PrivacySettings data={this.state.user.preferences} updateInfo={this.updateUserInfo}/>
 				</div>;
 			}
 		},
-		updatePassword() {
+		updatePassword(password, confirm) {
+			UserService.updateCredentials(password, confirm);
 		},
 		updateUserInfo(newInfo) {
 			UserService.updateCurrentUserInfo(newInfo).then((result) => {

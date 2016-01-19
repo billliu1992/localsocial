@@ -74,7 +74,7 @@ def get_post_feed(current_user_id, current_location, range, limit, skip, max_id=
 		postId, authorId, postBody, postDate, privacy, cityName, longitude, latitude,
 		eventId, eventName, eventLocation, eventStart, eventEnd,
 		imageId,
-		firstName, lastName, nickName, showLastName
+		firstName, lastName, nickName, showLastName,
 		(authorId IN (SELECT firstUserId FROM userFriends WHERE secondUserId = %(current_user_id)s)
 				AND %(current_user_id)s IN (SELECT firstUserId FROM userFriends WHERE secondUserId = authorId)) AS areFriends
 		FROM posts LEFT JOIN users ON posts.authorId = users.userId

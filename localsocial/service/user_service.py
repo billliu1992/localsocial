@@ -47,6 +47,9 @@ def get_users_by_ids(user_ids):
 def update_user(user_obj):
 	return user_dao.update_user(user_obj)
 
+def update_user_credentials(user_obj, hashed, salt):
+	return user_dao.update_user_credentials(user_obj, hashed, salt)
+
 def set_user_biography(user_obj, new_biography):
 	if(len(new_biography) > BIOGRAPHY_MAX_LENGTH):
 		return False
