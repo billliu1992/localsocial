@@ -110,10 +110,10 @@ def update_user_credentials(user_obj, new_hash, new_salt):
 	cursor = handled_execute(db_conn, """UPDATE users SET hash=%s, salt=%s WHERE userId=%s;""",
 		(new_hash, new_salt, user_obj.user_id))
 
-	return user_obj
+	return True
 
 def update_user_biography(user_obj, new_biography):
 	cursor = handled_execute(db_conn, """UPDATE users SET biography=%s WHERE userId=%s""",
 		(new_biography, user_obj.user_id))
 
-	return user_obj
+	return True

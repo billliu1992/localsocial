@@ -16,12 +16,14 @@ define([
 		render() {
 			return <div className="settings-section personal">
 				<h2>Personal info</h2>
-				<SettingsField field="email" label="Email" type="email" oldValues={this.props.data} newValues={this.state.data} updateField={this.updateField} cancelUpdate={this.cancelUpdate} />
-				<SettingsField field="phone" label="Phone" type="text" oldValues={this.props.data} newValues={this.state.data} updateField={this.updateField} cancelUpdate={this.cancelUpdate} />
-				<SettingsField field="first_name" label="First name" type="text" oldValues={this.props.data} newValues={this.state.data} updateField={this.updateField} cancelUpdate={this.cancelUpdate} />
-				<SettingsField field="last_name" label="Last name" type="text" oldValues={this.props.data} newValues={this.state.data} updateField={this.updateField} cancelUpdate={this.cancelUpdate} />
-				<SettingsField field="nick_name" label="Nick name" type="text" oldValues={this.props.data} newValues={this.state.data} updateField={this.updateField} cancelUpdate={this.cancelUpdate} />
-				<button onClick={this.submitData}>Submit</button><button>Cancel</button>
+				<form onSubmit={this.submitData}>
+					<SettingsField field="email" label="Email" type="email" oldValues={this.props.data} newValues={this.state.data} updateField={this.updateField} cancelUpdate={this.cancelUpdate} required={true} />
+					<SettingsField field="phone" label="Phone" type="telephone" oldValues={this.props.data} newValues={this.state.data} updateField={this.updateField} cancelUpdate={this.cancelUpdate} required={true} />
+					<SettingsField field="first_name" label="First name" type="text" oldValues={this.props.data} newValues={this.state.data} updateField={this.updateField} cancelUpdate={this.cancelUpdate} required={true} />
+					<SettingsField field="last_name" label="Last name" type="text" oldValues={this.props.data} newValues={this.state.data} updateField={this.updateField} cancelUpdate={this.cancelUpdate} required={true} />
+					<SettingsField field="nick_name" label="Nick name" type="text" oldValues={this.props.data} newValues={this.state.data} updateField={this.updateField} cancelUpdate={this.cancelUpdate} />
+					<button>Submit</button><button>Cancel</button>
+				</form>
 			</div>;
 		},
 		updateField(field, value) {
@@ -32,10 +34,26 @@ define([
 			});
 		},
 		cancelUpdate(field) {
-			delete this.state.data[field];
+			var newData = this.state.data;
+			delete newData[field];
+			this.setState({
+				data : newData
+			});
 		},
-		submitData() {
-			this.props.updateInfo(this.state.data);
+		submitData(event) {
+			event.preventDefault();
+
+			console.log(event.target.checkValidity());
+			if(event.target.checkValidity()) {
+
+				this.props.updateInfo(this.state.data);
+
+				this.setState({
+					data : {}
+				});
+			}
+			else {
+			}
 		}
 	});
 

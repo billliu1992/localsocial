@@ -47,17 +47,17 @@ define([
 						<span onClick={this.changeSettingsTab(SettingsTabs.PRIVACY)}>Privacy</span>
 						<span onClick={this.changeSettingsTab(SettingsTabs.PASSWORD)}>Password</span>
 					</div>
-					<ChangePassword data={this.state.user} updateInfo={this.updatePassword} />
-					{/* <PersonalInfo data={this.state.user} updateInfo={this.updateUserInfo}/> */}
-					<PrivacySettings data={this.state.user.preferences} updateInfo={this.updateUserInfo}/>
+					<ChangePassword data={this.state.user} updatePassword={this.updatePassword} />
+					<PersonalInfo data={this.state.user} updateInfo={this.updateUserInfo} />
+					<PrivacySettings data={this.state.user.preferences} updateInfo={this.updateUserInfo} />
 				</div>;
 			}
 		},
-		updatePassword(password, confirm) {
-			UserService.updateCredentials(password, confirm);
+		updatePassword(current, password, confirm) {
+			return UserService.updateCredentials(current, password, confirm);
 		},
 		updateUserInfo(newInfo) {
-			UserService.updateCurrentUserInfo(newInfo).then((result) => {
+			return UserService.updateCurrentUserInfo(newInfo).then((result) => {
 				this.setState({
 					user : result.user
 				});

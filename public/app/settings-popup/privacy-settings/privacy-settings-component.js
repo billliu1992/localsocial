@@ -28,13 +28,22 @@ define([
 			});
 		},
 		cancelUpdate(field) {
-			delete this.state.data[field];
-		},
-		submitData() {
+			var newData = this.state.data;
+			delete newData[field];
 			this.setState({
-				data : {}
+				data : newData
 			});
-			this.props.updateInfo(this.state.data);
+		},
+		submitData(event) {
+			console.log(event.target.checkValidity());
+			if(event.target.checkValidity()) {
+				this.setState({
+					data : {}
+				});
+				this.props.updateInfo(this.state.data);
+			}
+			else {
+			}
 		}
 	});
 

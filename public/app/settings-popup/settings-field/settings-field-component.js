@@ -24,10 +24,13 @@ define([
 				}
 
 				if(this.props.type === 'text' || this.props.type === 'email') {
-					inputElement = <input type={this.props.type} value={fieldValue} onChange={this.onChangeValue} />;
+					inputElement = <input type={this.props.type} value={fieldValue} id={this.props.field} onChange={this.onChangeValue} required={this.props.required} />;
 				}
 				else if(this.props.type === 'checkbox') {
-					inputElement = <input type={this.props.type} checked={fieldValue} onChange={this.onChangeValue} />;
+					inputElement = <input type={this.props.type} checked={fieldValue} id={this.props.field} onChange={this.onChangeValue} required={this.props.required} />;
+				}
+				else if(this.props.type === 'telephone') {
+					inputElement = <input type='text' value={fieldValue} id={this.props.field} onChange={this.onChangeValue} required={this.props.required} pattern="[0-9-()]+" />;
 				}
 				editingText = 'Cancel';
 			}
@@ -45,9 +48,9 @@ define([
 			}
 
 			return <fieldset>
-				<label>{this.props.label}</label>
-				{inputElement}
+				<label htmlFor={this.props.field}>{this.props.label}</label>
 				<a onClick={this.toggleMode}>{ editingText }</a>
+				{inputElement}
 			</fieldset>;
 		},
 		toggleMode() {
@@ -63,7 +66,7 @@ define([
 				this.updateValue(event.target.checked);
 			}
 			else {
-				this.updateValue(event.target.checked);
+				this.updateValue(event.target.value);
 			}
 		},
 		updateValue(newValue) {

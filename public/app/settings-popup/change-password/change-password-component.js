@@ -16,10 +16,10 @@ define([
 		render() {
 			var editElement = null;
 			if(!this.state.editing) {
-				editElement = <input type='password' value='1234567890' readOnly='true' />;
+				editElement = <div className="change-password"><input className="example-pass" type='password' value='1234567890' readOnly='true' /></div>;
 			}
 			else {
-				editElement = <div>
+				editElement = <div className="change-password">
 					<input type="password" value={this.state.current} onChange={this.updateField('current')} />
 					<input type="password" value={this.state.password} onChange={this.updateField('password')} />
 					<input type="password" value={this.state.confirm} onChange={this.updateField('confirm')} />
@@ -29,18 +29,27 @@ define([
 			return <div className='settings-section password'>
 				<h2>Change Password</h2>
 				<span onClick={this.toggleEditing}>Edit</span>
-				{ editElement }
-				<button onClick={this.submitPassword}>Submit</button><button>Cancel</button>
+				<form onSubmit={this.submitPassword}>
+					{ editElement }
+					<button>Submit</button><button>Cancel</button>
+				</form>
 			</div>;
 		},
-		submitPassword() {
+		submitPassword(event) {
+			event.preventDefault();
+
 			if(this.state.password === this.state.confirm) {
-				this.props.updatePassword(this.state.current, this.state.password, this.state.confirm);
+				this.props.updatePassword(this.state.current, this.state.password, this.state.confirm).then((data) => {
+					if(data.success) {
+						this.toggleEditing();
+					}
+				});
 			}
 		},
 		toggleEditing() {
 			if(this.state.editing) {
 				this.setState({
+					'current' : '',
 					'password' : '',
 					'confirm' : ''
 				});

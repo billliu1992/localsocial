@@ -59,6 +59,7 @@ def create_user():
 	if password != confirm_password:
 		return { "success" : False, "reason" : "password" }
 	else:
+		phone = user_service.convert_text_to_num(phone)
 		new_user = User(email, phone, first_name, last_name, nick_name, portrait, "", DEFAULT_PREFS)
 
 		new_user = user_service.create_new_user(new_user, password)
@@ -82,7 +83,12 @@ def update_user_info():
 	if "email" in request.form:
 		requested_user.email = request.form["email"]
 	elif "phone" in request.form:
-		requested_user.phone = request.form["phone"]
+		phone = request.form["phone"]
+		phone = user_service.convert_text_to_num(phone)
+
+		print(phone)
+
+		requested_user.phone = phone
 	elif "first_name" in request.form:
 		requested_user.first_name = request.form["first_name"]
 	elif "last_name" in request.form:
@@ -105,14 +111,16 @@ def update_user_info():
 def update_password():
 	requested_user = g.user
 
-	if "password" in request.form and auth_service.check_password_strength(request.form["password"]):
-		password_hash, salt = auth_service.hash_password(request.form["password"])
+	current = request.form.get("current", "")
+	password = request.form.get("password", "")
+	confirm = request.form.get("confirm", "")
 
-		user_service.update_user_credentials(requested_user, password_hash, salt)
+	if password == confirm:
+		change_result = user_service.update_user_credentials(requested_user, current, password)
 
-		return { "success" : True }
+		return { "success" : change_result, "reason" : "authentication" }
 	else:
-		return { "success" : False }
+		return { "success" : False, "reason" : "confirm" }
 
 @api_endpoint('/user/<queried_user_identifier>/profile')
 @login_required
