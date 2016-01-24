@@ -36,21 +36,29 @@ define([
 			}
 			else {
 				var fieldValue = this.props.oldValues[this.props.field];
-				if(fieldValue === true) {
-					fieldValue = 'Yes';
-				}
-				else if(fieldValue === false) {
-					fieldValue = 'No';
-				}
 
-				inputElement = <div>{ fieldValue }</div>;
+				if(typeof fieldValue === 'undefined' || fieldValue === '' || fieldValue === null) {
+					inputElement = <div className="current-value empty">Empty</div>;
+				}
+				else {
+					if(fieldValue === true) {
+						fieldValue = 'Yes';
+					}
+					else if(fieldValue === false) {
+						fieldValue = 'No';
+					}
+
+					inputElement = <div className="current-value">{ fieldValue }</div>;
+				}
 				editingText = 'Edit';
 			}
 
-			return <fieldset>
+			return <fieldset className="settings-field">
 				<label htmlFor={this.props.field}>{this.props.label}</label>
 				<a onClick={this.toggleMode}>{ editingText }</a>
-				{inputElement}
+				<div className="value-wrapper">
+					{inputElement}
+				</div>
 			</fieldset>;
 		},
 		toggleMode() {

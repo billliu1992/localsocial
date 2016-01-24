@@ -25,7 +25,9 @@ define([
 		getInitialState() {
 			return { 
 				user : null,
-				tab : 'personal'
+				tab : 'personal',
+				message : '',
+				messageClass : ''
 			};
 		},
 		componentWillMount() {
@@ -40,18 +42,33 @@ define([
 				return <div>Loading</div>;
 			}
 			else {
-				return <div className={"edit-user-settings " + this.state.tab}>
-					<h1>Settings</h1>
+				return <div className={"edit-user-settings pod " + this.state.tab}>
+					<h2>Settings</h2>
 					<div className="settings-tab-selector">
-						<span onClick={this.changeSettingsTab(SettingsTabs.PERSONAL)}>Personal Info</span>
-						<span onClick={this.changeSettingsTab(SettingsTabs.PRIVACY)}>Privacy</span>
-						<span onClick={this.changeSettingsTab(SettingsTabs.PASSWORD)}>Password</span>
+						<span className='personal' onClick={this.changeSettingsTab(SettingsTabs.PERSONAL)}>Personal Info</span>
+						<span className='privacy' onClick={this.changeSettingsTab(SettingsTabs.PRIVACY)}>Privacy</span>
+						<span className='password' onClick={this.changeSettingsTab(SettingsTabs.PASSWORD)}>Password</span>
 					</div>
-					<ChangePassword data={this.state.user} updatePassword={this.updatePassword} />
-					<PersonalInfo data={this.state.user} updateInfo={this.updateUserInfo} />
-					<PrivacySettings data={this.state.user.preferences} updateInfo={this.updateUserInfo} />
+					<div className={ 'settings-message ' + this.state.messageClass }>
+						{ this.state.message }
+					</div>
+					<ChangePassword data={this.state.user} updatePassword={this.updatePassword}
+						cancelSettings={this.closeSettingsPopup} />
+					<PersonalInfo data={this.state.user} updateInfo={this.updateUserInfo}
+						cancelSettings={this.closeSettingsPopup} />
+					<PrivacySettings data={this.state.user.preferences} updateInfo={this.updateUserInfo}
+						cancelSettings={this.closeSettingsPopup} />
 				</div>;
 			}
+		},
+		setMessage(messageClass, message) {
+			this.setState({
+				message,
+				messageClass
+			});
+		},
+		acknowledgeMessage() {
+			this.setMessage('', '');
 		},
 		updatePassword(current, password, confirm) {
 			return UserService.updateCredentials(current, password, confirm);

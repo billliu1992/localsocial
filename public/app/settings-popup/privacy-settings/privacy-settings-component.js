@@ -13,11 +13,11 @@ define([
 		},
 		render() {
 			return <div className="settings-section privacy">
-				<h2>Privacy</h2>
 				<SettingsField field="show_last_name" label="Show last name" type="checkbox" oldValues={this.props.data} newValues={this.state.data} updateField={this.updateField} cancelUpdate={this.cancelUpdate}  />
 				<SettingsField field="name_search" label="Searchable by name" type="checkbox" oldValues={this.props.data} newValues={this.state.data} updateField={this.updateField} cancelUpdate={this.cancelUpdate}  />
 				<SettingsField field="browser_geo" label="Use browser geolocation" type="checkbox" oldValues={this.props.data} newValues={this.state.data} updateField={this.updateField} cancelUpdate={this.cancelUpdate}  />
-				<button onClick={this.submitData}>Submit</button><button>Cancel</button>
+				<button onClick={this.submitData}>Submit</button>
+				<button className="cancel" type="button" onClick={this.props.cancelSettings}>Cancel</button>
 			</div>;
 		},
 		updateField(field, value) {
@@ -35,7 +35,6 @@ define([
 			});
 		},
 		submitData(event) {
-			console.log(event.target.checkValidity());
 			if(event.target.checkValidity()) {
 				this.setState({
 					data : {}

@@ -60,7 +60,7 @@ def create_user_by_field(user_obj, field_name, field_value, password_hash, salt)
 	cursor = handled_execute(db_conn, """INSERT INTO users 
 		(%s, hash, salt, firstName, lastName, nickName, portrait,
 			showLastName, searchableByName, useBrowserGeolocation) 
-		VALUES (%s, %s, %s, %s, %s, %s, %s)
+		VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
 		RETURNING userId;""",
 		(AsIs(field_name), field_value, password_hash, salt, user_obj.first_name, user_obj.last_name, user_obj.nick_name, user_obj.portrait,
 			user_obj.preferences.show_last_name, user_obj.preferences.name_search, user_obj.preferences.browser_geo))
