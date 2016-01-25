@@ -9,13 +9,15 @@ define([
 ) {
 	'use strict';
 
-	var POPUP_SELECTOR = '#popup';
+	var POPUP_SELECTOR = '#popup-content';
 	var POPUP_WRAPPER_SELECTOR = '#popup-wrapper';
 	var OVERLAY_SELECTOR = '#popup-overlay';
+	var CLOSE_POPUP_SELECTOR = '#popup-close';
 
 	var popupWrapperElem = document.querySelector(POPUP_WRAPPER_SELECTOR);
 	var popupContainerElem = document.querySelector(POPUP_SELECTOR);
 	var popupOverlayElem = document.querySelector(OVERLAY_SELECTOR);
+	var popupCloseElem = document.querySelector(CLOSE_POPUP_SELECTOR);
 
 	var CurrentPopupClass = null;
 
@@ -36,6 +38,10 @@ define([
 	};
 
 	popupOverlayElem.addEventListener('click', function() {
+		PopupService.destroyPopup();
+	});
+
+	popupCloseElem.addEventListener('click', function() {
 		PopupService.destroyPopup();
 	});
 

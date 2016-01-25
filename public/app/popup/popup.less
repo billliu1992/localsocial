@@ -1,3 +1,5 @@
+@import (reference) 'app/common';
+
 #popup-wrapper {
 	text-align:center;
 	width: 100%;
@@ -13,11 +15,24 @@
 	}
 
 	#popup {
+		height: 100%;
 		top: 5vh;
 		height: 100%;
 		width: auto;
 		position: relative;
-		display: inline-block;
+		display: inline-block;	
+	
+		#popup-content {
+			height:100%;
+		}
+
+		#popup-close {
+			position: absolute;
+			right: .5em;
+			top: .3em;
+			color: @darkestGreen;
+			cursor: pointer;
+		}
 	}
 
 	#popup-overlay {
