@@ -38,9 +38,13 @@ def do_login():
 
 	try:
 		user_id = user_service.login(email, password)
-		session["user_id"] = user_id
 
-		return { "success" : True }
+		if user_id != None:
+			session["user_id"] = user_id
+
+			return { "success" : True }
+		else:
+			return { "success" : False }
 	except:
 		return { "success" : False }
 

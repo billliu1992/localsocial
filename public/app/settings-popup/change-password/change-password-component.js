@@ -67,7 +67,7 @@ define([
 		submitPassword(event) {
 			event.preventDefault();
 
-			if(this.state.password === this.state.confirm) {
+			if(this.state.editing) {
 				this.props.updatePassword(this.state.current, this.state.password, this.state.confirm).then((data) => {
 					if(data.success) {
 						this.toggleEditing();

@@ -71,17 +71,34 @@ define([
 			this.setMessage('', '');
 		},
 		updatePassword(current, password, confirm) {
-			return UserService.updateCredentials(current, password, confirm);
+			if(password !== confirm) {
+				this.setMessage('error', 'New password does not match your confirm password');
+			}
+			return UserService.updateCredentials(current, password, confirm).then((response) => {
+				if(!response.success) {
+					if(response.reason === 'authentication') {
+						this.setMessage('error', 'Your current password is not correct');
+					}
+				}
+				else {
+					this.setMessage('success', 'Password changed');
+				}
+			});
 		},
 		updateUserInfo(newInfo) {
 			return UserService.updateCurrentUserInfo(newInfo).then((result) => {
 				this.setState({
 					user : result.user
 				});
+
+				this.setMessage('success', 'Updated');
+			}, () => {
+				this.setMessage('error', 'An error has occurred');
 			});
 		},
 		changeSettingsTab(tab) {
 			return () => {
+				this.acknowledgeMessage();
 				this.setState({ tab });
 			};
 		},

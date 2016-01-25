@@ -35,8 +35,34 @@
 		}
 	}
 
+	.settings-message {
+		margin-top: .1em;
+		font-size: .8em;
+		padding: 0 @sidePadding;
+
+		line-height: 1.5em;
+		height: 1.5em;
+		vertical-align: middle;
+
+		visibility: hidden;
+
+		&.success {
+			background-color: @lightGreen;
+			color: @darkGreen;
+
+			visibility: visible;
+		}
+
+		&.error {
+			background-color: @lightRed;
+			color: @medRed;
+
+			visibility: visible;
+		}
+	}
+
 	.settings-section {
-		padding: 1em @sidePadding;
+		padding: .2em @sidePadding 1em;;
 
 		button {
 			margin-right: 1em;

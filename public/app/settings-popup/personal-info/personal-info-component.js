@@ -43,9 +43,7 @@ define([
 		submitData(event) {
 			event.preventDefault();
 
-			console.log(event.target.checkValidity());
 			if(event.target.checkValidity()) {
-
 				this.props.updateInfo(this.state.data);
 
 				this.setState({
