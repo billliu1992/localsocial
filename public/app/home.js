@@ -14,6 +14,7 @@ var doGeolocation = function() {
 requirejs(['babel-polyfill',
 	'home-feed/home-feed-component',
 	'top-nav/top-nav-component',
+	'sidebar/sidebar-component',
 	'react',
 	'react-dom',
 	'components/location-service',
@@ -22,6 +23,7 @@ requirejs(['babel-polyfill',
 	polyfill,
 	HomeFeed,
 	TopNav,
+	Sidebar,
 	React,
 	ReactDOM,
 	LocationService,
@@ -38,6 +40,11 @@ requirejs(['babel-polyfill',
 	ReactDOM.render(
 		<HomeFeed />,
 		document.getElementById('post-feed')
+	);
+
+	ReactDOM.render(
+		<Sidebar />,
+		document.getElementById('left-bar')
 	);
 
 	ReactDOM.render(
