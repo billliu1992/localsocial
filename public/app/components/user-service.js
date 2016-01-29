@@ -20,6 +20,34 @@ define([
 			log.log('Could not get user, status: ' + response.status);
 		});
 
+	var ListenerService = {
+		listeners : [],
+		counter : 0,
+		addListener(callback) {
+			callback.$$lscounter = this.counter++;
+
+			this.listeners.push(callback);
+
+			return this.removeListener(callback.$$lscounter);
+		},
+		fireListeners(value) {
+			for(var callback of this.listeners) {
+				callback(value);
+			}
+		},
+		removeListener(counter) {
+			return () => {
+				for(var i = 0; i < this.listeners.length; i++) {
+					var thisCallback = this.listeners[i];
+
+					if(thisCallback.$$lscounter === counter) {
+						this.listeners = this.listeners.splice(i, 1);
+					}
+				}
+			};
+		}
+	}
+
 	var UserService = {
 		setCustomLocation(location) {
 			if(!(location instanceof Coordinates)) {
@@ -27,7 +55,6 @@ define([
 			}
 
 			this.location = location;
-
 		},
 		getCustomLocation() {
 			return this.location;
@@ -40,10 +67,15 @@ define([
 				APIService.transformObjectToForm(newInfo)));
 
 			userPromise = promise.then((result) => {
+				ListenerService.fireListeners(result.user);
+
 				return result.user;
 			});
 
 			return promise;
+		},
+		onUpdateCurrentUser(callback) {
+			return ListenerService.addListener(callback);
 		},
 		updateCredentials(current, password, confirm) {
 			return APIService.filterResponse(axios.post('/user/me/password',
@@ -75,6 +107,36 @@ define([
 		},
 		deleteFollow(userId) {
 			return axios.delete('/user/' + userId + '/follows/request').then(() => true, () => false);
+		},
+		getUserProfilePictureList() {
+			return APIService.filterResponse(axios.get('/user/me/image/profile'));
+		},
+		uploadUserProfilePic(formData) {
+			var uploadPromise = axios.post('/user/me/image/profile', formData)
+
+			userPromise = uploadPromise.then((response) => {
+				return response.data.user;
+			});
+
+			return uploadPromise.then((response) => {
+				ListenerService.fireListeners(response.data.user);
+
+				return response.data;
+			});
+		},
+		deleteUserProfilePic() {
+			var deletePromise = APIService.filterResponse(axios.delete('/user/me/image/profile'));
+
+			userPromise = deletePromise.then((result) => {
+				ListenerService.fireListeners(result.user);
+
+				return result.user;
+			});
+
+			return deletePromise;
+		},
+		getUploadedImages(userId) {
+			return APIService.filterResponse(axios.get('/user/' + userId + '/image'));
 		}
 	}
 

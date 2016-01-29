@@ -6,7 +6,7 @@ from psycopg2.extensions import AsIs
 
 def get_user_by_field(field, value):
 	cursor = handled_execute(db_conn, """
-			SELECT userId,email,phone,firstName,lastName,nickName,portrait,biography,
+			SELECT userId,email,phone,firstName,lastName,nickName,portrait,portraitSetDate,biography,
 			showLastName,searchableByName,useBrowserGeolocation
 			FROM users WHERE %s=%s;""", (AsIs(field), value))
 
@@ -14,11 +14,11 @@ def get_user_by_field(field, value):
 
 	returned_user = None
 	if(user_row != None):
-		(user_id, email, phone, first_name, last_name, nick_name, portrait, biography,
+		(user_id, email, phone, first_name, last_name, nick_name, portrait, portrait_date, biography,
 			show_last_name, name_search, browser_geo) = user_row
 
 		returned_prefs = UserPreferences(show_last_name, name_search, browser_geo)
-		returned_user = User(email, phone, first_name, last_name, nick_name, portrait, biography, returned_prefs)
+		returned_user = User(email, phone, first_name, last_name, nick_name, portrait, portrait_date, biography, returned_prefs)
 
 		returned_user.user_id = user_id
 	else:
@@ -37,18 +37,18 @@ def get_user_by_id(user_id):
 
 def get_users_by_ids(user_ids):
 	cursor = handled_execute(db_conn, """
-		SELECT userId,email,phone,firstName,lastName,nickName,portrait,biography,
+		SELECT userId,email,phone,firstName,lastName,nickName,portrait,portraitSetDate,biography,
 		showLastName,searchableByName,useBrowserGeolocation
 		FROM users WHERE userId = ANY (%s)""", (user_ids,))
 
 	user_rows = cursor.fetchall()
 	user_objs = []
 	for row in user_rows:
-		(user_id, email, phone, first_name, last_name, nick_name, portrait, biography,
+		(user_id, email, phone, first_name, last_name, nick_name, portrait, portrait_date, biography,
 			show_last_name, name_search, browser_geo) = row
 
 		user_prefs = UserPreferences(show_last_name, name_search, browser_geo)
-		user_obj = User(email, phone, first_name, last_name, nick_name, portrait, biography, user_prefs)
+		user_obj = User(email, phone, first_name, last_name, nick_name, portrait, portrait_date, biography, user_prefs)
 		user_obj.user_id = user_id
 
 		user_objs.append(user_obj)
@@ -58,12 +58,12 @@ def get_users_by_ids(user_ids):
 
 def create_user_by_field(user_obj, field_name, field_value, password_hash, salt):
 	cursor = handled_execute(db_conn, """INSERT INTO users 
-		(%s, hash, salt, firstName, lastName, nickName, portrait,
+		(%s, hash, salt, firstName, lastName, nickName, portrait, portraitSetDate,
 			showLastName, searchableByName, useBrowserGeolocation) 
-		VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+		VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
 		RETURNING userId;""",
 		(AsIs(field_name), field_value, password_hash, salt, user_obj.first_name, user_obj.last_name, user_obj.nick_name, user_obj.portrait,
-			user_obj.preferences.show_last_name, user_obj.preferences.name_search, user_obj.preferences.browser_geo))
+			user_obj.portrait_set_date, user_obj.preferences.show_last_name, user_obj.preferences.name_search, user_obj.preferences.browser_geo))
 
 	last_id = cursor.fetchone()[0]
 
@@ -97,11 +97,11 @@ def get_credentials_by_phone(phone):
 
 def update_user(user_obj):
 	cursor = handled_execute(db_conn, """UPDATE users SET 
-		email=%s, phone=%s, firstName=%s, lastName=%s, nickName=%s, portrait=%s,
+		email=%s, phone=%s, firstName=%s, lastName=%s, nickName=%s, portrait=%s, portraitSetDate=%s,
 		showLastName=%s, searchableByName=%s, useBrowserGeolocation=%s
 		WHERE userId=%s;""",
 		(user_obj.email, user_obj.phone, user_obj.first_name, user_obj.last_name, user_obj.nick_name,
-			user_obj.portrait, user_obj.preferences.show_last_name,	user_obj.preferences.name_search,
+			user_obj.portrait, user_obj.portrait_set_date, user_obj.preferences.show_last_name,	user_obj.preferences.name_search,
 			user_obj.preferences.browser_geo, user_obj.user_id))
 
 	return user_obj

@@ -2,6 +2,7 @@ define([
 	'settings-popup/change-password/change-password-component',
 	'settings-popup/personal-info/personal-info-component',
 	'settings-popup/privacy-settings/privacy-settings-component',
+	'components/message-enabled-mixin',
 	'components/user-service',
 	'components/popup-service',
 	'react'
@@ -9,6 +10,7 @@ define([
 	ChangePassword,
 	PersonalInfo,
 	PrivacySettings,
+	MessageEnabledMixin,
 	UserService,
 	PopupService,
 	React
@@ -22,12 +24,11 @@ define([
 	}
 
 	var SettingsPopup = React.createClass({
+		mixins : [ MessageEnabledMixin ],
 		getInitialState() {
 			return { 
 				user : null,
-				tab : 'personal',
-				message : '',
-				messageClass : ''
+				tab : 'personal'
 			};
 		},
 		componentWillMount() {
@@ -60,15 +61,6 @@ define([
 						cancelSettings={this.closeSettingsPopup} />
 				</div>;
 			}
-		},
-		setMessage(messageClass, message) {
-			this.setState({
-				message,
-				messageClass
-			});
-		},
-		acknowledgeMessage() {
-			this.setMessage('', '');
 		},
 		updatePassword(current, password, confirm) {
 			if(password !== confirm) {

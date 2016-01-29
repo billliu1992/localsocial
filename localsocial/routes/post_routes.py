@@ -3,6 +3,7 @@ import localsocial.service.post_service
 from flask import request, g
 from localsocial import app
 from localsocial.service import post_service, location_service
+from localsocial.service.picture import filesystem_storage_service
 from localsocial.model.location_model import Location
 from localsocial.decorator.user_decorator import login_required
 from localsocial.decorator.route_decorator import api_endpoint, location_endpoint
@@ -45,6 +46,8 @@ def get_posts():
 	for post in current_posts:
 		post_json = post.to_json_dict()
 		post_json["replies"] = replies_to_json(post_service.get_post_replies(post))
+		print post.author_portrait_set_date
+		post_json["portrait_src"] = filesystem_storage_service.get_cropped_src(post.author_portrait, post.author_portrait_set_date, post.author_id)
 
 		posts_json.append(post_json)
 

@@ -1,6 +1,6 @@
 from localsocial.database.db import db_conn, handled_execute
 from localsocial.model.location_model import Location
-from localsocial.model.post_model import Post, EventPost, ImagePost
+from localsocial.model.post_model import Post, EventPost, ImagePost, POST_PRIVACY
 
 def build_name(first_name, nick_name, last_name, are_friends, show_last_name):
 	if (not are_friends) and (not show_last_name):
@@ -44,18 +44,18 @@ def get_posts_by_user(searched_user, friends, limit, offset, max_id):
 			event_end, image_id) = row
 
 		author_name = build_name(searched_user.first_name, searched_user.nick_name, searched_user.last_name, friends, searched_user.preferences.show_last_name)
-		post_location = build_location(longitude, latitude, city_name, friends, privacy != 'hide_location')
+		post_location = build_location(longitude, latitude, city_name, friends, privacy != POST_PRIVACY.HIDE_LOCATION)
 
 		if(event_id != None):
-			new_post = EventPost(author_id, author_name, post_body, post_date, 
+			new_post = EventPost(author_id, author_name, searched_user.portrait, searched_user.portrait_set_date, post_body, post_date, 
 				privacy, post_location, event_id,
 				event_name, event_location, event_start, event_end)
 
 		elif(image_id != None):
-			new_post = ImagePost(author_id, author_name, post_body, post_date, 
+			new_post = ImagePost(author_id, author_name, searched_user.portrait, searched_user.portrait_set_date, post_body, post_date, 
 				privacy, post_location, image_id)
 		else:
-			new_post = Post(author_id, author_name, post_body, post_date, 
+			new_post = Post(author_id, author_name, searched_user.portrait, searched_user.portrait_set_date, post_body, post_date, 
 				privacy, post_location)
 
 		new_post.post_id = post_id
@@ -74,7 +74,7 @@ def get_post_feed(current_user_id, current_location, range, limit, skip, max_id=
 		postId, authorId, postBody, postDate, privacy, cityName, longitude, latitude,
 		eventId, eventName, eventLocation, eventStart, eventEnd,
 		imageId,
-		firstName, lastName, nickName, showLastName,
+		firstName, lastName, nickName, portrait, portraitSetDate, showLastName,
 		(authorId IN (SELECT firstUserId FROM userFriends WHERE secondUserId = %(current_user_id)s)
 				AND %(current_user_id)s IN (SELECT firstUserId FROM userFriends WHERE secondUserId = authorId)) AS areFriends
 		FROM posts LEFT JOIN users ON posts.authorId = users.userId
@@ -96,22 +96,22 @@ def get_post_feed(current_user_id, current_location, range, limit, skip, max_id=
 	for row in post_rows:
 		(post_id, author_id, post_body, post_date, privacy, city_name,
 			longitude, latitude, event_id, event_name, event_location, event_start,
-			event_end, image_id, first_name, last_name, nick_name, show_last_name,
+			event_end, image_id, first_name, last_name, nick_name, portrait, portrait_set_date, show_last_name,
 			are_friends) = row
 
 		author_name = build_name(first_name, nick_name, last_name, are_friends, show_last_name)
-		post_location = build_location(longitude, latitude, city_name, are_friends, privacy != 'exact_location')
+		post_location = build_location(longitude, latitude, city_name, are_friends, privacy != POST_PRIVACY.HIDE_LOCATION)
 
 		if(event_id != None):
-			new_post = EventPost(author_id, author_name, post_body, post_date, 
+			new_post = EventPost(author_id, author_name, portrait, portrait_set_date, post_body, post_date, 
 				privacy, post_location, event_id,
 				event_name, event_location, event_start, event_end)
 
 		elif(image_id != None):
-			new_post = ImagePost(author_id, author_name, post_body, post_date, 
+			new_post = ImagePost(author_id, author_name, portrait, portrait_set_date, post_body, post_date, 
 				privacy, post_location, image_id)
 		else:
-			new_post = Post(author_id, author_name, post_body, post_date, 
+			new_post = Post(author_id, author_name, portrait, portrait_set_date, post_body, post_date, 
 				privacy, post_location)
 
 		new_post.post_id = post_id

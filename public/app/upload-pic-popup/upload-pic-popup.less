@@ -1,0 +1,59 @@
+@import (reference) 'app/common';
+
+.upload-pic-popup {
+	background-color: @backgroundGray;
+	padding: 1em;
+	text-align: left;
+	height: 27em;
+	display: flex;
+	flex-flow: row nowrap;
+
+	form {
+		display: flex;
+		flex-flow: column nowrap;
+		justify-content: space-between;
+		margin-left: 1em;
+
+		.photo-selector {
+			fieldset {
+				label {
+					display: block;
+					font-size: .8em;
+					margin-bottom: .5em;
+				}
+
+				input {
+					display: block;
+				}
+			}
+
+			.or-text {
+				margin: 1em 0;
+				text-align: center;
+				font-size: .9em;
+				color: @darkGreen;
+			}
+		}
+
+		.button-row {
+			margin-top: 1em;
+			text-align: right;
+
+			.error-message {
+				font-size: .8em;
+				color: @medRed;
+				margin-bottom: .3em;
+			}
+
+			.delete {
+				color: @medRed;
+				background: @lightRed;
+				border-color: @medRed;
+			}
+
+			button {
+				margin-left: 1em;
+			}
+		}
+	}
+}

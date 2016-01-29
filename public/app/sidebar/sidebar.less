@@ -3,9 +3,19 @@
 .sidebar-content {
 	margin-right: 1em;
 
-	.main-portrait {
-		border-radius: 6px;
-		width: 100%;
+	@maxPortraitWidth: 100%;
+	@maxPortraitHeight: 10em;
+	.main-portrait-wrap {
+		width: @maxPortraitWidth;
+		height: @maxPortraitHeight;
+		display: inline-block;
+		text-align: center;
+
+		.main-portrait {
+			border-radius: 6px;
+			max-width: @maxPortraitWidth;
+			max-height: @maxPortraitHeight;
+		}
 	}
 
 	.sidebar-options {

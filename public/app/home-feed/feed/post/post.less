@@ -8,16 +8,23 @@
 		margin-top: 0;
 	}
 
-	.portrait, .post-header {
+	.portrait-wrap, .post-header {
 		display: inline-block;
 	}
 
+	@portraitMaxWidth: 3em;
+	@portraitMaxHeight: 3em;
+	.portrait-wrap {
+		width: @portraitMaxWidth;
+		height: @portraitMaxHeight;
+		text-align: center;
 
-	.portrait {
-		width: 3em;
-		height: 3em;
+		.portrait {
+			max-width: @portraitMaxWidth;
+			max-height: @portraitMaxHeight;
 
-		border-radius: 5px;	// TODO: Pixels or ems?
+			border-radius: 5px;	// TODO: Pixels or ems?
+		}
 	}
 	.post-header {
 		padding-left: .8em;

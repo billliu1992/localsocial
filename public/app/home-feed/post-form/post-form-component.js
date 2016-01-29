@@ -1,7 +1,14 @@
-define(['react'], function(React) {
+define([
+	'components/user-profile-mixin',
+	'react'
+], function(
+	UserProfileMixin,
+	React
+) {
 	'use strict';
 
 	var NewPostForm = React.createClass({
+		mixins : [UserProfileMixin],
 		getInitialState() {
 			return {
 				postBody : '',
@@ -19,7 +26,7 @@ define(['react'], function(React) {
 			return (
 				<form id="post-form" className="pod important" onSubmit={this.submitNewPost }>
 					<fieldset className="post-body">
-						<img className="post-author-info portrait large" src="/portrait/test" />
+						<img className="post-author-info portrait large" src={ this.getProfilePic() } />
 						
 						<textarea value={this.state.postBody} onChange={ this.updatePostBody } placeholder="Say something">
 						</textarea>
