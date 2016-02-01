@@ -1,0 +1,32 @@
+@import (reference) 'app/common';
+
+.image-tag {
+	position: relative;
+
+	img {
+		max-width: 25em;
+		max-height: 25em;
+	}
+
+	@tagBoxBorderWidth: 1px;
+
+	.tag-box {
+		position: absolute;
+		box-sizing: border-box;
+		border: @tagBoxBorderWidth dotted @darkGreen;
+		cursor: move;
+
+		.resize-corner {
+			position: absolute;
+			right: (-@tagBoxBorderWidth);
+			bottom: (-@tagBoxBorderWidth);
+			width: 1em;
+			height: 1em;
+			display: inline-block;
+
+			cursor: nwse-resize;
+
+			background-color: @darkerGreen;
+		}
+	}
+}

@@ -1,6 +1,8 @@
 define([
+	'upload-pic-popup/taggable-profile-image/taggable-profile-image-component',
 	'react'
 ], function(
+	TaggableProfileImage,
 	React
 ) {
 	'use strict';
@@ -14,7 +16,7 @@ define([
 			return <div>
 				<form onSubmit={this.doSubmit}>
 					<input type="file" onChange={this.doUpload} />
-					<img src={this.state.imageUrl} />
+					<TaggableProfileImage src={this.state.imageUrl} />
 					<button>Submit</button>
 				</form>
 			</div>;
