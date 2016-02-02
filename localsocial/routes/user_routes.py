@@ -248,3 +248,7 @@ def delete_follow(queried_user_identifier):
 	queried_user_id = g.queried_user_id
 
 	return user_service.delete_follow(current_user.user_id, queried_user_id)
+
+@api_endpoint('/user/me/image/profile', methods=("POST",))
+@login_required
+def upload_photo

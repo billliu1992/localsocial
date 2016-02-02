@@ -75,6 +75,12 @@ define([
 		},
 		deleteFollow(userId) {
 			return axios.delete('/user/' + userId + '/follows/request').then(() => true, () => false);
+		},
+		getUserProfilePictureList() {
+			return APIService.filterResponse(axios.get('/user/me/image/profile'));
+		},
+		uploadUserProfilePic(formData) {
+			return APIService.filterResponse(axios.post('/user/me/image/profile', data));
 		}
 	}
 
