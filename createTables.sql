@@ -86,3 +86,23 @@ CREATE TABLE userFriends (
 	secondUserId		INTEGER REFERENCES users (userId) NOT NULL,
 	UNIQUE(firstUserId, secondUserId)
 );
+
+CREATE TABLE pictures (
+	pictureId				SERIAL PRIMARY KEY,
+	authorId			INTEGER REFERENCES users (userId) NOT NULL,
+	uploadedDate		TIMESTAMPTZ NOT NULL,
+
+	filename			TEXT NOT NULL,
+	hashedIdentifier	TEXT NOT NULL,
+
+	photoTitle			TEXT,
+	photoDescription	TEXT,
+
+	cityName			TEXT NOT NULL,
+	longitude			DOUBLE PRECISION NOT NULL,
+	latitude			DOUBLE PRECISION NOT NULL,
+	privacy				privacyValues NOT NULL,
+
+	UNIQUE(authorId, filename),
+	UNIQUE(authorId, hashedIdentifier)
+);
