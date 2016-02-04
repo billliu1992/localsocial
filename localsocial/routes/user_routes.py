@@ -1,8 +1,12 @@
+from datetime import datetime
+
 from localsocial import app
 from localsocial.decorator.user_decorator import login_required, query_user
 from localsocial.decorator.route_decorator import api_endpoint, location_endpoint
 from localsocial.service import facebook_service, user_service, post_service
+from localsocial.service.picture import picture_meta_service, filesystem_storage_service
 from localsocial.model.user_model import User, Friendship, UserPreferences
+from localsocial.model.picture_model import UploadedPicture
 
 from flask import redirect, request, session, g
 
@@ -251,4 +255,34 @@ def delete_follow(queried_user_identifier):
 
 @api_endpoint('/user/me/image/profile', methods=("POST",))
 @login_required
-def upload_photo
+@location_endpoint
+def upload_photo():
+	current_user = g.user
+	current_location = g.user_location
+
+	crop_x_str = request.form["crop-x"]
+	crop_y_str = request.form["crop-y"]
+	crop_width_str = request.form["width"]
+	crop_height_str = request.form["height"]
+	privacy = request.form["privacy"]
+
+	try:
+		crop_x = int(crop_x_str)
+		crop_y = int(crop_y_str)
+		crop_width = int(crop_width_str)
+		crop_height = int(crop_height_str)
+	except ValueError as e:
+		return { "success" : False }
+
+	filename, hashed_name = filesystem_storage_service.save_image("image", current_user.user_id, crop_x, crop_y, crop_width, crop_height)
+
+	new_picture = UploadedPicture(current_user.user_id, datetime.now(), filename, hashed_name, current_location, None, None, privacy)
+
+	picture_meta_service.create_picture(new_picture)
+
+	current_user.portrait = hashed_name
+
+	updated_user = user_service.update_user(current_user)
+
+	return { "success" : True }
+

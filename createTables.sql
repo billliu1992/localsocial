@@ -14,7 +14,7 @@ CREATE TABLE users (
 	lastName		VARCHAR(30) NOT NULL,
 	nickName		VARCHAR(30),
 	biography		TEXT CHECK(char_length(biography) <= 300),
-	portrait		VARCHAR(30),
+	portrait		TEXT,
 
 	-- Preferences
 	showLastName			BOOLEAN NOT NULL,

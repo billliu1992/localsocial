@@ -46,8 +46,8 @@ define([
 
 			return <div className="image-tag">
 				<img src={this.props.src} onLoad={this.doImageLoad} />
-				<div className="tag-box" draggable="true" onDragStart={this.doDragStart} onDrag={this.doDragBox} onDragEnd{this.doDragEnd} style={buildStyles(taggedBox.x, taggedBox.y, taggedBox.width, taggedBox.height)}>
-					<div className="resize-corner" draggable="true" onDragStart={this.doDragStart} onDragEnd{this.doDragEnd} onDrag={this.doDragResize}></div>
+				<div className="tag-box" draggable="true" onDragStart={this.doDragStart} onDrag={this.doDragBox} onDragEnd={this.doDragEnd} style={buildStyles(taggedBox.x, taggedBox.y, taggedBox.width, taggedBox.height)}>
+					<div className="resize-corner" draggable="true" onDragStart={this.doDragStart} onDragEnd={this.doDragEnd} onDrag={this.doDragResize}></div>
 				</div>
 			</div>
 		},
@@ -124,6 +124,10 @@ define([
 
 		},
 		doDragResize(event) {
+			if(event.clientX === 0 && event.clientY === 0) {
+				return;
+			}
+			
 			event.preventDefault();
 			event.stopPropagation();
 
@@ -146,10 +150,10 @@ define([
 		doDragEnd() {
 			if(this.props.onChange) {
 				this.props.onChange({
-					x : this.state.taggedBox.x * this.state.scale,
-					y : this.state.taggedBox.y * this.state.scale,
-					width : this.state.taggedBox.width * this.state.scale,
-					height : this.state.taggedBox.height * this.state.scale
+					x : Math.floor(this.state.taggedBox.x * this.state.scale),
+					y : Math.floor(this.state.taggedBox.y * this.state.scale),
+					width : Math.floor(this.state.taggedBox.width * this.state.scale),
+					height : Math.floor(this.state.taggedBox.height * this.state.scale)
 				});
 			}
 		}

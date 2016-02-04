@@ -1,8 +1,10 @@
 define([
 	'upload-pic-popup/taggable-profile-image/taggable-profile-image-component',
+	'components/user-service',
 	'react'
 ], function(
 	TaggableProfileImage,
+	UserService,
 	React
 ) {
 	'use strict';
@@ -16,7 +18,7 @@ define([
 	var UploadPicPopup = React.createClass({
 		getInitialState() {
 			return {
-				currentState : UPLOAD_STATES.NO_IMAGE;
+				currentState : UPLOAD_STATES.NO_IMAGE
 			}
 		},
 		render() {
@@ -59,6 +61,8 @@ define([
 			});
 		},
 		doSubmit(event) {
+			event.preventDefault();
+
 			if(typeof this.state.imageObj !== 'undefined') {
 				var profilePicForm = new FormData();
 
@@ -67,6 +71,9 @@ define([
 				profilePicForm.append('crop-y', this.state.tag.y);
 				profilePicForm.append('width', this.state.tag.width);
 				profilePicForm.append('height', this.state.tag.height);
+				profilePicForm.append('privacy', 'public');
+
+				UserService.uploadUserProfilePic(profilePicForm);
 			}
 		}
 	});

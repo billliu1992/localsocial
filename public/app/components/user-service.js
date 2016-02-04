@@ -80,7 +80,7 @@ define([
 			return APIService.filterResponse(axios.get('/user/me/image/profile'));
 		},
 		uploadUserProfilePic(formData) {
-			return APIService.filterResponse(axios.post('/user/me/image/profile', data));
+			return APIService.filterResponse(axios.post('/user/me/image/profile', formData));
 		}
 	}
 

@@ -27,21 +27,19 @@ def build_location(longitude, latitude, city_name, are_friends, exact_location):
 		
 	return Location(city_name, longitude, latitude)
 
-def get_pictures_by_user(searched_user, friends, **kwargs):
-	limit = kwargs.get("limit", 20)
-	offset = kwargs.get("offset", 10)
-	max_id = kwargs.get("max_id", None)
-
+def get_pictures_by_user(searched_user_id, current_user_id, limit, offset, max_id):
 	cursor = handled_execute(db_conn, """
 		SELECT 
 			pictureId, authorId, uploadedDate, filename, hashedIdentifier,
 			photoTitle, photoDescription, cityName, longitude, latitude, privacy
 		FROM pictures
 		WHERE authorId=%(author_id)s
-			AND (privacy != 'friends' OR %(friends)s = True)
+			AND (privacy != 'friends' OR authorId=%(current_user_id)s
+				OR (authorId IN (SELECT firstUserId FROM userFriends WHERE secondUserId = %(current_user_id)s)
+					AND %(current_user_id)s IN (SELECT firstUserId FROM userFriends WHERE secondUserId = authorId))))
 			AND (%(max_id)s IS NULL OR postId < %(max_id)s)
 		LIMIT %(limit)s OFFSET %(offset)s
-	""", { "author_id" : searched_user.user_id, "friends" : friends, "max_id" : max_id, "limit" : limit, "offset" : offset })
+	""", { "author_id" : searched_user_id, "current_user_id" : current_user_id, "max_id" : max_id, "limit" : limit, "offset" : offset })
 
 	result_rows = cursor.fetchall()
 
@@ -59,17 +57,17 @@ def get_pictures_by_user(searched_user, friends, **kwargs):
 
 	return picture_objs
 
-def get_picture_by_id(image_id, friends):
+def get_picture_by_id(picture_id, current_user_id):
 	cursor = handled_execute(db_conn, """
 		SELECT 
 			pictureId, authorId, uploadedDate, filename, hashedIdentifier,
 			photoTitle, photoDescription, cityName, longitude, latitude, privacy
 		FROM pictures
-		WHERE authorId=%(author_id)s
-			AND (privacy != 'friends' OR %(friends)s = True)
-			AND (%(max_id)s IS NULL OR postId < %(max_id)s)
-		LIMIT %(limit)s OFFSET %(offset)s
-	""", { "author_id" : searched_user.user_id, "friends" : friends, "max_id" : max_id, "limit" : limit, "offset" : offset })
+		WHERE pictureId=%(picture_id)s
+			AND (privacy != 'friends' OR authorId=%(current_user_id)s
+				OR (authorId IN (SELECT firstUserId FROM userFriends WHERE secondUserId = %(current_user_id)s)
+					AND %(current_user_id)s IN (SELECT firstUserId FROM userFriends WHERE secondUserId = authorId))))
+	""", { "picture_id" : picture_id, "current_user_id" : current_user_id })
 
 	result_row = cursor.fetchone()
 
@@ -86,4 +84,33 @@ def get_picture_by_id(image_id, friends):
 	return picture
 
 def create_picture(picture_obj):
-	
+	cursor = handled_execute(db_conn, """
+		INSERT INTO pictures (authorId, uploadedDate, filename, hashedIdentifier,
+			photoTitle, photoDescription, cityName, longitude, latitude, privacy)
+			VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+			RETURNING pictureId;
+		""", (picture_obj.author_id, picture_obj.uploaded_date, picture_obj.original_filename,
+		picture_obj.hashed_name, picture_obj.title, picture_obj.description,
+		picture_obj.location.city, picture_obj.location.longitude, picture_obj.location.latitude,
+		picture_obj.privacy))
+
+	new_picture_id = cursor.fetchone()[0]
+
+	picture_obj.picture_id = new_picture_id
+
+	return picture_obj
+
+def update_picture(picture_obj):
+	cursor = handled_execute(db_conn, """
+		UPDATE pictures SET photoTitle=%s, photoDescription=%s, cityName=%s, longitude=%s, latitude=%s, privacy=%s WHERE pictureId=%s
+		""", (picture_obj.title, picture_obj.description, picture_obj.location.city, picture_obj.location.longitude,
+			picture_obj.location.latitude, picture_obj.privacy, picture_obj.picture_id))
+
+	return picture_obj
+
+def delete_picture_by_id(picture_id):
+	cursor = handled_execute(db_conn, """
+		DELETE FROM pictures WHERE pictureId=%s
+	""", (picture_id,))
+
+	return True
