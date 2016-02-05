@@ -24,6 +24,19 @@ define([
 					profile
 				});
 			});
+
+			var destroyListener = UserService.onUpdateCurrentUser((profile) => {
+				this.setState({
+					profile
+				});
+			});
+
+			this.setState({
+				destroyListener
+			});
+		},
+		componentWillUnmount() {
+			this.state.destroyListener();
 		},
 		render() {
 			if(this.state.profile === null) {
@@ -31,7 +44,7 @@ define([
 			}
 			else {
 				return <div className="user-summary">
-					<img src="/portrait/test" />
+					<img src={UserService.getUserProfilePic(this.state.profile, true)} />
 					<span className="user-name">{ this.state.profile['first_name'] + ' ' + this.state.profile['last_name'] }</span>
 					
 					<div className="user-dropdown">

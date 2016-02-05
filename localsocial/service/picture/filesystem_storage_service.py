@@ -37,14 +37,7 @@ def save_image(param_name, user_id, crop_left, crop_top, crop_width, crop_height
 
 		image_file = Image.open(orig_file_path)
 
-		print((crop_left, crop_top, crop_left + crop_width, crop_top + crop_height))
-		print(app.config["THUMBNAIL_SIZE"])
-
-		image_file.crop((crop_left, crop_top, crop_left + crop_width, crop_top + crop_height)).save(thumb_file_path, quality=95)
-
-		#.resize(app.config["THUMBNAIL_SIZE"])
-
-		print("HIHIHI")
+		image_file.crop((crop_left, crop_top, crop_left + crop_width, crop_top + crop_height)).resize(app.config["THUMBNAIL_SIZE"]).save(thumb_file_path, quality=95)
 
 	return new_file.filename, hashed_name
 

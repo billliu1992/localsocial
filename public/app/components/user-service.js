@@ -20,6 +20,32 @@ define([
 			log.log('Could not get user, status: ' + response.status);
 		});
 
+	var ListenerService = {
+		listeners : [],
+		counter : 0,
+		addListener(callback) {
+			callback.$$lscounter = this.counter++;
+
+			this.listeners.push(callback);
+
+			return this.removeListener(callback.$$lscounter);
+		},
+		fireListeners(value) {
+			for(var callback of this.listeners) {
+				callback(value);
+			}
+		},
+		removeListener(counter) {
+			for(var i = 0; i < this.listeners.length; i++) {
+				var thisCallback = this.listeners[i];
+
+				if(thisCallback.$$lscounter === counter) {
+					this.listeners = this.listeners.splice(i, 1);
+				}
+			}
+		}
+	}
+
 	var UserService = {
 		setCustomLocation(location) {
 			if(!(location instanceof Coordinates)) {
@@ -27,7 +53,6 @@ define([
 			}
 
 			this.location = location;
-
 		},
 		getCustomLocation() {
 			return this.location;
@@ -40,10 +65,15 @@ define([
 				APIService.transformObjectToForm(newInfo)));
 
 			userPromise = promise.then((result) => {
+				ListenerService.fireListeners(result.user);
+
 				return result.user;
 			});
 
 			return promise;
+		},
+		onUpdateCurrentUser(callback) {
+			return ListenerService.addListener(callback);
 		},
 		updateCredentials(current, password, confirm) {
 			return APIService.filterResponse(axios.post('/user/me/password',
@@ -81,6 +111,20 @@ define([
 		},
 		uploadUserProfilePic(formData) {
 			return APIService.filterResponse(axios.post('/user/me/image/profile', formData));
+		},
+		getUserProfilePic(user, thumb) {
+			if(user['portrait']) {
+				var srcUrl = '/image/' + user['user_id'] + '/' + user['portrait'];
+
+				if(thumb) {
+					srcUrl += '/thumb';
+				}
+
+				return srcUrl;
+			}
+			else {
+				return null;
+			}
 		}
 	}
 
