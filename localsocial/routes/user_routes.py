@@ -9,6 +9,7 @@ from localsocial.model.user_model import User, Friendship, UserPreferences
 from localsocial.model.picture_model import UploadedPicture
 
 from flask import redirect, request, session, g
+from werkzeug import secure_filename
 
 DEFAULT_PREFS = UserPreferences(True, True, False)
 
@@ -81,7 +82,10 @@ def create_user():
 def get_my_info():
 	requested_user = g.user
 
-	return requested_user.to_json_dict(private=True)
+	user_dict = requested_user.to_json_dict(private=True)
+	user_dict['portrait_src'] = filesystem_storage_service.get_image_hash(requested_user.portrait, requested_user.user_id)
+
+	return user_dict
 
 @api_endpoint('/user/me', methods=("POST",))
 @login_required
@@ -158,6 +162,7 @@ def get_user_profile(queried_user_identifier):
 
 	# Build the result
 	result_json_dict = requested_user.to_json_dict()
+	result_json_dict['portrait_src'] = filesystem_storage_service.get_image_hash(requested_user.portrait, requested_user.user_id)
 	result_json_dict['friends'] = friend_json_dicts
 	result_json_dict['posts'] = post_json_dicts
 	result_json_dict['follower_count'] = len(followers)
@@ -253,6 +258,24 @@ def delete_follow(queried_user_identifier):
 
 	return user_service.delete_follow(current_user.user_id, queried_user_id)
 
+@api_endpoint('/user/<queried_user_identifier>/image', methods=("GET",))
+@login_required
+@query_user()
+def get_user_images(queried_user_identifier):
+	current_user = g.user
+	queried_user_id = g.queried_user_id
+
+	picture_objs = picture_meta_service.get_pictures_by_user(queried_user_id, current_user.user_id)
+
+	picture_json_dicts = []
+
+	for picture in picture_objs:
+		picture_json_dict = picture.to_json_dict()
+		picture_json_dict["portrait_src"] = filesystem_storage_service.get_image_hash(picture.picture_id, picture.author_id)
+		picture_json_dicts.append(picture_json_dict)
+
+	return picture_json_dicts
+
 @api_endpoint('/user/me/image/profile', methods=("POST",))
 @login_required
 @location_endpoint
@@ -265,6 +288,7 @@ def upload_photo():
 	crop_width_str = request.form["width"]
 	crop_height_str = request.form["height"]
 	privacy = request.form["privacy"]
+	new_photo = request.files["image"]
 
 	try:
 		crop_x = int(crop_x_str)
@@ -274,15 +298,22 @@ def upload_photo():
 	except ValueError as e:
 		return { "success" : False }
 
-	filename, hashed_name = filesystem_storage_service.save_image("image", current_user.user_id, crop_x, crop_y, crop_width, crop_height)
+	secured_name = secure_filename(new_photo.filename)
 
-	new_picture = UploadedPicture(current_user.user_id, datetime.now(), filename, hashed_name, current_location, None, None, privacy)
+	print(secured_name)
 
+	new_picture = UploadedPicture(current_user.user_id, datetime.now(), secured_name, current_location, None, None, privacy)
 	picture_meta_service.create_picture(new_picture)
 
-	current_user.portrait = hashed_name
-
+	# Temporary local filesystem storage
+	hashed_filename = filesystem_storage_service.get_image_hash(new_picture.picture_id, new_picture.author_id)
+	filename = filesystem_storage_service.save_image(new_photo, hashed_filename, crop_x, crop_y, crop_width, crop_height)
+	
+	current_user.portrait = new_picture.picture_id
 	updated_user = user_service.update_user(current_user)
 
-	return { "success" : True }
+	updated_user_json_dict = updated_user.to_json_dict(private=True)
+	updated_user_json_dict['portrait_src'] = filesystem_storage_service.get_image_hash(updated_user.portrait, updated_user.user_id)
+
+	return { "success" : True, "user" : updated_user_json_dict }
 

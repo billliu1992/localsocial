@@ -3,20 +3,25 @@ define([
 	'profile-popup/profile-popup-component',
 	'settings-popup/settings-popup-component',
 	'components/popup-service',
+	'components/user-service',
+	'components/user-profile-mixin',
 	'react'
 ], function(
 	UploadPicPopup,
 	ProfilePopup,
 	SettingsPopup,
 	PopupService,
+	UserService,
+	UserProfileMixin,
 	React
 ) {
 	'use strict';
 
 	var Sidebar = React.createClass({
+		mixins : [UserProfileMixin],
 		render() {
 			return <div className="sidebar-content">
-				<img className="main-portrait" src="/portrait/test" />
+				<img className="main-portrait" src={ this.getUserProfilePic(true) } />
 				<div className="sidebar-options">
 					<div className="sidebar-option" onClick={this.showUploadPopup}>Change your picture</div>
 					<div className="sidebar-option" onClick={this.showProfilePopup}>Profile</div>

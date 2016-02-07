@@ -3,6 +3,7 @@ define([
 	'components/post-service',
 	'components/user-service',
 	'components/popup-service',
+	'components/user-profile-mixin',
 	'profile-popup/profile-popup-component',
 	'home-feed/feed/feed-component', 
 	'home-feed/post-form/post-form-component'
@@ -12,6 +13,7 @@ function(
 	PostService,
 	UserService,
 	PopupService,
+	UserProfileMixin,
 	ProfilePopup,
 	Feed, 
 	NewPostForm
@@ -19,6 +21,7 @@ function(
 	'use strict';
 
 	var HomeFeed = React.createClass({
+		mixins : [UserProfileMixin],
 		getInitialState() {
 			return {
 				posts: [],

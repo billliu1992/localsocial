@@ -3,40 +3,22 @@ define([
 	'profile-popup/profile-popup-component',
 	'components/user-service',
 	'components/popup-service',
+	'components/user-profile-mixin',
 	'react'
 ], function(
 	SettingsPopup,
 	ProfilePopup,
 	UserService,
 	PopupService,
+	UserProfileMixin,
 	React
 ) {
 	var UserSummary = React.createClass({
+		mixins : [UserProfileMixin],
 		getInitialState() {
 			return {
-				profile : null,
 				showDropdown : false
 			}
-		},
-		componentWillMount() {
-			UserService.getCurrentUserInfo().then((profile) => {
-				this.setState({
-					profile
-				});
-			});
-
-			var destroyListener = UserService.onUpdateCurrentUser((profile) => {
-				this.setState({
-					profile
-				});
-			});
-
-			this.setState({
-				destroyListener
-			});
-		},
-		componentWillUnmount() {
-			this.state.destroyListener();
 		},
 		render() {
 			if(this.state.profile === null) {

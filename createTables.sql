@@ -88,12 +88,11 @@ CREATE TABLE userFriends (
 );
 
 CREATE TABLE pictures (
-	pictureId				SERIAL PRIMARY KEY,
+	pictureId			SERIAL PRIMARY KEY,
 	authorId			INTEGER REFERENCES users (userId) NOT NULL,
 	uploadedDate		TIMESTAMPTZ NOT NULL,
 
 	filename			TEXT NOT NULL,
-	hashedIdentifier	TEXT NOT NULL,
 
 	photoTitle			TEXT,
 	photoDescription	TEXT,
@@ -102,7 +101,4 @@ CREATE TABLE pictures (
 	longitude			DOUBLE PRECISION NOT NULL,
 	latitude			DOUBLE PRECISION NOT NULL,
 	privacy				privacyValues NOT NULL,
-
-	UNIQUE(authorId, filename),
-	UNIQUE(authorId, hashedIdentifier)
 );

@@ -30,14 +30,16 @@ def build_location(longitude, latitude, city_name, are_friends, exact_location):
 def get_pictures_by_user(searched_user_id, current_user_id, limit, offset, max_id):
 	cursor = handled_execute(db_conn, """
 		SELECT 
-			pictureId, authorId, uploadedDate, filename, hashedIdentifier,
-			photoTitle, photoDescription, cityName, longitude, latitude, privacy
+			pictureId, authorId, uploadedDate, filename,
+			photoTitle, photoDescription, cityName, longitude, latitude, privacy,
+			(authorId IN (SELECT firstUserId FROM userFriends WHERE secondUserId = %(current_user_id)s)
+				AND %(current_user_id)s IN (SELECT firstUserId FROM userFriends WHERE secondUserId = authorId)) AS areFriends
 		FROM pictures
 		WHERE authorId=%(author_id)s
 			AND (privacy != 'friends' OR authorId=%(current_user_id)s
 				OR (authorId IN (SELECT firstUserId FROM userFriends WHERE secondUserId = %(current_user_id)s)
-					AND %(current_user_id)s IN (SELECT firstUserId FROM userFriends WHERE secondUserId = authorId))))
-			AND (%(max_id)s IS NULL OR postId < %(max_id)s)
+					AND %(current_user_id)s IN (SELECT firstUserId FROM userFriends WHERE secondUserId = authorId)))
+			AND (%(max_id)s IS NULL OR pictureId < %(max_id)s)
 		LIMIT %(limit)s OFFSET %(offset)s
 	""", { "author_id" : searched_user_id, "current_user_id" : current_user_id, "max_id" : max_id, "limit" : limit, "offset" : offset })
 
@@ -47,11 +49,12 @@ def get_pictures_by_user(searched_user_id, current_user_id, limit, offset, max_i
 
 	for result_row in result_rows:
 		(picture_id, author_id, uploaded_date, filename, 
-			hashed_name, title, descr, city, longitude, latitude, privacy) = result_row
+			title, descr, city, longitude, latitude, privacy, friends) = result_row
 
-		taken_location = build_location(longitude, latitude, city_name, friends, privacy != "hide_location")
+		taken_location = build_location(longitude, latitude, city, friends, privacy != "hide_location")
 
-		picture = Picture(author_id, uploaded_date, filename, hashed_name, taken_location, title, descr, privacy)
+		picture = UploadedPicture(author_id, uploaded_date, filename, taken_location, title, descr, privacy)
+		picture.picture_id = picture_id
 
 		picture_objs.append(picture)
 
@@ -60,8 +63,10 @@ def get_pictures_by_user(searched_user_id, current_user_id, limit, offset, max_i
 def get_picture_by_id(picture_id, current_user_id):
 	cursor = handled_execute(db_conn, """
 		SELECT 
-			pictureId, authorId, uploadedDate, filename, hashedIdentifier,
-			photoTitle, photoDescription, cityName, longitude, latitude, privacy
+			pictureId, authorId, uploadedDate, filename,
+			photoTitle, photoDescription, cityName, longitude, latitude, privacy,
+			(authorId IN (SELECT firstUserId FROM userFriends WHERE secondUserId = %(current_user_id)s)
+				AND %(current_user_id)s IN (SELECT firstUserId FROM userFriends WHERE secondUserId = authorId)) AS areFriends
 		FROM pictures
 		WHERE pictureId=%(picture_id)s
 			AND (privacy != 'friends' OR authorId=%(current_user_id)s
@@ -75,22 +80,23 @@ def get_picture_by_id(picture_id, current_user_id):
 
 	if result_row != None:
 		(picture_id, author_id, uploaded_date, filename, 
-				hashed_name, title, descr, city, longitude, latitude, privacy) = result_row
+				title, descr, city, longitude, latitude, privacy, friends) = result_row
 
 		taken_location = build_location(longitude, latitude, city_name, friends, privacy != "hide_location")
 
-		picture = Picture(author_id, uploaded_date, filename, hashed_name, taken_location, title, descr, privacy)
+		picture = UploadedPicture(author_id, uploaded_date, filename, taken_location, title, descr, privacy)
+		picture.picture_id = picture_id
 		
 	return picture
 
 def create_picture(picture_obj):
 	cursor = handled_execute(db_conn, """
-		INSERT INTO pictures (authorId, uploadedDate, filename, hashedIdentifier,
+		INSERT INTO pictures (authorId, uploadedDate, filename,
 			photoTitle, photoDescription, cityName, longitude, latitude, privacy)
-			VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+			VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
 			RETURNING pictureId;
 		""", (picture_obj.author_id, picture_obj.uploaded_date, picture_obj.original_filename,
-		picture_obj.hashed_name, picture_obj.title, picture_obj.description,
+		picture_obj.title, picture_obj.description,
 		picture_obj.location.city, picture_obj.location.longitude, picture_obj.location.latitude,
 		picture_obj.privacy))
 

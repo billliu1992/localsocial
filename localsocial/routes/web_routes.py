@@ -7,13 +7,13 @@ from localsocial.service.picture import filesystem_storage_service
 def serve_index_page():
 	return redirect('/web/home.html')
 
-@app.route('/image/<int:user_id>/<hash>')
-def serve_uploaded_images(user_id, hashed):
-	return filesystem_storage_service.get_image(user_id, hashed)
+@app.route('/image/<hashed>')
+def serve_uploaded_images(hashed):
+	return filesystem_storage_service.get_image(hashed)
 
-@app.route('/image/<int:user_id>/<hash>/thumb')
-def serve_uploaded_thumbnail(user_id, hashed):
-	return filesystem_storage_service.get_image(user_id, hashed, True)
+@app.route('/image/<hashed>/thumb')
+def serve_uploaded_thumbnail(hashed):
+	return filesystem_storage_service.get_image(hashed, True)
 
 @app.route('/portrait/test')
 def serve_test_portrait():

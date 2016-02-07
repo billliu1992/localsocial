@@ -36,13 +36,15 @@ define([
 			}
 		},
 		removeListener(counter) {
-			for(var i = 0; i < this.listeners.length; i++) {
-				var thisCallback = this.listeners[i];
+			return () => {
+				for(var i = 0; i < this.listeners.length; i++) {
+					var thisCallback = this.listeners[i];
 
-				if(thisCallback.$$lscounter === counter) {
-					this.listeners = this.listeners.splice(i, 1);
+					if(thisCallback.$$lscounter === counter) {
+						this.listeners = this.listeners.splice(i, 1);
+					}
 				}
-			}
+			};
 		}
 	}
 
@@ -110,11 +112,15 @@ define([
 			return APIService.filterResponse(axios.get('/user/me/image/profile'));
 		},
 		uploadUserProfilePic(formData) {
-			return APIService.filterResponse(axios.post('/user/me/image/profile', formData));
+			return axios.post('/user/me/image/profile', formData).then((response) => {
+				ListenerService.fireListeners(response.data.user);
+
+				return response.data;
+			});
 		},
 		getUserProfilePic(user, thumb) {
-			if(user['portrait']) {
-				var srcUrl = '/image/' + user['user_id'] + '/' + user['portrait'];
+			if(user['portrait_src']) {
+				var srcUrl = '/image/' + user['portrait_src'];
 
 				if(thumb) {
 					srcUrl += '/thumb';
