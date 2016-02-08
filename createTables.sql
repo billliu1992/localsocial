@@ -102,3 +102,14 @@ CREATE TABLE pictures (
 	latitude			DOUBLE PRECISION NOT NULL,
 	privacy				privacyValues NOT NULL,
 );
+
+CREATE TABLE profilePictures (
+	profilePictureId	SERIAL PRIMARY KEY,
+	uploadedPictureId	INTEGER REFERENCES pictures (pictureId) NOT NULL,
+	userId				INTEGER REFERENCES users (userId) NOT NULL,
+	setDate				TIMESTAMPTZ NOT NULL,
+	leftBound			SMALLINT,
+	topBound			SMALLINT,
+	width				SMALLINT,
+	height				SMALLINT
+);

@@ -1,4 +1,7 @@
-from localsocial.database import picture_dao
+from datetime import datetime
+
+from localsocial.model.picture_model import ProfilePicture
+from localsocial.database import picture_dao, profile_picture_dao
 
 def get_pictures_by_user(searched_user_id, current_user_id, **kwargs):
 	page_num = kwargs.get("page_num", 1)
@@ -21,3 +24,9 @@ def update_picture(picture_obj):
 
 def delete_picture_by_id(picture_id):
 	return picture_dao.delete_picture_by_id(picture_id)
+
+def create_profile_picture(profile_picture_obj):
+	return profile_picture_dao.create_profile_picture(profile_picture_obj)
+
+def profile_picture_from_picture(picture_obj, current_user_id, left_bound, top_bound, width, height):
+	return ProfilePicture(picture_obj.picture_id, current_user_id, datetime.now(), left_bound, top_bound, width, height)
