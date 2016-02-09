@@ -1,11 +1,10 @@
+import os
+
 from flask import send_file, redirect, request, send_from_directory
 from localsocial import app
 
-def get_image(picture_hash, thumb=False):
-	picture_filename = picture_hash
-	if thumb:
-		picture_filename += "_thumb"
-	picture_filename += ".jpg"
+def get_image(picture_hash):
+	picture_filename = picture_hash + ".jpg"
 
 	picture_path = os.path.join(app.root_path, app.config["FILESYSTEM_STORE_FOLDER"], picture_filename)
 
@@ -21,10 +20,6 @@ def serve_index_page():
 @app.route('/image/<hashed>')
 def serve_uploaded_images(hashed):
 	return get_image(hashed)
-
-@app.route('/image/<hashed>/thumb')
-def serve_uploaded_thumbnail(hashed):
-	return get_image(hashed, True)
 
 @app.route('/portrait/test')
 def serve_test_portrait():

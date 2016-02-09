@@ -1,7 +1,9 @@
 define([
+	'upload-pic-popup/previous-photos/previous-photos-component',
 	'react',
 	'config'
 ], function(
+	PreviousPhotos,
 	React,
 	Config
 ) {
@@ -49,6 +51,7 @@ define([
 				<div className="tag-box" draggable="true" onDragStart={this.doDragStart} onDrag={this.doDragBox} onDragEnd={this.doDragEnd} style={buildStyles(taggedBox.x, taggedBox.y, taggedBox.width, taggedBox.height)}>
 					<div className="resize-corner" draggable="true" onDragStart={this.doDragStart} onDragEnd={this.doDragEnd} onDrag={this.doDragResize}></div>
 				</div>
+				<PreviousPhotos />
 			</div>
 		},
 		doImageLoad(event) {

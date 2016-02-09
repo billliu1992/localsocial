@@ -27,6 +27,7 @@ class ProfilePicture(object):
 	def to_json_dict(self):
 		json_dict = self.__dict__
 		json_dict['set_date'] = json_dict['set_date'].isoformat("T")
+		json_dict['crop'] = json_dict['crop'].to_json_dict()
 
 		return json_dict
 

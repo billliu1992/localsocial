@@ -71,7 +71,7 @@ def get_picture_by_id(picture_id, current_user_id):
 		WHERE pictureId=%(picture_id)s
 			AND (privacy != 'friends' OR authorId=%(current_user_id)s
 				OR (authorId IN (SELECT firstUserId FROM userFriends WHERE secondUserId = %(current_user_id)s)
-					AND %(current_user_id)s IN (SELECT firstUserId FROM userFriends WHERE secondUserId = authorId))))
+					AND %(current_user_id)s IN (SELECT firstUserId FROM userFriends WHERE secondUserId = authorId)))
 	""", { "picture_id" : picture_id, "current_user_id" : current_user_id })
 
 	result_row = cursor.fetchone()
