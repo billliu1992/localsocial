@@ -308,15 +308,15 @@ def upload_profile_photo():
 	except ValueError as e:
 		return { "success" : False }
 
-	secured_name = secure_filename(new_photo.filename)
-
 	if picture_id == None:
+		secured_name = secure_filename(new_photo.filename)
+
 		new_picture = UploadedPicture(current_user.user_id, datetime.now(), secured_name, current_location, None, None, privacy)
 		picture_meta_service.create_picture(new_picture)
 
 		# Temporary local filesystem storage
 		hashed_filename = filesystem_storage_service.get_image_hash(new_picture.picture_id, new_picture.author_id)
-		filename = filesystem_storage_service.save_image(new_photo, hashed_filename)
+		filesystem_storage_service.save_image(new_photo, hashed_filename)
 	else:
 		new_picture = picture_meta_service.get_picture_by_id(picture_id, current_user.user_id)
 		hashed_filename = filesystem_storage_service.get_image_hash(new_picture.picture_id, new_picture.author_id)
@@ -327,7 +327,7 @@ def upload_profile_photo():
 
 	# Temporary local filesystem storae
 	hashed_cropped_filename = filesystem_storage_service.get_cropped_hash(profile_picture.profile_picture_id, profile_picture.user_id)
-	cropped_filename = filesystem_storage_service.save_cropped_image(new_photo, hashed_cropped_filename, profile_picture.crop)
+	filesystem_storage_service.save_cropped_image(new_photo, hashed_cropped_filename, profile_picture.crop)
 
 	current_user.portrait = profile_picture.profile_picture_id
 	updated_user = user_service.update_user(current_user)

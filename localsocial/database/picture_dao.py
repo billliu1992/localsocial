@@ -82,7 +82,7 @@ def get_picture_by_id(picture_id, current_user_id):
 		(picture_id, author_id, uploaded_date, filename, 
 				title, descr, city, longitude, latitude, privacy, friends) = result_row
 
-		taken_location = build_location(longitude, latitude, city_name, friends, privacy != "hide_location")
+		taken_location = build_location(longitude, latitude, city, friends, privacy != "hide_location")
 
 		picture = UploadedPicture(author_id, uploaded_date, filename, taken_location, title, descr, privacy)
 		picture.picture_id = picture_id

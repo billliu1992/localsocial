@@ -1,9 +1,7 @@
 define([
-	'upload-pic-popup/previous-photos/previous-photos-component',
 	'react',
 	'config'
 ], function(
-	PreviousPhotos,
 	React,
 	Config
 ) {
@@ -46,43 +44,65 @@ define([
 		render() {
 			var taggedBox = this.state.taggedBox;
 
-			return <div className="image-tag">
-				<img src={this.props.src} onLoad={this.doImageLoad} />
-				<div className="tag-box" draggable="true" onDragStart={this.doDragStart} onDrag={this.doDragBox} onDragEnd={this.doDragEnd} style={buildStyles(taggedBox.x, taggedBox.y, taggedBox.width, taggedBox.height)}>
-					<div className="resize-corner" draggable="true" onDragStart={this.doDragStart} onDragEnd={this.doDragEnd} onDrag={this.doDragResize}></div>
+			var tagElement = null;
+			if(this.state.taggedBox !== null) {
+				tagElement = <div className="tag-box" draggable="true" onDragStart={this.doDragStart} onDrag={this.doDragBox} onDragEnd={this.updateTag} style={buildStyles(taggedBox.x, taggedBox.y, taggedBox.width, taggedBox.height)}>
+					<div className="resize-corner" draggable="true" onDragStart={this.doDragStart} onDragEnd={this.updateTag} onDrag={this.doDragResize}></div>
 				</div>
-				<PreviousPhotos />
+			}
+
+			return <div className="image-tag">
+				<img src={this.props.src} onLoad={this.doImageLoad} onClick={this.doNewTag} />
+				{ tagElement }
 			</div>
 		},
 		doImageLoad(event) {
-			var numberToCompute = Math.min(event.target.height, event.target.width);
-
-			var centerX = Math.floor(event.target.width / 2);
-			var centerY = Math.floor(event.target.height / 2);
-
-			var squareHalfSize = Math.floor(numberToCompute / 6);
-
 			var scale = event.target.naturalHeight / event.target.height;
+			var image = {
+				width: event.target.width,
+				height: event.target.height
+			}
 
 			this.setState({
-				taggedBox : {
-					x : centerX - squareHalfSize,
-					y : centerY - squareHalfSize,
-					width : squareHalfSize * 2,
-					height : squareHalfSize * 2
-				},
-				image : {
-					width: event.target.width,
-					height: event.target.height
-				},
+				image,
+				taggedBox : null,	// Reset
 				scale,
 				minTagBoxSize : MIN_IMAGE_SIZE / scale
 			});
 
-			this.doDragEnd();	// Update
+			if(this.props.onNewImage) {
+				this.props.onNewImage({
+					width: event.target.width,
+					height: event.target.height
+				});
+			}
+		},
+		doNewTag(event) {
+			var boundingBox = event.target.getClientRects()[0];
+			var mouseX = event.clientX - (boundingBox['left']);
+			var mouseY = event.clientY - (boundingBox['top']);
+
+			var numberToCompute = Math.min(event.target.height, event.target.width);
+
+			var squareHalfSize = Math.floor(numberToCompute / 6);
+
+			var newTagX = Math.max(mouseX - squareHalfSize, 0);
+			newTagX = Math.min(newTagX, event.target.width - (squareHalfSize * 2));
+			//var newTagX = mouseX;
+
+			var newTagY = Math.max(mouseY - squareHalfSize, 0);
+			newTagY = Math.min(newTagY, event.target.height - (squareHalfSize * 2));
+
+			this.setState({
+				taggedBox : {
+					x : newTagX,
+					y : newTagY,
+					width : squareHalfSize * 2,
+					height : squareHalfSize * 2
+				}
+			}, this.updateTag);
 		},
 		doDragStart(event) {
-
 			var boundingBox = event.target.getClientRects()[0];
 			var mouseX = event.clientX - (boundingBox['left']);
 			var mouseY = event.clientY - (boundingBox['top']);
@@ -138,19 +158,25 @@ define([
 			var mouseX = event.clientX - (boundingBox['left']);
 			var mouseY = event.clientY - (boundingBox['top']);
 
+			var newWidth = this.state.taggedBox.width - (this.state.dragStart.x - mouseX);
+			var newHeight = this.state.taggedBox.height - (this.state.dragStart.y - mouseY);
 
-			var smallestDiff = Math.min((this.state.dragStart.x - mouseX), (this.state.dragStart.y - mouseY));
+			newWidth = Math.max(MIN_IMAGE_SIZE / this.state.scale, newWidth);
+			newWidth = Math.min(this.state.image.width - this.state.taggedBox.x, newWidth);
+
+			newHeight = Math.max(MIN_IMAGE_SIZE / this.state.scale, newHeight);
+			newHeight = Math.min(this.state.image.height - this.state.taggedBox.y, newHeight);
 
 			this.setState({
 				taggedBox : {
 					x : this.state.taggedBox.x,
 					y : this.state.taggedBox.y,
-					width : this.state.taggedBox.width - smallestDiff,
-					height : this.state.taggedBox.height - smallestDiff
+					width : newWidth,
+					height : newHeight
 				}
 			});
 		},
-		doDragEnd() {
+		updateTag() {
 			if(this.props.onChange) {
 				this.props.onChange({
 					x : Math.floor(this.state.taggedBox.x * this.state.scale),

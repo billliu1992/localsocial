@@ -1,9 +1,11 @@
 define([
 	'upload-pic-popup/taggable-profile-image/taggable-profile-image-component',
+	'upload-pic-popup/previous-photos/previous-photos-component',
 	'components/user-service',
 	'react'
 ], function(
 	TaggableProfileImage,
+	PreviousPhotos,
 	UserService,
 	React
 ) {
@@ -18,7 +20,9 @@ define([
 	var UploadPicPopup = React.createClass({
 		getInitialState() {
 			return {
-				currentState : UPLOAD_STATES.NO_IMAGE
+				currentState : UPLOAD_STATES.NO_IMAGE,
+				imageObj : null,
+				previousPictureId : null
 			}
 		},
 		render() {
@@ -30,7 +34,8 @@ define([
 			return <div className={this.state.currentState}>
 				<form onSubmit={this.doSubmit}>
 					<input type="file" onChange={this.doUpload} />
-					<TaggableProfileImage src={this.state.imageUrl} onChange={this.doImageTag} />
+					<TaggableProfileImage src={this.state.imageUrl} onChange={this.doImageTag} onNewImage={this.doImageUpdateProps} />
+					<PreviousPhotos changePicture={this.selectPreviousImage} />
 					<button>Submit</button>
 					<button type="button" className="cancel">Cancel</button>
 				</form>
@@ -44,33 +49,58 @@ define([
 				var reader = new FileReader();
 				reader.onload = (loadEvent) => {
 					this.setState({
-						imageUrl : loadEvent.target.result
+						imageUrl : loadEvent.target.result,
+						imageObj : portraitFile,
+						previousPictureId : null,
 					});
 				};
 
-				this.setState({
-					imageObj : portraitFile
-				});
-
 				reader.readAsDataURL(portraitFile);
 			}
+		},
+		selectPreviousImage(pictureId, pictureSrc) {
+			this.setState({
+				imageUrl : pictureSrc,
+				previousPictureId : pictureId,
+				imageObj : null,
+			});
 		},
 		doImageTag(newTag) {
 			this.setState({
 				tag : newTag
 			});
 		},
+		doImageUpdateProps(newImageProps) {
+			this.setState({
+				imageProps : newImageProps,
+				tag : null
+			});
+		},
 		doSubmit(event) {
 			event.preventDefault();
 
-			if(typeof this.state.imageObj !== 'undefined') {
+			if(this.state.imageObj !== null || this.state.previousPictureId !== null) {
 				var profilePicForm = new FormData();
 
-				profilePicForm.append('image', this.state.imageObj);
-				profilePicForm.append('crop-x', this.state.tag.x);
-				profilePicForm.append('crop-y', this.state.tag.y);
-				profilePicForm.append('width', this.state.tag.width);
-				profilePicForm.append('height', this.state.tag.height);
+				if(this.state.imageObj) {
+					profilePicForm.append('image', this.state.imageObj);
+				}
+				else {
+					profilePicForm.append('profile-picture-id', this.state.previousPictureId);
+				}
+
+				if(this.state.tag) {
+					profilePicForm.append('crop-x', this.state.tag.x);
+					profilePicForm.append('crop-y', this.state.tag.y);
+					profilePicForm.append('width', this.state.tag.width);
+					profilePicForm.append('height', this.state.tag.height);
+				}
+				else {
+					profilePicForm.append('crop-x', 0);
+					profilePicForm.append('crop-y', 0);
+					profilePicForm.append('width', this.state.imageProps.width);
+					profilePicForm.append('height', this.state.imageProps.height);
+				}
 				profilePicForm.append('privacy', 'public');
 
 				UserService.uploadUserProfilePic(profilePicForm);

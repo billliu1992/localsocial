@@ -18,16 +18,12 @@ def save_image(uploaded_file, new_filename):
 
 	image_file.save(compressed_file_path, quality=95)
 
-	return uploaded_file.filename
-
 def save_cropped_image(uploaded_file, new_filename, crop):
 	cropped_file_path = os.path.join(upload_folder_path, new_filename + ".jpg")
 
 	image_file = Image.open(uploaded_file)
 
 	image_file.crop((crop.left, crop.top, crop.right, crop.bottom)).resize(app.config["THUMBNAIL_SIZE"]).save(cropped_file_path, quality=95)
-
-	return uploaded_file.filename
 
 def get_image(picture_hash):
 	picture_path = os.path.join(upload_folder_path, picture_hash + ".jpg")
