@@ -26,7 +26,9 @@ define([
 			}
 			else {
 				return <div className="user-summary">
-					<img src={UserService.getUserProfilePic(this.state.profile, true)} />
+					<div className="portrait-wrap">
+						<img src={ this.getProfilePic() } />
+					</div>
 					<span className="user-name">{ this.state.profile['first_name'] + ' ' + this.state.profile['last_name'] }</span>
 					
 					<div className="user-dropdown">

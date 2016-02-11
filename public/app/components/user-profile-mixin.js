@@ -30,9 +30,9 @@ define([
 		componentWillUnmount() {
 			this.state.destroyListener();
 		},
-		getUserProfilePic(thumb) {
-			if(this.state.profile !== null) {
-				return UserService.getUserProfilePic(this.state.profile, thumb);
+		getProfilePic() {
+			if(this.state.profile) {
+				return this.state.profile['portrait_src'];
 			}
 			else {
 				return '';

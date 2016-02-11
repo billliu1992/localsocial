@@ -26,7 +26,7 @@ define([
 			return (
 				<form id="post-form" className="pod important" onSubmit={this.submitNewPost }>
 					<fieldset className="post-body">
-						<img className="post-author-info portrait large" src={ this.getUserProfilePic(true) } />
+						<img className="post-author-info portrait large" src={ this.getProfilePic() } />
 						
 						<textarea value={this.state.postBody} onChange={ this.updatePostBody } placeholder="Say something">
 						</textarea>

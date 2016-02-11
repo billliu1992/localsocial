@@ -28,6 +28,9 @@ def delete_picture_by_id(picture_id):
 def create_profile_picture(profile_picture_obj):
 	return profile_picture_dao.create_profile_picture(profile_picture_obj)
 
+def delete_profile_picture_by_id(profile_picture_id):
+	return profile_picture_dao.delete_profile_picture_by_id(profile_picture_id)
+
 def profile_picture_from_picture(picture_obj, current_user_id, left_bound, top_bound, width, height):
 	crop = PictureSection(left_bound, top_bound, width, height)
 

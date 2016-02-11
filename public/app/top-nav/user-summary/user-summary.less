@@ -6,14 +6,21 @@
 	box-sizing: border-box;
 	cursor: pointer;
 
-	img, .user-name {
+	.portrait-wrap, .user-name {
 		vertical-align: middle;
 	}
 
-	img {
+	.portrait-wrap {
 		width: 2em;
 		height: 2em;
-		border-radius: 3px;
+		display: inline-block;
+		text-align: center;
+
+		img {
+			max-width: 2em;
+			max-height: 2em;
+			border-radius: 3px;
+		}
 	}
 
 	.user-name {

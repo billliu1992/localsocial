@@ -21,7 +21,9 @@ define([
 		mixins : [UserProfileMixin],
 		render() {
 			return <div className="sidebar-content">
-				<img className="main-portrait" src={ this.getUserProfilePic(true) } />
+				<div className="main-portrait-wrap">
+					<img className="main-portrait" src={ this.getProfilePic() } />
+				</div>
 				<div className="sidebar-options">
 					<div className="sidebar-option" onClick={this.showUploadPopup}>Change your picture</div>
 					<div className="sidebar-option" onClick={this.showProfilePopup}>Profile</div>

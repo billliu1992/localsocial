@@ -22,12 +22,7 @@ define([
 	var TaggableImage = React.createClass({
 		getInitialState() {
 			return {
-				taggedBox : {
-					x : 0,
-					y : 0,
-					width: 0,
-					height: 0
-				},
+				taggedBox : null,
 				dragStart : {
 					x : 0,
 					y : 0
@@ -46,12 +41,12 @@ define([
 
 			var tagElement = null;
 			if(this.state.taggedBox !== null) {
-				tagElement = <div className="tag-box" draggable="true" onDragStart={this.doDragStart} onDrag={this.doDragBox} onDragEnd={this.updateTag} style={buildStyles(taggedBox.x, taggedBox.y, taggedBox.width, taggedBox.height)}>
+				tagElement = <div className="tag-box" draggable="true" onDragOver={this.doDragOver} onDragStart={this.doDragStart} onDrag={this.doDragBox} onDragEnd={this.updateTag} style={buildStyles(taggedBox.x, taggedBox.y, taggedBox.width, taggedBox.height)}>
 					<div className="resize-corner" draggable="true" onDragStart={this.doDragStart} onDragEnd={this.updateTag} onDrag={this.doDragResize}></div>
 				</div>
 			}
 
-			return <div className="image-tag">
+			return <div className="image-tag" onDragOver={this.doDragOver} >
 				<img src={this.props.src} onLoad={this.doImageLoad} onClick={this.doNewTag} />
 				{ tagElement }
 			</div>
@@ -72,8 +67,8 @@ define([
 
 			if(this.props.onNewImage) {
 				this.props.onNewImage({
-					width: event.target.width,
-					height: event.target.height
+					width: event.target.naturalWidth,
+					height: event.target.naturalHeight
 				});
 			}
 		},
@@ -109,6 +104,9 @@ define([
 
 			event.dataTransfer.setDragImage(document.createElement('div'), 0, 0);	// Remove drag image
 
+			event.dataTransfer.effectAllowed = 'all';
+			event.dataTransfer.setData('text', '');
+
 			this.setState({
 				dragStart : {
 					x : mouseX,
@@ -116,17 +114,30 @@ define([
 				}
 			});
 		},
+		doDragOver(event) {
+			event.preventDefault();
+
+			if(event.clientX === 0 || event.clientY === 0) {
+				return;
+			}
+
+			this.setState({
+				mouse : {
+					x : event.clientX,
+					y : event.clientY
+				}
+			});
+		},
 		doDragBox(event) {
 			event.preventDefault();
 
-			// For some reason, last drag event has mouse position at 0
-			if(event.clientX === 0 && event.clientY === 0) {
+			if(!this.state.mouse) {
 				return;
 			}
 
 			var boundingBox = event.target.getClientRects()[0];
-			var mouseX = event.clientX - (boundingBox['left']);
-			var mouseY = event.clientY - (boundingBox['top']);
+			var mouseX = this.state.mouse.x - (boundingBox['left']);
+			var mouseY = this.state.mouse.y - (boundingBox['top']);
 
 			var newX = this.state.taggedBox.x - (this.state.dragStart.x - mouseX);
 			var newY = this.state.taggedBox.y - (this.state.dragStart.y - mouseY);
@@ -147,16 +158,16 @@ define([
 
 		},
 		doDragResize(event) {
-			if(event.clientX === 0 && event.clientY === 0) {
-				return;
-			}
-			
 			event.preventDefault();
 			event.stopPropagation();
 
+			if(!this.state.mouse) {
+				return;
+			}
+
 			var boundingBox = event.target.getClientRects()[0];
-			var mouseX = event.clientX - (boundingBox['left']);
-			var mouseY = event.clientY - (boundingBox['top']);
+			var mouseX = this.state.mouse.x - (boundingBox['left']);
+			var mouseY = this.state.mouse.y - (boundingBox['top']);
 
 			var newWidth = this.state.taggedBox.width - (this.state.dragStart.x - mouseX);
 			var newHeight = this.state.taggedBox.height - (this.state.dragStart.y - mouseY);

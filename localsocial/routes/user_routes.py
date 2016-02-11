@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from localsocial import app
+from localsocial.exceptions import ServiceException
 from localsocial.decorator.user_decorator import login_required, query_user
 from localsocial.decorator.route_decorator import api_endpoint, location_endpoint
 from localsocial.service import facebook_service, user_service, post_service
@@ -85,7 +86,7 @@ def get_my_info():
 	user_dict = requested_user.to_json_dict(private=True)
 
 	if(requested_user.portrait != None):
-		user_dict['portrait_src'] = filesystem_storage_service.get_cropped_hash(requested_user.portrait, requested_user.user_id)
+		user_dict['portrait_src'] = filesystem_storage_service.get_cropped_src(requested_user.portrait, requested_user.user_id)
 
 	return user_dict
 
@@ -99,9 +100,6 @@ def update_user_info():
 	elif "phone" in request.form:
 		phone = request.form["phone"]
 		phone = user_service.convert_text_to_num(phone)
-
-		print(phone)
-
 		requested_user.phone = phone
 	elif "first_name" in request.form:
 		requested_user.first_name = request.form["first_name"]
@@ -160,11 +158,13 @@ def get_user_profile(queried_user_identifier):
 
 	post_json_dicts = []
 	for post in posts:
-		post_json_dicts.append(post.to_json_dict())
+		post_json_dict = post.to_json_dict()
+		post_json_dict['portrait_src'] = filesystem_storage_service.get_cropped_src(post.author_portrait, post.author_id)
+		post_json_dicts.append(post_json_dict)
 
 	# Build the result
 	result_json_dict = requested_user.to_json_dict()
-	result_json_dict['portrait_src'] = filesystem_storage_service.get_cropped_hash(requested_user.portrait, requested_user.user_id)
+	result_json_dict['portrait_src'] = filesystem_storage_service.get_cropped_src(requested_user.portrait, requested_user.user_id)
 	result_json_dict['friends'] = friend_json_dicts
 	result_json_dict['posts'] = post_json_dicts
 	result_json_dict['follower_count'] = len(followers)
@@ -273,7 +273,7 @@ def get_user_images(queried_user_identifier):
 
 	for picture in picture_objs:
 		picture_json_dict = picture.to_json_dict()
-		picture_json_dict["portrait_src"] = filesystem_storage_service.get_image_hash(picture.picture_id, picture.author_id)
+		picture_json_dict["portrait_src"] = filesystem_storage_service.get_image_src(picture.picture_id, picture.author_id)
 		picture_json_dicts.append(picture_json_dict)
 
 	return picture_json_dicts
@@ -316,7 +316,11 @@ def upload_profile_photo():
 
 		# Temporary local filesystem storage
 		hashed_filename = filesystem_storage_service.get_image_hash(new_picture.picture_id, new_picture.author_id)
-		filesystem_storage_service.save_image(new_photo, hashed_filename)
+		try:
+			filesystem_storage_service.save_image(new_photo, hashed_filename)
+		except ServiceException as se:
+			picture_meta_service.delete_picture_by_id(new_picture.picture_id)
+			return { "success" : False }
 	else:
 		new_picture = picture_meta_service.get_picture_by_id(picture_id, current_user.user_id)
 		hashed_filename = filesystem_storage_service.get_image_hash(new_picture.picture_id, new_picture.author_id)
@@ -327,56 +331,40 @@ def upload_profile_photo():
 
 	# Temporary local filesystem storae
 	hashed_cropped_filename = filesystem_storage_service.get_cropped_hash(profile_picture.profile_picture_id, profile_picture.user_id)
-	filesystem_storage_service.save_cropped_image(new_photo, hashed_cropped_filename, profile_picture.crop)
+	
+	try:
+		filesystem_storage_service.save_cropped_image(new_photo, hashed_cropped_filename, profile_picture.crop)
+	except ServiceException as se:
+		picture_meta_service.delete_profile_picture_by_id(profile_picture.profile_picture_id)
+		return { "success" : False }
+
+	original_portrait = current_user.portrait
 
 	current_user.portrait = profile_picture.profile_picture_id
 	updated_user = user_service.update_user(current_user)
 
+	picture_meta_service.delete_profile_picture_by_id(original_portrait)
+
 	updated_user_json_dict = updated_user.to_json_dict(private=True)
-	updated_user_json_dict['portrait_src'] = filesystem_storage_service.get_cropped_hash(updated_user.portrait, updated_user.user_id)
+	updated_user_json_dict['portrait_src'] = filesystem_storage_service.build_src(hashed_cropped_filename)
 
 	return { "success" : True, "user" : updated_user_json_dict }
 
-
-@api_endpoint('/user/me/image/profile/update', methods=("POST",))
+@api_endpoint('/user/me/image/profile', methods=("DELETE",))
 @login_required
-def update_profile_photo():
+@location_endpoint
+def delete_profile_photo():
 	current_user = g.user
+	current_location = g.user_location
 
-	picture_id_str = request.form["profile-picture-id"]
-	crop_x_str = request.form["crop-x"]
-	crop_y_str = request.form["crop-y"]
-	crop_width_str = request.form["width"]
-	crop_height_str = request.form["height"]
+	original_portrait = current_user.portrait
 
-	try:
-		picture_id = int(picture_id_str)
-		crop_x = int(crop_x_str)
-		crop_y = int(crop_y_str)
-		crop_width = int(crop_width_str)
-		crop_height = int(crop_height_str)
-	except ValueError as e:
-		return { "success" : False }
+	current_user.portrait = None
+	updated_user = user_service.update_user(current_user)
 
-	picture = picture_meta_service.get_picture_by_id(picture_id, current_user.user_id)
+	picture_meta_service.delete_profile_picture_by_id(original_portrait)
 
-	if picture != None:
-		crop = PictureSection(crop_x, crop_y, crop_width, crop_height)
-		profile_picture = ProfilePicture(picture_id, current_user.user_id, datetime.now(), crop)
-		picture_meta_service.create_profile_picture(profile_picture)
+	updated_user_json_dict = updated_user.to_json_dict(private=True)
+	updated_user_json_dict['portrait_src'] = filesystem_storage_service.build_src(hashed_cropped_filename)
 
-		hashed_cropped_filename = filesystem_storage_service.get_cropped_hash(profile_picture.profile_picture_id, profile_picture.user_id)
-		cropped_filename = filesystem_storage_service.save_cropped_image(new_photo, hashed_cropped_filename, profile_picture.crop)
-
-		current_user.portrait = profile_picture.profile_picture_id
-		updated_user = user_service.update_user(current_user)
-
-		image_hash = filesystem_storage_service.get_image_hash(picture_id, picture.author_id)
-		opened_file = filesystem_storage_service.get_image(image_hash)
-
-		cropped_hash = filesystem_storage_service.get_cropped_hash(profile_picture.profile_picture_id, profile_picture.user_id)
-		save_cropped_image(opened_file, cropped_hash, crop)
-	else:
-		return "Not found", 404
-
-
+	return { "success" : True, "user" : updated_user_json_dict }

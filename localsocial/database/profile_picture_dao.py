@@ -33,7 +33,7 @@ def get_profile_picture_by_picture_id(picture_id):
 
 def delete_profile_picture_by_id(profile_pic_id):
 	cursor = handled_execute(db_conn, """
-		DELETE FROM profilePictures WHERE uploadedPictureId=%s
+		DELETE FROM profilePictures WHERE profilePictureId=%s
 		""", (profile_pic_id,))
 
 	return True

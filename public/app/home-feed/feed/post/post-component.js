@@ -62,7 +62,9 @@ define([
 
 			return (
 				<div className="feed-post pod">
-					<img className="portrait" src="/portrait/test" />
+					<div className="portrait-wrap">
+						<img className="portrait" src={ this.props.post['portrait_src'] } />
+					</div>
 					<div className="post-header">
 						<div className="post-header-row">
 							<a className="post-author" onClick={this.showUserProfile}>{ this.props.post['author_name'] }</a>

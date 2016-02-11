@@ -26,15 +26,10 @@ define([
 			}
 		},
 		render() {
-			var wrapperClass = '';
-			if(typeof this.state.imageUrl !== 'undefined') {
-				wrapperClass = 'uploaded';
-			}
-
-			return <div className={this.state.currentState}>
+			return <div className={"upload-pic-popup " + this.state.currentState}>
 				<form onSubmit={this.doSubmit}>
-					<input type="file" onChange={this.doUpload} />
 					<TaggableProfileImage src={this.state.imageUrl} onChange={this.doImageTag} onNewImage={this.doImageUpdateProps} />
+					<input type="file" onChange={this.doUpload} />
 					<PreviousPhotos changePicture={this.selectPreviousImage} />
 					<button>Submit</button>
 					<button type="button" className="cancel">Cancel</button>
@@ -52,8 +47,13 @@ define([
 						imageUrl : loadEvent.target.result,
 						imageObj : portraitFile,
 						previousPictureId : null,
+						currentState : UPLOAD_STATES.UPLOADED
 					});
 				};
+
+				this.setState({
+					currentState : UPLOAD_STATES.UPLOADING
+				});
 
 				reader.readAsDataURL(portraitFile);
 			}
@@ -63,6 +63,7 @@ define([
 				imageUrl : pictureSrc,
 				previousPictureId : pictureId,
 				imageObj : null,
+				currentState : UPLOAD_STATES.UPLOADED
 			});
 		},
 		doImageTag(newTag) {

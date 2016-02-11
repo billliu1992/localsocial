@@ -120,16 +120,6 @@ define([
 		},
 		getUploadedImages(userId) {
 			return APIService.filterResponse(axios.get('/user/' + userId + '/image'));
-		},
-		getUserProfilePic(user) {
-			if(user['portrait_src']) {
-				var srcUrl = '/image/' + user['portrait_src'];
-
-				return srcUrl;
-			}
-			else {
-				return null;
-			}
 		}
 	}
 
