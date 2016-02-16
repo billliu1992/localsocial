@@ -22,8 +22,8 @@ define([
 		},
 		render() {
 			var photoElements = this.state.photos.map((photo) => {
-				return <div key={photo.picture_id} onClick={ this.selectPreviousPhoto(photo['picture_id'], photo['portrait_src']) }>
-					<img src={photo['portrait_src']} />
+				return <div key={photo.picture_id} onClick={ this.selectPreviousPhoto(photo['picture_id'], photo['image_src']) }>
+					<img src={photo['image_src']} />
 				</div>;
 			});
 

@@ -1,12 +1,14 @@
+from localsocial.service.picture import filesystem_storage_service
+
 class Friendship():
-	FRIENDS = 'friends'
-	PENDING = 'pending'
-	SENT = 'sent'
-	NOTHING = 'nothing'
-	SELF = 'self'
+	FRIENDS = "friends"
+	PENDING = "pending"
+	SENT = "sent"
+	NOTHING = "nothing"
+	SELF = "self"
 
 class User():
-	def __init__(self, email, phone, f_name, l_name, n_name, portrait, biography, preferences):
+	def __init__(self, email, phone, f_name, l_name, n_name, portrait, portrait_set_date, biography, preferences):
 		self.user_id = -1
 		self.email = email
 		self.phone = phone
@@ -14,6 +16,7 @@ class User():
 		self.last_name = l_name
 		self.nick_name = n_name
 		self.portrait = portrait
+		self.portrait_set_date = portrait_set_date
 		self.biography = biography
 		self.preferences = preferences
 
@@ -23,16 +26,22 @@ class User():
 		return self.first_name + " " + self.last_name
 
 	def to_json_dict(self, **kwargs):
-		show_private_fields = kwargs.get('private', False)
+		show_private_fields = kwargs.get("private", False)
+		build_profile_pic_src = kwargs.get("portrait", True)
 
+		print "YOU GOT ME HERE"
+		print self.portrait_set_date
+
+		user_dict = None
+		portrait_src = filesystem_storage_service.get_cropped_src(self.portrait, self.portrait_set_date, self.user_id)
 		if show_private_fields:
 			user_dict = self.__dict__
 
-			user_dict['preferences'] = self.preferences.to_json_dict()
+			user_dict["portrait_set_date"] = user_dict["portrait_set_date"].isoformat("T")
+			user_dict["preferences"] = self.preferences.to_json_dict()
 
-			return user_dict
 		else:
-			return {
+			user_dict = {
 				"user_id" : self.user_id,
 				"first_name" : self.first_name,
 				"last_name" : self.last_name,
@@ -40,6 +49,11 @@ class User():
 				"portrait" : self.portrait,
 				"biography" : self.biography
 			}
+
+		user_dict["portrait_src"] = portrait_src
+		
+
+		return user_dict
 
 class UserCredentials:
 	def __init__(self, user_id, password_hash, salt):

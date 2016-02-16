@@ -32,11 +32,10 @@ def save_cropped_image(uploaded_file, new_filename, crop):
 	width, height = image_file.size
 
 	scale = max(crop.width, crop.height) / float(app.config["THUMBNAIL_SIZE"])
-
 	new_width = int(crop.width / scale)
 	new_height = int(crop.height / scale)
 
-	if new_width < app.config["THUMBNAIL_SIZE"] or new_height < app.config["THUMBNAIL_SIZE"]:
+	if crop.width < app.config["THUMBNAIL_SIZE"] or crop.height < app.config["THUMBNAIL_SIZE"]:
 		raise ServiceException("Cropped area too small")
 
 	image_file.crop((crop.left, crop.top, crop.right, crop.bottom)).resize((new_width, new_height)).save(cropped_file_path, quality=95)
@@ -53,11 +52,11 @@ def get_image_hash(picture_id, author_id):
 	hashed_name_obj.update(app.config["IMAGE_STORAGE_PASSWORD"])
 	return hashed_name_obj.hexdigest()
 
-def get_cropped_hash(cropped_id, author_id):
+def get_cropped_hash(cropped_id, crop_date, author_id):
 	hashed_name_obj = hashlib.md5()
 	hashed_name_obj.update(str(cropped_id))
 	hashed_name_obj.update(str(author_id))
-	hashed_name_obj.update("crop")
+	hashed_name_obj.update(crop_date.isoformat("T"))
 	hashed_name_obj.update(app.config["IMAGE_STORAGE_PASSWORD"])
 	return hashed_name_obj.hexdigest()
 
@@ -70,8 +69,8 @@ def get_image_src(picture_id, author_id):
 
 	return build_src(get_image_hash(picture_id, author_id))
 
-def get_cropped_src(cropped_id, author_id):
+def get_cropped_src(cropped_id, crop_date, author_id):
 	if cropped_id == None or author_id == None:
 		return None
 
-	return build_src(get_cropped_hash(cropped_id, author_id))
+	return build_src(get_cropped_hash(cropped_id, crop_date, author_id))

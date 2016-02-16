@@ -7,7 +7,7 @@ from localsocial.decorator.route_decorator import api_endpoint, location_endpoin
 from localsocial.service import facebook_service, user_service, post_service
 from localsocial.service.picture import picture_meta_service, filesystem_storage_service
 from localsocial.model.user_model import User, Friendship, UserPreferences
-from localsocial.model.picture_model import UploadedPicture
+from localsocial.model.picture_model import UploadedPicture, PictureSection
 
 from flask import redirect, request, session, g
 from werkzeug import secure_filename
@@ -85,9 +85,6 @@ def get_my_info():
 
 	user_dict = requested_user.to_json_dict(private=True)
 
-	if(requested_user.portrait != None):
-		user_dict['portrait_src'] = filesystem_storage_service.get_cropped_src(requested_user.portrait, requested_user.user_id)
-
 	return user_dict
 
 @api_endpoint('/user/me', methods=("POST",))
@@ -159,12 +156,10 @@ def get_user_profile(queried_user_identifier):
 	post_json_dicts = []
 	for post in posts:
 		post_json_dict = post.to_json_dict()
-		post_json_dict['portrait_src'] = filesystem_storage_service.get_cropped_src(post.author_portrait, post.author_id)
 		post_json_dicts.append(post_json_dict)
 
 	# Build the result
 	result_json_dict = requested_user.to_json_dict()
-	result_json_dict['portrait_src'] = filesystem_storage_service.get_cropped_src(requested_user.portrait, requested_user.user_id)
 	result_json_dict['friends'] = friend_json_dicts
 	result_json_dict['posts'] = post_json_dicts
 	result_json_dict['follower_count'] = len(followers)
@@ -273,7 +268,7 @@ def get_user_images(queried_user_identifier):
 
 	for picture in picture_objs:
 		picture_json_dict = picture.to_json_dict()
-		picture_json_dict["portrait_src"] = filesystem_storage_service.get_image_src(picture.picture_id, picture.author_id)
+		picture_json_dict["image_src"] = filesystem_storage_service.get_image_src(picture.picture_id, picture.author_id)
 		picture_json_dicts.append(picture_json_dict)
 
 	return picture_json_dicts
@@ -291,9 +286,9 @@ def upload_profile_photo():
 	crop_width_str = request.form["width"]
 	crop_height_str = request.form["height"]
 	privacy = request.form["privacy"]
-	new_photo = request.files.get("image", None)
+	uploaded_photo = request.files.get("image", None)
 
-	if picture_id_str == None and new_photo == None:
+	if picture_id_str == None and uploaded_photo == None:
 		return { "success" : False }
 	try:
 		if picture_id_str != None:
@@ -309,62 +304,50 @@ def upload_profile_photo():
 		return { "success" : False }
 
 	if picture_id == None:
-		secured_name = secure_filename(new_photo.filename)
+		secured_name = secure_filename(uploaded_photo.filename)
 
-		new_picture = UploadedPicture(current_user.user_id, datetime.now(), secured_name, current_location, None, None, privacy)
-		picture_meta_service.create_picture(new_picture)
+		full_picture = UploadedPicture(current_user.user_id, datetime.now(), secured_name, current_location, None, None, privacy)
+		picture_meta_service.create_picture(full_picture)
 
 		# Temporary local filesystem storage
-		hashed_filename = filesystem_storage_service.get_image_hash(new_picture.picture_id, new_picture.author_id)
+		hashed_filename = filesystem_storage_service.get_image_hash(full_picture.picture_id, full_picture.author_id)
 		try:
-			filesystem_storage_service.save_image(new_photo, hashed_filename)
+			filesystem_storage_service.save_image(uploaded_photo, hashed_filename)
 		except ServiceException as se:
-			picture_meta_service.delete_picture_by_id(new_picture.picture_id)
-			return { "success" : False }
+			picture_meta_service.delete_picture_by_id(full_picture.picture_id)
+			return { "success" : False, "message" : "Error saving new image" }
 	else:
-		new_picture = picture_meta_service.get_picture_by_id(picture_id, current_user.user_id)
-		hashed_filename = filesystem_storage_service.get_image_hash(new_picture.picture_id, new_picture.author_id)
-		new_photo = filesystem_storage_service.get_image(hashed_filename)
+		full_picture = picture_meta_service.get_picture_by_id(picture_id, current_user.user_id)
+		hashed_filename = filesystem_storage_service.get_image_hash(full_picture.picture_id, full_picture.author_id)
+		uploaded_photo = filesystem_storage_service.get_image(hashed_filename)
 
-	profile_picture = picture_meta_service.profile_picture_from_picture(new_picture, current_user.user_id, crop_x, crop_y, crop_width, crop_height)
-	picture_meta_service.create_profile_picture(profile_picture)
+	cropped_time = datetime.now()
 
 	# Temporary local filesystem storae
-	hashed_cropped_filename = filesystem_storage_service.get_cropped_hash(profile_picture.profile_picture_id, profile_picture.user_id)
+	hashed_cropped_filename = filesystem_storage_service.get_cropped_hash(full_picture.picture_id, cropped_time, current_user.user_id)
 	
 	try:
-		filesystem_storage_service.save_cropped_image(new_photo, hashed_cropped_filename, profile_picture.crop)
+		crop = PictureSection(crop_x, crop_y, crop_width, crop_height)
+		filesystem_storage_service.save_cropped_image(uploaded_photo, hashed_cropped_filename, crop)
 	except ServiceException as se:
-		picture_meta_service.delete_profile_picture_by_id(profile_picture.profile_picture_id)
-		return { "success" : False }
+		return { "success" : False, "message" : "Error saving cropped image" }
 
-	original_portrait = current_user.portrait
-
-	current_user.portrait = profile_picture.profile_picture_id
+	current_user.portrait = full_picture.picture_id
+	current_user.portrait_set_date = cropped_time
 	updated_user = user_service.update_user(current_user)
 
-	picture_meta_service.delete_profile_picture_by_id(original_portrait)
-
 	updated_user_json_dict = updated_user.to_json_dict(private=True)
-	updated_user_json_dict['portrait_src'] = filesystem_storage_service.build_src(hashed_cropped_filename)
 
 	return { "success" : True, "user" : updated_user_json_dict }
 
 @api_endpoint('/user/me/image/profile', methods=("DELETE",))
 @login_required
-@location_endpoint
 def delete_profile_photo():
 	current_user = g.user
-	current_location = g.user_location
-
-	original_portrait = current_user.portrait
 
 	current_user.portrait = None
 	updated_user = user_service.update_user(current_user)
 
-	picture_meta_service.delete_profile_picture_by_id(original_portrait)
-
 	updated_user_json_dict = updated_user.to_json_dict(private=True)
-	updated_user_json_dict['portrait_src'] = filesystem_storage_service.build_src(hashed_cropped_filename)
 
 	return { "success" : True, "user" : updated_user_json_dict }

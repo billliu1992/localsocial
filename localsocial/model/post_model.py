@@ -51,3 +51,8 @@ class ImagePost(Post):
 		super(author_id, author_name, author_portrait, body, post_date, post_date, privacy, location)
 
 		self.image_id = image_id
+
+class POST_PRIVACY:
+	PUBLIC = 'public'
+	HIDE_LOCATION = 'hide_location'
+	FRIENDS = 'friends'

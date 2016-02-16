@@ -20,7 +20,6 @@ class ProfilePicture(object):
 	def __init__(self, uploaded_picture_id, user_id, set_date, crop):
 		self.profile_picture_id = -1
 		self.uploaded_picture_id = uploaded_picture_id
-		self.user_id = user_id
 		self.set_date = set_date
 		self.crop = crop
 

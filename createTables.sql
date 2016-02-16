@@ -1,3 +1,19 @@
+CREATE TABLE pictures (
+	pictureId			SERIAL PRIMARY KEY,
+	authorId			INTEGER NOT NULL,
+	uploadedDate		TIMESTAMPTZ NOT NULL,
+
+	filename			TEXT NOT NULL,
+
+	photoTitle			TEXT,
+	photoDescription	TEXT,
+
+	cityName			TEXT NOT NULL,
+	longitude			DOUBLE PRECISION NOT NULL,
+	latitude			DOUBLE PRECISION NOT NULL,
+	privacy				privacyValues NOT NULL
+);
+
 CREATE TABLE users (
 	userId			SERIAL PRIMARY KEY,
 
@@ -14,13 +30,17 @@ CREATE TABLE users (
 	lastName		VARCHAR(30) NOT NULL,
 	nickName		VARCHAR(30),
 	biography		TEXT CHECK(char_length(biography) <= 300),
-	portrait		INTEGER REFERENCES profilePictures (profilePictureId),
+	portrait		INTEGER REFERENCES pictures (pictureId),
+	portraitSetDate	TIMESTAMP,
 
 	-- Preferences
 	showLastName			BOOLEAN NOT NULL,
 	searchableByName		BOOLEAN NOT NULL,
 	useBrowserGeolocation	BOOLEAN NOT NULL
 );
+
+-- Circular dependency
+ALTER TABLE pictures ADD FOREIGN KEY (authorId) REFERENCES users (userId);
 
 CREATE TYPE platform AS ENUM ('facebook', 'twitter', 'instagram');
 
@@ -85,31 +105,4 @@ CREATE TABLE userFriends (
 	firstUserId			INTEGER REFERENCES users (userId) NOT NULL,
 	secondUserId		INTEGER REFERENCES users (userId) NOT NULL,
 	UNIQUE(firstUserId, secondUserId)
-);
-
-CREATE TABLE pictures (
-	pictureId			SERIAL PRIMARY KEY,
-	authorId			INTEGER REFERENCES users (userId) NOT NULL,
-	uploadedDate		TIMESTAMPTZ NOT NULL,
-
-	filename			TEXT NOT NULL,
-
-	photoTitle			TEXT,
-	photoDescription	TEXT,
-
-	cityName			TEXT NOT NULL,
-	longitude			DOUBLE PRECISION NOT NULL,
-	latitude			DOUBLE PRECISION NOT NULL,
-	privacy				privacyValues NOT NULL,
-);
-
-CREATE TABLE profilePictures (
-	profilePictureId	SERIAL PRIMARY KEY,
-	uploadedPictureId	INTEGER REFERENCES pictures (pictureId) NOT NULL,
-	userId				INTEGER REFERENCES users (userId) NOT NULL,
-	setDate				TIMESTAMPTZ NOT NULL,
-	leftBound			SMALLINT,
-	topBound			SMALLINT,
-	width				SMALLINT,
-	height				SMALLINT
 );

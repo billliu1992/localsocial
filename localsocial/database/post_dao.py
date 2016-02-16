@@ -1,6 +1,6 @@
 from localsocial.database.db import db_conn, handled_execute
 from localsocial.model.location_model import Location
-from localsocial.model.post_model import Post, EventPost, ImagePost
+from localsocial.model.post_model import Post, EventPost, ImagePost, POST_PRIVACY
 
 def build_name(first_name, nick_name, last_name, are_friends, show_last_name):
 	if (not are_friends) and (not show_last_name):
@@ -44,7 +44,7 @@ def get_posts_by_user(searched_user, friends, limit, offset, max_id):
 			event_end, image_id) = row
 
 		author_name = build_name(searched_user.first_name, searched_user.nick_name, searched_user.last_name, friends, searched_user.preferences.show_last_name)
-		post_location = build_location(longitude, latitude, city_name, friends, privacy != 'hide_location')
+		post_location = build_location(longitude, latitude, city_name, friends, privacy != POST_PRIVACY.HIDE_LOCATION)
 
 		if(event_id != None):
 			new_post = EventPost(author_id, author_name, searched_user.portrait, post_body, post_date, 
@@ -100,7 +100,7 @@ def get_post_feed(current_user_id, current_location, range, limit, skip, max_id=
 			are_friends) = row
 
 		author_name = build_name(first_name, nick_name, last_name, are_friends, show_last_name)
-		post_location = build_location(longitude, latitude, city_name, are_friends, privacy != 'exact_location')
+		post_location = build_location(longitude, latitude, city_name, are_friends, privacy != POST_PRIVACY.HIDE_LOCATION)
 
 		if(event_id != None):
 			new_post = EventPost(author_id, author_name, portrait, post_body, post_date, 
