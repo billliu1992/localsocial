@@ -17,6 +17,15 @@ define([
 			UserService.getUploadedImages('me').then((photos) => {
 				this.setState({
 					photos
+				}, () => {
+					UserService.getCurrentUserInfo().then((user) => {
+						for(var photoIdx in this.state.photos) {
+							var photo = this.state.photos[photoIdx];
+							if(user['portrait'] === photo['picture_id']) {
+								this.props.changePicture(photo['picture_id'], photo['image_src'])
+							}
+						}
+					});
 				});
 			});
 		},

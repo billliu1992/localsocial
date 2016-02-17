@@ -112,11 +112,28 @@ define([
 			return APIService.filterResponse(axios.get('/user/me/image/profile'));
 		},
 		uploadUserProfilePic(formData) {
-			return axios.post('/user/me/image/profile', formData).then((response) => {
+			var uploadPromise = axios.post('/user/me/image/profile', formData)
+
+			userPromise = uploadPromise.then((response) => {
+				return response.data.user;
+			});
+
+			return uploadPromise.then((response) => {
 				ListenerService.fireListeners(response.data.user);
 
 				return response.data;
 			});
+		},
+		deleteUserProfilePic() {
+			var deletePromise = APIService.filterResponse(axios.delete('/user/me/image/profile'));
+
+			userPromise = deletePromise.then((result) => {
+				ListenerService.fireListeners(result.user);
+
+				return result.user;
+			});
+
+			return deletePromise;
 		},
 		getUploadedImages(userId) {
 			return APIService.filterResponse(axios.get('/user/' + userId + '/image'));

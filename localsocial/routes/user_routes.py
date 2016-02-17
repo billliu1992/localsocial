@@ -70,7 +70,7 @@ def create_user():
 		return { "success" : False, "reason" : "password" }
 	else:
 		phone = user_service.convert_text_to_num(phone)
-		new_user = User(email, phone, first_name, last_name, nick_name, portrait, "", DEFAULT_PREFS)
+		new_user = User(email, phone, first_name, last_name, nick_name, portrait, None, "", DEFAULT_PREFS)
 
 		new_user = user_service.create_new_user(new_user, password)
 		session["user_id"] = new_user.user_id

@@ -1,12 +1,16 @@
 define([
 	'upload-pic-popup/taggable-profile-image/taggable-profile-image-component',
 	'upload-pic-popup/previous-photos/previous-photos-component',
+	'components/message-enabled-mixin',
 	'components/user-service',
+	'components/popup-service',
 	'react'
 ], function(
 	TaggableProfileImage,
 	PreviousPhotos,
+	MessageEnabledMixin,
 	UserService,
+	PopupService,
 	React
 ) {
 	'use strict';
@@ -18,21 +22,41 @@ define([
 	};
 
 	var UploadPicPopup = React.createClass({
+		mixins : [ MessageEnabledMixin ],
 		getInitialState() {
 			return {
 				currentState : UPLOAD_STATES.NO_IMAGE,
 				imageObj : null,
-				previousPictureId : null
+				previousPictureId : null,
+				errorMessage : null
 			}
 		},
 		render() {
+			var errorMessageElem = null;
+			if(this.state.errorMessage !== '') {
+				errorMessageElem = <div className="error-message">{this.getMessageText()}</div>;
+			}
+
 			return <div className={"upload-pic-popup " + this.state.currentState}>
+				<TaggableProfileImage src={this.state.imageUrl} onChange={this.doImageTag} onNewImage={this.doImageUpdateProps} />
 				<form onSubmit={this.doSubmit}>
-					<TaggableProfileImage src={this.state.imageUrl} onChange={this.doImageTag} onNewImage={this.doImageUpdateProps} />
-					<input type="file" onChange={this.doUpload} />
-					<PreviousPhotos changePicture={this.selectPreviousImage} />
-					<button>Submit</button>
-					<button type="button" className="cancel">Cancel</button>
+					<div className="photo-selector">
+						<fieldset>
+							<label forHtml="new-photo-upload">Upload a photo</label>
+							<input type="file" onChange={this.doUpload} id="new-photo-upload" />
+						</fieldset>
+						<div className="or-text">Or</div>
+						<fieldset>
+							<label>Select a previous image</label>
+							<PreviousPhotos changePicture={this.selectPreviousImage} />
+						</fieldset>
+					</div>
+					<div className="button-row">
+						{ errorMessageElem }
+						<button type="button" className="delete" onClick={this.deletePortrait}>Delete</button>
+						<button>Submit</button>
+						<button type="button" className="cancel" onClick={this.closePopup}>Cancel</button>
+					</div>
 				</form>
 			</div>;
 		},
@@ -59,6 +83,8 @@ define([
 			}
 		},
 		selectPreviousImage(pictureId, pictureSrc) {
+			this.acknowledgeMessage();
+
 			this.setState({
 				imageUrl : pictureSrc,
 				previousPictureId : pictureId,
@@ -67,6 +93,8 @@ define([
 			});
 		},
 		doImageTag(newTag) {
+			this.acknowledgeMessage();
+
 			this.setState({
 				tag : newTag
 			});
@@ -104,8 +132,21 @@ define([
 				}
 				profilePicForm.append('privacy', 'public');
 
-				UserService.uploadUserProfilePic(profilePicForm);
+				UserService.uploadUserProfilePic(profilePicForm).then(() => {
+					this.closePopup();
+				},
+				() => {
+					this.setMessage('error', 'An error occurred. Please try again');
+				});
 			}
+		},
+		deletePortrait() {
+			UserService.deleteUserProfilePic().then(() => {
+				this.closePopup();
+			});
+		},
+		closePopup() {
+			PopupService.destroyPopup();
 		}
 	});
 

@@ -29,9 +29,6 @@ class User():
 		show_private_fields = kwargs.get("private", False)
 		build_profile_pic_src = kwargs.get("portrait", True)
 
-		print "YOU GOT ME HERE"
-		print self.portrait_set_date
-
 		user_dict = None
 		portrait_src = filesystem_storage_service.get_cropped_src(self.portrait, self.portrait_set_date, self.user_id)
 		if show_private_fields:
