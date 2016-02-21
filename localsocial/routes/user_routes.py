@@ -144,7 +144,7 @@ def get_user_profile(queried_user_identifier):
 	friendship_status = user_service.get_friendship_status(current_user.user_id, requested_user_id)
 	are_friends = friendship_status == Friendship.FRIENDS
 
-	posts = post_service.get_posts_by_user(requested_user, are_friends)
+	posts = post_service.get_posts_by_user(current_user.user_id, requested_user, are_friends)
 	friends = user_service.get_friends(requested_user_id)
 	followers = user_service.get_followers(requested_user_id)
 

@@ -33,8 +33,12 @@ define([
 
 			PostService.saveReply(this.props.postId, {
 				'reply-body' : this.state.body
-			})
-
+			}).then((data) => {
+				this.props.updatePost(data['updated_post']);
+				this.setState({
+					body: ''
+				});
+			});
 		}
 	});
 

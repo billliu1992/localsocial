@@ -14,20 +14,24 @@ def create_new_post(author, body, privacy, location):
 
 	return new_post
 
-def create_new_reply(author, body, parent_post_id, location):
+def create_new_reply(author, body, parent_post_id, location, privacy):
 	current_time = datetime.now()
 
-	new_reply = Reply(parent_post_id, author.user_id, author.full_name, body, current_time, location, False)
+	new_reply = Reply(parent_post_id, author.user_id, "", author.portrait,
+		author.portrait_set_date, body, current_time, location, privacy, False)
 
 	reply_dao.create_reply(new_reply)
 
 	return new_reply
 
-def get_posts_by_user(searched_user, are_friends, page_num=1, post_per_page=10, max_id=None):
+def get_posts_by_user(current_user_id, searched_user, are_friends, page_num=1, post_per_page=10, max_id=None):
 	if page_num < 1:
 		page_num = 1
 
-	return post_dao.get_posts_by_user(searched_user, are_friends, post_per_page, (page_num - 1) * post_per_page, max_id)
+	return post_dao.get_posts_by_user(current_user_id, searched_user, are_friends, post_per_page, (page_num - 1) * post_per_page, max_id)
+
+def get_post_by_id(current_user_id, post_id):
+	return post_dao.get_post_by_id(current_user_id, post_id)
 
 def get_post_feed(current_user_id, location, max_dist=25, page_num=1, post_per_page=10, max_id = None):
 	if(page_num < 1):

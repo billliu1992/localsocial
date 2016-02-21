@@ -11,14 +11,17 @@ define([
 		render() {
 			var locationElement = null;
 			if(this.props.location.city !== this.props.reply.location.city) {
-				locationElement = (<div>this.props.reply.location.city</div>);
+				locationElement = <span className="reply-location">this.props.reply.location.city</span>;
 			}
 
 			return (
-				<div>
-					Author: <span onClick={this.showUserProfile}>{ this.props.reply.author_name }</span>
-					{ locationElement }
-					<div> { this.props.reply.reply_body } </div>
+				<div className="reply">
+					<img src={this.props.reply['portrait_src']} />
+					<div className="author-info">
+						<span className="reply-author" onClick={this.showUserProfile}>{ this.props.reply.author_name }</span>
+						{ locationElement }
+					</div>
+					<div className="reply-body"> { this.props.reply['reply_body'] } </div>
 				</div>
 			);
 		},

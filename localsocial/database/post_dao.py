@@ -1,26 +1,10 @@
 from localsocial.database.db import db_conn, handled_execute
 from localsocial.model.location_model import Location
 from localsocial.model.post_model import Post, EventPost, ImagePost, POST_PRIVACY
+from localsocial.database.util import build_name, build_location
+from localsocial.database import reply_dao
 
-def build_name(first_name, nick_name, last_name, are_friends, show_last_name):
-	if (not are_friends) and (not show_last_name):
-		last_name = last_name[0:1] + "."
-
-	if nick_name != None:
-		author_name = nick_name + " " + last_name
-	else:
-		author_name = first_name + " " + last_name
-
-	return author_name
-
-def build_location(longitude, latitude, city_name, are_friends, exact_location):
-	if (not are_friends) and (not exact_location):
-		longitude = None
-		latitude = None
-		
-	return Location(city_name, longitude, latitude)
-
-def get_posts_by_user(searched_user, friends, limit, offset, max_id):
+def get_posts_by_user(current_user_id, searched_user, friends, limit, offset, max_id):
 	cursor = handled_execute(db_conn, """
 		SELECT
 		postId, authorId, postBody, postDate, privacy, cityName, longitude, latitude,
@@ -37,7 +21,7 @@ def get_posts_by_user(searched_user, friends, limit, offset, max_id):
 	post_rows = cursor.fetchall()
 
 	post_objects = []
-
+	post_ids = []
 	for row in post_rows:
 		(post_id, author_id, post_body, post_date, privacy, city_name,
 			longitude, latitude, event_id, event_name, event_location, event_start,
@@ -60,7 +44,10 @@ def get_posts_by_user(searched_user, friends, limit, offset, max_id):
 
 		new_post.post_id = post_id
 
+		post_ids.append(post_id)
 		post_objects.append(new_post)
+
+	build_replies(post_ids, post_objects, current_user_id)
 
 	return post_objects
 
@@ -92,7 +79,7 @@ def get_post_feed(current_user_id, current_location, range, limit, skip, max_id=
 	post_rows = cursor.fetchall()
 
 	post_objects = []
-
+	post_ids = []
 	for row in post_rows:
 		(post_id, author_id, post_body, post_date, privacy, city_name,
 			longitude, latitude, event_id, event_name, event_location, event_start,
@@ -115,10 +102,75 @@ def get_post_feed(current_user_id, current_location, range, limit, skip, max_id=
 				privacy, post_location)
 
 		new_post.post_id = post_id
+		new_post.replies = build_replies(post_ids, post_objects, current_user_id)
 
+		post_ids.append(post_id)
 		post_objects.append(new_post)
 
+	build_replies(post_ids, post_objects, current_user_id)
+
 	return post_objects
+
+def get_post_by_id(current_user_id, post_id):
+	cursor = handled_execute(db_conn, """
+		SELECT
+		postId, authorId, postBody, postDate, privacy, cityName, longitude, latitude,
+		eventId, eventName, eventLocation, eventStart, eventEnd,
+		imageId,
+		firstName, lastName, nickName, portrait, portraitSetDate, showLastName,
+		(authorId IN (SELECT firstUserId FROM userFriends WHERE secondUserId = %(current_user_id)s)
+				AND %(current_user_id)s IN (SELECT firstUserId FROM userFriends WHERE secondUserId = authorId)) AS areFriends
+		FROM posts LEFT JOIN users ON posts.authorId = users.userId
+		WHERE postId = %(searched_post_id)s
+			AND (privacy != 'friends' OR authorId=%(current_user_id)s
+				OR (authorId IN (SELECT firstUserId FROM userFriends WHERE secondUserId = %(current_user_id)s)
+					AND %(current_user_id)s IN (SELECT firstUserId FROM userFriends WHERE secondUserId = authorId)))
+		ORDER BY postId DESC
+		LIMIT 1;""", {
+			"searched_post_id" : post_id, "current_user_id" : current_user_id
+		})
+
+	row = cursor.fetchone()
+
+	(post_id, author_id, post_body, post_date, privacy, city_name,
+		longitude, latitude, event_id, event_name, event_location, event_start,
+		event_end, image_id, first_name, last_name, nick_name, portrait, portrait_set_date, show_last_name,
+		are_friends) = row
+
+	author_name = build_name(first_name, nick_name, last_name, are_friends, show_last_name)
+	post_location = build_location(longitude, latitude, city_name, are_friends, privacy != POST_PRIVACY.HIDE_LOCATION)
+
+	if(event_id != None):
+		new_post = EventPost(author_id, author_name, portrait, portrait_set_date, post_body, post_date, 
+			privacy, post_location, event_id,
+			event_name, event_location, event_start, event_end)
+
+	elif(image_id != None):
+		new_post = ImagePost(author_id, author_name, portrait, portrait_set_date, post_body, post_date, 
+			privacy, post_location, image_id)
+	else:
+		new_post = Post(author_id, author_name, portrait, portrait_set_date, post_body, post_date, 
+			privacy, post_location)
+
+	new_post.post_id = post_id
+
+	replies = reply_dao.get_replies_by_post_id(current_user_id, post_id)
+	new_post.replies = replies
+
+	return new_post
+
+def build_replies(post_ids, post_objects, current_user_id):
+	replies = reply_dao.get_replies_with_post_ids(post_ids, current_user_id)
+
+	replies_dict = {}
+	for reply in replies:
+		post_replies = replies_dict.get(reply.post_id, [])
+		post_replies.append(reply)
+		replies_dict[reply.post_id] = post_replies
+
+	for post in post_objects:
+		post.replies = replies_dict.get(post.post_id, [])
+
 
 def create_post(post):
 	cursor = handled_execute(db_conn, """

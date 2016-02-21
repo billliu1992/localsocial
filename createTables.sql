@@ -85,13 +85,13 @@ CREATE TABLE replies (
 	replyId			SERIAL PRIMARY KEY,
 	postId			INTEGER REFERENCES posts (postId) NOT NULL,
 	authorId		INTEGER REFERENCES users (userId) NOT NULL,
-	authorName		TEXT NOT NULL,
 	replyBody		TEXT NOT NULL,
 	replyDate		TIMESTAMPTZ,
 	cityName		TEXT NOT NULL,
 	longitude		DOUBLE PRECISION NOT NULL,
 	latitude		DOUBLE PRECISION NOT NULL,
 
+	privacy			privacyValues NOT NULL,
 	edited			BOOLEAN NOT NULL
 );
 

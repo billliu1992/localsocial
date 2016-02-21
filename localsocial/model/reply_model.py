@@ -1,7 +1,8 @@
 from localsocial.model.location_model import Location
+from localsocial.service.picture import filesystem_storage_service
 
 class Reply:
-	def __init__(self, post_id, author_id, author_name, body, reply_date, location, edited):
+	def __init__(self, post_id, author_id, author_name, author_portrait, author_portrait_set_date, body, reply_date, location, privacy, edited):
 		if not isinstance(location, Location):
 			raise ValueError("argument 'location' must be a Location object")
 
@@ -9,9 +10,12 @@ class Reply:
 		self.post_id = post_id
 		self.author_id = author_id
 		self.author_name = author_name
+		self.author_portrait = author_portrait
+		self.author_portrait_set_date = author_portrait_set_date
 		self.reply_body = body
 		self.reply_date = reply_date
 		self.location = location
+		self.privacy = privacy
 		self.edited = edited
 
 	@property
@@ -27,8 +31,16 @@ class Reply:
 		return self.location.city
 
 	def to_json_dict(self):
-		reply_dict = self.__dict__
-		reply_dict["reply_date"] = reply_dict["reply_date"].isoformat("T")
-		reply_dict["location"] = reply_dict["location"].to_json_dict()
+		reply_dict = {}
+		reply_dict["reply_id"] = self.reply_id
+		reply_dict["post_id"] = self.post_id
+		reply_dict["author_name"] = self.author_name
+		print(self.author_portrait_set_date)
+		reply_dict["portrait_src"] = filesystem_storage_service.get_cropped_src(self.author_portrait, self.author_portrait_set_date, self.author_id)
+		reply_dict["reply_body"] = self.reply_body
+		reply_dict["reply_date"] = self.reply_date.isoformat("T")
+		reply_dict["location"] = self.location.to_json_dict()
+		reply_dict["privacy"] = self.privacy
+		reply_dict["edited"] = self.edited
 
 		return reply_dict

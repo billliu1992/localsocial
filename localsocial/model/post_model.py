@@ -15,6 +15,7 @@ class Post(object):
 		self.post_date = post_date
 		self.privacy = privacy
 		self.location = location
+		self.replies = None
 
 	@property
 	def latitude(self):
@@ -31,6 +32,7 @@ class Post(object):
 	def to_json_dict(self):
 		post_dict = {}
 
+		post_dict['post_id'] = self.post_id
 		post_dict['author_id'] = self.author_id
 		post_dict['author_name'] = self.author_name
 		post_dict['author_portrait'] = self.author_portrait
@@ -39,6 +41,12 @@ class Post(object):
 		post_dict['post_date'] = self.post_date.isoformat("T")
 		post_dict['privacy'] = self.privacy
 		post_dict['location'] = self.location.to_json_dict()
+
+		if self.replies != None:
+			replies_dicts = []
+			for reply in self.replies:
+				replies_dicts.append(reply.to_json_dict())
+			post_dict['replies'] = replies_dicts
 
 		return post_dict
 
