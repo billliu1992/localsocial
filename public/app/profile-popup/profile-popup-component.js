@@ -1,7 +1,7 @@
 define([
 	'components/popup-service',
 	'components/user-service',
-	'home-feed/feed/feed-component',
+	'profile-popup/profile-feed/profile-feed-component.js',
 	'profile-popup/user-relation-status/user-relation-status-component',
 	'profile-popup/biography/biography-component',
 	'profile-popup/friends-list/friends-list-component',
@@ -9,7 +9,7 @@ define([
 ], function(
 	PopupService,
 	UserService,
-	Feed,
+	ProfileFeed,
 	UserRelationStatus,
 	Biography,
 	FriendsList,
@@ -62,9 +62,7 @@ define([
 						isSelf={this.state.profile.self}
 					/>
 					<FriendsList friends={this.state.profile.friends} showProfilePopup={this.showProfilePopup} />
-					<div className="profile-feed">
-						<Feed posts={this.state.profile.posts} location={ currentUser.location } />
-					</div>
+					<ProfileFeed userId={this.state.profile['user_id']} posts={this.state.profile.posts} location={ currentUser.location } getNextPagePosts={ this.getNextPagePosts } />
 				</div>
 			}
 			else {
@@ -74,6 +72,15 @@ define([
 		updateProfile() {
 			UserService.getUserProfile(this.props.userId).then((profile) => {
 				this.setState({ profile });
+			});
+		},
+		getNextPagePosts(newPosts) {
+			var oldProfile = this.state.profile;
+
+			oldProfile.posts.push(...newPosts);
+
+			this.setState({
+				profile : oldProfile
 			});
 		},
 		showProfilePopup(userId) {

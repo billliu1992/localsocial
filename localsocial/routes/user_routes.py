@@ -144,7 +144,7 @@ def get_user_profile(queried_user_identifier):
 	friendship_status = user_service.get_friendship_status(current_user.user_id, requested_user_id)
 	are_friends = friendship_status == Friendship.FRIENDS
 
-	posts = post_service.get_posts_by_user(requested_user, are_friends)
+	posts = post_service.get_posts_by_user(current_user.user_id, requested_user, are_friends)
 	friends = user_service.get_friends(requested_user_id)
 	followers = user_service.get_followers(requested_user_id)
 
@@ -172,6 +172,62 @@ def get_user_profile(queried_user_identifier):
 		result_json_dict["self"] = current_user.user_id == requested_user_id
 
 	return result_json_dict
+
+@api_endpoint('/user/<queried_user_identifier>/posts', methods=("GET",))
+@login_required
+@location_endpoint
+@query_user(get_object = True)
+def get_user_posts(queried_user_identifier):
+	current_user = g.user
+	current_location = g.user_location
+	requested_user = g.queried_user
+
+	max_dist_str = request.args.get('max_dist', 25)
+	max_id_str = request.args.get('max_id', None)
+	page_num_str = request.args.get('page', 1)
+	post_per_page_str = request.args.get('post_per_page', 10)
+
+	try:
+		max_dist = int(max_dist_str)
+		page_num = int(page_num_str)
+		post_per_page = int(post_per_page_str)
+
+		max_id = None
+		if(max_id_str != None):
+			max_id = int(max_id_str)
+	except ValueError as e:
+		return {
+			"error" : True
+		}
+
+	friendship_status = user_service.get_friendship_status(current_user.user_id, requested_user.user_id)
+	are_friends = friendship_status == Friendship.FRIENDS
+
+	current_posts = post_service.get_posts_by_user(current_user.user_id, requested_user, are_friends, page_num, post_per_page, max_id)
+
+	if max_id == None and len(current_posts) > 0:
+		max_id = current_posts[0].post_id
+
+	output_json = {
+		"error" : False,
+		"max_id" : max_id,
+		"current_location" : current_location.to_json_dict(),
+		"pagination": {
+			"page_num" : page_num,
+			"post_per_page" : post_per_page,
+			"length" : len(current_posts)
+		}
+	}
+
+	posts_json = []
+	for post in current_posts:
+		post_json = post.to_json_dict()
+
+		posts_json.append(post_json)
+
+	output_json["posts"] = posts_json
+
+	return output_json
 
 @api_endpoint("/user/me/biography", methods=("POST",))
 @login_required

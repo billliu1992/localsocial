@@ -2,6 +2,7 @@ import json
 import localsocial.service.post_service
 from flask import request, g
 from localsocial import app
+from localsocial.exceptions import DAOException
 from localsocial.service import post_service, location_service
 from localsocial.service.picture import filesystem_storage_service
 from localsocial.model.location_model import Location
@@ -24,12 +25,28 @@ def get_posts():
 	current_user = g.user
 	current_location = g.user_location
 
-	max_dist = request.args.get('max_dist', 25)
-	max_id = request.args.get('max_id', None)
-	page_num = request.args.get('page_num', 0)
-	post_per_page = request.args.get('post_per_page', 10)
+	max_dist_str = request.args.get('max_dist', 25)
+	max_id_str = request.args.get('max_id', None)
+	page_num_str = request.args.get('page', 1)
+	post_per_page_str = request.args.get('post_per_page', 10)
+
+	try:
+		max_dist = int(max_dist_str)
+		page_num = int(page_num_str)
+		post_per_page = int(post_per_page_str)
+
+		max_id = None
+		if(max_id_str != None):
+			max_id = int(max_id_str)
+	except ValueError as e:
+		return {
+			"error" : True,
+		}
 
 	current_posts = post_service.get_post_feed(current_user.user_id, current_location, max_dist, page_num, post_per_page, max_id)
+
+	if max_id == None and len(current_posts) > 0:
+		max_id = current_posts[0].post_id
 
 	output_json = {
 		"error" : False,
@@ -45,9 +62,6 @@ def get_posts():
 	posts_json = []
 	for post in current_posts:
 		post_json = post.to_json_dict()
-		post_json["replies"] = replies_to_json(post_service.get_post_replies(post))
-		print post.author_portrait_set_date
-		post_json["portrait_src"] = filesystem_storage_service.get_cropped_src(post.author_portrait, post.author_portrait_set_date, post.author_id)
 
 		posts_json.append(post_json)
 
@@ -68,7 +82,7 @@ def create_posts():
 	if(len(body) < MINIMUM_POST_BODY_LENGTH):
 		return {
 			"error" : True,
-			"message" : "Please include a post body with length greater than 10"
+			"message" : "Please make your post greater than " + str(MINIMUM_POST_BODY_LENGTH) + " characters"
 		}
 	else:
 		new_post = post_service.create_new_post(current_user, body, privacy, current_location)
@@ -88,7 +102,38 @@ def create_reply(post_id):
 	current_location = g.user_location
 
 	body = request.form['reply-body']
+	privacy = request.form['privacy']
 
-	new_reply = post_service.create_new_reply(current_user, body, post_id, current_location)
+	new_reply = post_service.create_new_reply(current_user, body, post_id, current_location, privacy)
+	updated_post = post_service.get_post_by_id(current_user.user_id, post_id)
 
-	return { "error" : False, "reply" : new_reply.to_json_dict() }
+	return { "error" : False, "reply" : new_reply.to_json_dict(), "updated_post" : updated_post.to_json_dict() }
+
+
+@api_endpoint('/post/<int:post_id>/like', methods=("POST",))
+@login_required
+def create_like(post_id):
+	current_user = g.user
+
+	try:
+		post_service.create_like(post_id, current_user.user_id)
+	except DAOException as e:
+		return {
+			"error" : True
+		}
+
+	return { "error" : False }
+
+@api_endpoint('/post/<int:post_id>/unlike', methods=("POST",))
+@login_required
+def delete_like(post_id):
+	current_user = g.user
+
+	try:
+		post_service.delete_like(post_id, current_user.user_id)
+	except DAOException as e:
+		return {
+			"error" : True
+		}
+
+	return { "error" : False }

@@ -1,85 +1,64 @@
 define([
 	'components/post-service',
 	'home-feed/feed/post/replies/replies-component',
+	'home-feed/feed/post/like/like-component',
 	'react'
 ], function(
 	PostService,
 	Replies,
+	Like,
 	React
 ) {
 	'use strict';
 
 	var Post = React.createClass({
-		formatDistanceForDisplay(postCoords, feedCoords) {
-			if(!feedCoords || postCoords.latitude === null || postCoords.longitude === null || feedCoords.city !== postCoords.city) {
-				return postCoords.city;
-			}
-			else {
-				return PostService.getDistance(postCoords, feedCoords, true) + ' miles away';
-			}
-		},
-		formatTimeForDisplay(time) {
-			var currentTime = new Date();
-
-			var difference = currentTime - time;
-
-			var buildString = function(diff, oneUnitInMillis, unitName) {
-				var numberOfUnits = Math.floor(diff / oneUnitInMillis);
-				if(numberOfUnits > 1) {
-					unitName += 's';
-				}
-
-				return numberOfUnits + ' ' + unitName + ' ago';
-			}
-
-			if(difference / (1000 * 60 * 60 * 24 * 365) >= 1) {
-				return buildString(difference, (1000 * 60 * 60 * 24 * 365), "year");
-			}
-			else if(difference / (1000 * 60 * 60 * 24 * 30) >= 1) {
-				// We naively assume each month is 30 days
-				return buildString(difference, (1000 * 60 * 60 * 24 * 30), "month");
-			}
-			else if(difference / (1000 * 60 * 60 * 24) >= 1) {
-				return buildString(difference, (1000 * 60 * 60 * 24), "day");
-			}
-			else if(difference / (1000 * 60 * 60) >= 1) {
-				return buildString(difference, (1000 * 60 * 60), "hour");
-			}
-			else if(difference / (1000 * 60 * 60) >= 1) {
-				return buildString(difference, (1000 * 60), "minute");
-			}
-			else {
-				return "less than a minute ago";
-			}
-		},
-		formatPrivacyForDisplay(privacyString) {
-			if(privacyString === 'friends') {
-				return 'Private';
-			}
+		getInitialState() {
+			return {
+				updatedPost : null
+			};
 		},
 		render() {
+			var displayedPost = this.props.post;
+			if(this.state.updatedPost !== null) {
+				displayedPost = this.state.updatedPost;
+			}
+
 			var dateObject = new Date(this.props.post['post_date']);
 
 			return (
 				<div className="feed-post pod">
 					<div className="portrait-wrap">
-						<img className="portrait" src={ this.props.post['portrait_src'] } />
+						<img className="portrait" src={ displayedPost['portrait_src'] } />
 					</div>
 					<div className="post-header">
 						<div className="post-header-row">
-							<a className="post-author" onClick={this.showUserProfile}>{ this.props.post['author_name'] }</a>
-							<span className="post-private post-info">{ this.formatPrivacyForDisplay(this.props.post['privacy']) }</span>
+							<a className="post-author" onClick={this.showUserProfile}>{ displayedPost['author_name'] }</a>
+							<span className="post-private post-info">{ PostService.formatPrivacyForDisplay(displayedPost['privacy']) }</span>
 						</div>
 						<div className="post-header-row">
-							<span className="post-location post-info">{ this.formatDistanceForDisplay(this.props.post['location'], this.props.location) }</span>
-							<span className="post-date post-info">{ this.formatTimeForDisplay(dateObject) }</span>
+							<span className="post-location post-info">{ PostService.formatDistanceForDisplay(displayedPost['location'], this.props.location) }</span>
+							<span className="post-date post-info">{ PostService.formatTimeForDisplay(dateObject) }</span>
 						</div>
 					</div>
 					<div className="post-body">
-						{ this.props.post['body'] }
+						{ displayedPost['body'] }
 					</div>
+					<div className="post-controls">
+						<Like className="post-control" postId={ displayedPost['post_id'] } likes={ displayedPost['likes'] } liked = { displayedPost['liked'] } />
+					</div>
+					<Replies
+						replies={ displayedPost['replies'] }
+						postId={ displayedPost['post_id'] }
+						location={ this.props.location }
+						updatePost={ this.updatePost }
+					/>
 				</div>
 			);
+		},
+		updatePost(updatedPost) {
+			this.setState({
+				updatedPost
+			});
 		},
 		showUserProfile() {
 			this.props.showProfile(this.props.post['author_id']);

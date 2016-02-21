@@ -8,18 +8,44 @@ define([
 	React
 ) {
 	'use strict';
+
+	var MAX_REPLIES_UNEXPANDED = 2;
+	var REPLIES_ADDED = 5;
+
 	var Replies = React.createClass({
+		getInitialState() {
+			return {
+				shownReplies : MAX_REPLIES_UNEXPANDED
+			}
+		},
 		render() {
-			var replies = this.props.replies.map((reply) => (
+			var expandElement = null;
+			var displayedReplies = this.props.replies;
+			if(this.props.replies.length > this.state.shownReplies) {
+				expandElement = <div className="expand" onClick={this.doExpand}>Show more replies</div>
+				displayedReplies = this.props.replies.slice(this.props.replies.length - this.state.shownReplies);
+			}
+
+			var replies = displayedReplies.map((reply) =>
 				<Reply key={ reply['reply_id'] } reply={ reply } location={ this.props.location } />
-			));
+			);
 
 			return (
-				<div>
-					{replies}
-					<NewReplyForm location={this.props.location} postId={this.props.postId} />
+				<div className="replies-container">
+					{ expandElement }
+					{ replies }
+					<NewReplyForm
+						location={this.props.location}
+						postId={this.props.postId}
+						updatePost={this.props.updatePost}
+					/>
 				</div>
 			);
+		},
+		doExpand() {
+			this.setState({
+				shownReplies : this.state.shownReplies + REPLIES_ADDED
+			});
 		}
 	});
 

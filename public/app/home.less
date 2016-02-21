@@ -14,7 +14,7 @@ body {
 	color: @darkGray;
 }
 
-button {
+button, .button {
 	background-color: @medGreen;
 	border: 1px solid @darkerGreen;
 	color: @darkestGreen;
@@ -49,6 +49,11 @@ button {
 		font-size: 1em;
 		padding: 0 .5em;
 	}
+
+	&.small {
+		font-size: .8em;
+		padding: 0 .3em;
+	}
 }
 
 a {
@@ -72,6 +77,13 @@ input[type='text'], textarea {
 	&:focus {
 		outline: none;
 	}
+}
+
+textarea {
+	border: 1px solid @medGreen;
+	background-color: #FFF;
+	border-radius: 0;
+	padding: 0;
 }
 
 nav#top-nav-bar {
