@@ -35,7 +35,6 @@ class Reply:
 		reply_dict["reply_id"] = self.reply_id
 		reply_dict["post_id"] = self.post_id
 		reply_dict["author_name"] = self.author_name
-		print(self.author_portrait_set_date)
 		reply_dict["portrait_src"] = filesystem_storage_service.get_cropped_src(self.author_portrait, self.author_portrait_set_date, self.author_id)
 		reply_dict["reply_body"] = self.reply_body
 		reply_dict["reply_date"] = self.reply_date.isoformat("T")
