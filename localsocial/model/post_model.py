@@ -1,4 +1,5 @@
 from localsocial.model.location_model import Location
+from localsocial.service.picture import filesystem_storage_service
 
 class Post(object):
 	def __init__(self, author_id, author_name, author_portrait, portrait_set_date, body, post_date, privacy, location):
@@ -37,6 +38,7 @@ class Post(object):
 		post_dict['author_name'] = self.author_name
 		post_dict['author_portrait'] = self.author_portrait
 		post_dict['author_portrait_set_date'] = self.author_portrait_set_date.isoformat("T")
+		post_dict["portrait_src"] = filesystem_storage_service.get_cropped_src(self.author_portrait, self.author_portrait_set_date, self.author_id)
 		post_dict['body'] = self.body
 		post_dict['post_date'] = self.post_date.isoformat("T")
 		post_dict['privacy'] = self.privacy

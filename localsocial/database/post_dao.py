@@ -154,7 +154,7 @@ def get_post_by_id(current_user_id, post_id):
 
 	new_post.post_id = post_id
 
-	replies = reply_dao.get_replies_by_post_id(current_user_id, post_id)
+	replies = reply_dao.get_replies_by_post_id(post_id, current_user_id)
 	new_post.replies = replies
 
 	return new_post

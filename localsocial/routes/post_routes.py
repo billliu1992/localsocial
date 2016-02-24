@@ -45,7 +45,6 @@ def get_posts():
 	posts_json = []
 	for post in current_posts:
 		post_json = post.to_json_dict()
-		post_json["portrait_src"] = filesystem_storage_service.get_cropped_src(post.author_portrait, post.author_portrait_set_date, post.author_id)
 
 		posts_json.append(post_json)
 
