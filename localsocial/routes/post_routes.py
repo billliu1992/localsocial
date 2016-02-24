@@ -86,8 +86,9 @@ def create_reply(post_id):
 	current_location = g.user_location
 
 	body = request.form['reply-body']
+	privacy = request.form['privacy']
 
-	new_reply = post_service.create_new_reply(current_user, body, post_id, current_location, "public")
+	new_reply = post_service.create_new_reply(current_user, body, post_id, current_location, privacy)
 	updated_post = post_service.get_post_by_id(current_user.user_id, post_id)
 
 	return { "error" : False, "reply" : new_reply.to_json_dict(), "updated_post" : updated_post.to_json_dict() }

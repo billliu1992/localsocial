@@ -1,3 +1,17 @@
+@import (reference) 'app/common';
+
 .replies-container {
-	margin-left: 1em;
+	margin: 1em 1em 0 1em;
+
+	.expand {
+		line-height: 1;
+		font-size: .8em;
+		text-align: center;
+		color: @medGreen;
+		cursor: pointer;
+
+		&:hover {
+			color: @darkGreen;
+		}
+	}
 }

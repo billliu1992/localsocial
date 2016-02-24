@@ -8,7 +8,7 @@ from localsocial.model.reply_model import Reply
 def create_new_post(author, body, privacy, location):
 	current_time = datetime.now()
 
-	new_post = Post(author.user_id, author.full_name, author.portrait, body, current_time, privacy, location)
+	new_post = Post(author.user_id, author.full_name, author.portrait, author.portrait_set_date, body, current_time, privacy, location)
 
 	post_dao.create_post(new_post)
 

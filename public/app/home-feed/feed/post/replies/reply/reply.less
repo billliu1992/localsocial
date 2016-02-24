@@ -9,8 +9,12 @@
 		border-radius: 3px;
 		display: inline-block;
 	}
-	.reply-author, .reply-location, .reply-body {
+	.reply-author, .reply-body {
 		font-size: .8em;
+	}
+
+	.reply-location, .reply-date {
+		font-size: .7em;
 	}
 
 	.author-info {
@@ -21,10 +25,12 @@
 
 		.reply-author {
 			color: @darkGreen;
+			display: block;
 		}
 
-		.reply-location {
+		.reply-location, .reply-date {
 			color: @lightGray;
+			margin-right: 1em;
 		}
 	}
 

@@ -1,0 +1,78 @@
+@portraitSize: 2em;
+
+.new-reply-form {
+	display: flex;
+	align-items: center;
+	flex-flow: row nowrap;
+	align-items: flex-start;
+
+	&.unexpanded {
+		.reply-input {
+			height: @portraitSize;
+			textarea {
+				height: 100%;
+				line-height: 2.5em;	// Same as height
+				padding-left: 1em;
+			}
+
+			.button-row {
+				display: none;
+			}
+		}
+	}
+
+	&.expanded {
+		.reply-input {
+			textarea {
+				height: 5em;
+				padding: .3em 0 0 .5em;
+			}
+		}
+	}
+
+	&.show-friends-options {
+		.privacy-option {
+			display: none;
+		}
+	}
+
+	img {
+		max-width: @portraitSize;
+		max-height: @portraitSize;
+		flex-basis: 2.5em;
+		border-radius: 3px;
+	}
+
+	.reply-input {
+		flex-basis: 100%;
+		margin-left: 1em;
+
+		textarea {
+			width: 100%;
+			box-sizing: border-box;
+			margin: 0;
+			padding-top: 0;
+			overflow: hidden;
+			resize: none;
+		}
+
+		.button-row {
+			text-align: right;
+			margin-top: .5em;
+
+			button, .privacy-dropdown, .privacy-option {
+				margin-left: 1em;
+			}
+
+			.privacy-option {
+				input {
+					vertical-align: middle;
+				}
+				label {
+					font-size: .8em;
+					vertical-align: middle;
+				}
+			}
+		}
+	}
+}

@@ -10,7 +10,7 @@ define([
 	'use strict';
 
 	var MAX_REPLIES_UNEXPANDED = 2;
-	var REPLIES_ADDED = 15;
+	var REPLIES_ADDED = 5;
 
 	var Replies = React.createClass({
 		getInitialState() {
