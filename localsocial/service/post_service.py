@@ -1,7 +1,7 @@
 import json
 
 from datetime import datetime
-from localsocial.database import post_dao, reply_dao
+from localsocial.database import post_dao, reply_dao, like_dao
 from localsocial.model.post_model import Post, EventPost, ImagePost
 from localsocial.model.reply_model import Reply
 
@@ -41,3 +41,9 @@ def get_post_feed(current_user_id, location, max_dist=25, page_num=1, post_per_p
 
 def get_post_replies(post):
 	return reply_dao.get_replies_by_post_id(post.post_id)
+
+def create_like(post_id, author_id):
+	return like_dao.create_like(post_id, author_id)
+
+def delete_like(post_id, author_id):
+	return like_dao.delete_like(post_id, author_id)

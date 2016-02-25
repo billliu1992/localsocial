@@ -41,6 +41,9 @@ define([
 					<div className="post-body">
 						{ displayedPost['body'] }
 					</div>
+					<div className="post-controls">
+						
+					</div>
 					<Replies
 						replies={ displayedPost['replies'] }
 						postId={ displayedPost['post_id'] }

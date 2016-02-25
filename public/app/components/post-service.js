@@ -32,7 +32,6 @@ define([
 				})
 			).catch((response) => ({ status: response.status, data: response.data }));
 		},
-
 		saveReply(postId, data) {
 			return APIService.filterResponse(
 				axios.post('/post/' + postId + '/reply', APIService.transformObjectToForm(data), {
@@ -41,6 +40,12 @@ define([
 					}
 				})
 			).catch((response) => ({ status: response.status, data: response.data}));
+		},
+		likePost(postId) {
+			return APIService.filterResponse(axios.get('/post/' + postId + '/like');
+		},
+		unlikePost(postId) {
+			return APIService.filterResponse(axios.get('/post/' + postId + '/unlike');
 		},
 		// Distance approximation: http://www.movable-type.co.uk/scripts/latlong.html
 		getDistance(coord1, coord2, isMetric) {

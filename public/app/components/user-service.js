@@ -2,11 +2,13 @@ define([
 	'axios',
 	'components/api-service',
 	'components/coordinates-model',
+	'components/location-service',
 	'components/log-service'
 ], function(
 	axios,
 	APIService,
 	Coordinates,
+	LocationService,
 	LogService
 ) {
 	'use strict';
@@ -16,7 +18,13 @@ define([
 	var log = LogService.createNewLogger('UserService');
 
 	var userPromise = APIService.filterResponse(axios.get('/user/me'))
-		.catch((response) => {
+		.then((data) => {
+			if(data.preferences.browser_geo) {
+				LocationService.doBrowserGeolocation().then(function(browserCoords) {
+					UserService.setCustomLocation(browserCoords);
+				})
+			}
+		}, (response) => {
 			log.log('Could not get user, status: ' + response.status);
 		});
 

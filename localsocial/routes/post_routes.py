@@ -2,6 +2,7 @@ import json
 import localsocial.service.post_service
 from flask import request, g
 from localsocial import app
+from localsocial.exceptions import DAOException
 from localsocial.service import post_service, location_service
 from localsocial.service.picture import filesystem_storage_service
 from localsocial.model.location_model import Location
@@ -91,3 +92,32 @@ def create_reply(post_id):
 	updated_post = post_service.get_post_by_id(current_user.user_id, post_id)
 
 	return { "error" : False, "reply" : new_reply.to_json_dict(), "updated_post" : updated_post.to_json_dict() }
+
+
+@api_endpoint('/post/<int:post_id>/like', methods=("POST",))
+@login_required
+def create_like(post_id):
+	current_user = g.user
+
+	try:
+		post_service.create_like(post_id, current_user.user_id)
+	except DAOException as e:
+		return {
+			"error" : True
+		}
+
+	return { "error" : False }
+
+@api_endpoint('/post/<int:post_id>/unlike', methods=("POST",))
+@login_required
+def delete_like(post_id):
+	current_user = g.user
+
+	try:
+		post_service.delete_like(post_id, current_user.user_id)
+	except DAOException as e:
+		return {
+			"error" : True
+		}
+
+	return { "error" : False }
