@@ -42,10 +42,10 @@ define([
 			).catch((response) => ({ status: response.status, data: response.data}));
 		},
 		likePost(postId) {
-			return APIService.filterResponse(axios.get('/post/' + postId + '/like');
+			return APIService.filterResponse(axios.post('/post/' + postId + '/like'));
 		},
 		unlikePost(postId) {
-			return APIService.filterResponse(axios.get('/post/' + postId + '/unlike');
+			return APIService.filterResponse(axios.post('/post/' + postId + '/unlike'));
 		},
 		// Distance approximation: http://www.movable-type.co.uk/scripts/latlong.html
 		getDistance(coord1, coord2, isMetric) {

@@ -58,12 +58,16 @@ def get_post_feed(current_user_id, current_location, range, limit, skip, max_id=
 
 	cursor = handled_execute(db_conn, """
 		SELECT
-		postId, authorId, postBody, postDate, privacy, cityName, longitude, latitude,
-		eventId, eventName, eventLocation, eventStart, eventEnd,
-		imageId,
-		firstName, lastName, nickName, portrait, portraitSetDate, showLastName,
-		(authorId IN (SELECT firstUserId FROM userFriends WHERE secondUserId = %(current_user_id)s)
-				AND %(current_user_id)s IN (SELECT firstUserId FROM userFriends WHERE secondUserId = authorId)) AS areFriends
+			postId, authorId, postBody, postDate, privacy, cityName, longitude, latitude,
+			eventId, eventName, eventLocation, eventStart, eventEnd,
+			imageId,
+			firstName, lastName, nickName, portrait, portraitSetDate, showLastName,
+			(SELECT COUNT(likes.likerId) FROM likes WHERE likes.postId = posts.postId GROUP BY likes.postId) AS likeCount,
+			(authorId IN (SELECT userId FROM likes WHERE likes.postId = posts.postId)) AS liked,
+			(authorId IN (SELECT firstUserId FROM userFriends WHERE secondUserId = %(current_user_id)s)) AS requestPending,
+			(%(current_user_id)s IN (SELECT firstUserId FROM userFriends WHERE secondUserId = authorId)) AS requestSent,
+			(authorId IN (SELECT firstUserId FROM userFollows WHERE secondUserId = %(current_user_id)s)) AS follower,
+			(%(current_user_id)s IN (SELECT firstUserId FROM userFollows WHERE secondUserId = authorId)) AS following
 		FROM posts LEFT JOIN users ON posts.authorId = users.userId
 		WHERE sqrt((longitude - %(current_long)s) ^ 2 + (latitude - %(current_lat)s) ^ 2) < %(range)s
 			AND (privacy != 'friends' OR authorId=%(current_user_id)s
@@ -84,7 +88,9 @@ def get_post_feed(current_user_id, current_location, range, limit, skip, max_id=
 		(post_id, author_id, post_body, post_date, privacy, city_name,
 			longitude, latitude, event_id, event_name, event_location, event_start,
 			event_end, image_id, first_name, last_name, nick_name, portrait, portrait_set_date, show_last_name,
-			are_friends) = row
+			likes, liked, request_pending, request_sent, follower, following) = row
+
+		are_friends = request_pending and request_sent
 
 		author_name = build_name(first_name, nick_name, last_name, are_friends, show_last_name)
 		post_location = build_location(longitude, latitude, city_name, are_friends, privacy != POST_PRIVACY.HIDE_LOCATION)
@@ -99,7 +105,7 @@ def get_post_feed(current_user_id, current_location, range, limit, skip, max_id=
 				privacy, post_location, image_id)
 		else:
 			new_post = Post(author_id, author_name, portrait, portrait_set_date, post_body, post_date, 
-				privacy, post_location)
+				privacy, post_location, likes, liked)
 
 		new_post.post_id = post_id
 		new_post.replies = build_replies(post_ids, post_objects, current_user_id)
@@ -150,7 +156,7 @@ def get_post_by_id(current_user_id, post_id):
 			privacy, post_location, image_id)
 	else:
 		new_post = Post(author_id, author_name, portrait, portrait_set_date, post_body, post_date, 
-			privacy, post_location)
+			privacy, post_location, likes, liked)
 
 	new_post.post_id = post_id
 

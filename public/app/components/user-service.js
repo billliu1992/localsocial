@@ -18,13 +18,7 @@ define([
 	var log = LogService.createNewLogger('UserService');
 
 	var userPromise = APIService.filterResponse(axios.get('/user/me'))
-		.then((data) => {
-			if(data.preferences.browser_geo) {
-				LocationService.doBrowserGeolocation().then(function(browserCoords) {
-					UserService.setCustomLocation(browserCoords);
-				})
-			}
-		}, (response) => {
+		.catch((response) => {
 			log.log('Could not get user, status: ' + response.status);
 		});
 

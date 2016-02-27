@@ -1,10 +1,12 @@
 define([
 	'components/post-service',
 	'home-feed/feed/post/replies/replies-component',
+	'home-feed/feed/post/like/like-component',
 	'react'
 ], function(
 	PostService,
 	Replies,
+	Like,
 	React
 ) {
 	'use strict';
@@ -42,7 +44,7 @@ define([
 						{ displayedPost['body'] }
 					</div>
 					<div className="post-controls">
-						
+						<Like postId={ displayedPost['post_id'] } likes={ displayedPost['likes'] } liked = { displayedPost['liked'] } />
 					</div>
 					<Replies
 						replies={ displayedPost['replies'] }

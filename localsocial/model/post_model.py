@@ -2,7 +2,7 @@ from localsocial.model.location_model import Location
 from localsocial.service.picture import filesystem_storage_service
 
 class Post(object):
-	def __init__(self, author_id, author_name, author_portrait, portrait_set_date, body, post_date, privacy, location):
+	def __init__(self, author_id, author_name, author_portrait, portrait_set_date, body, post_date, privacy, location, likes, liked):
 		self.post_id = -1
 
 		if not isinstance(location, Location):
@@ -17,6 +17,8 @@ class Post(object):
 		self.privacy = privacy
 		self.location = location
 		self.replies = None
+		self.likes = likes
+		self.liked = liked
 
 	@property
 	def latitude(self):
@@ -43,6 +45,8 @@ class Post(object):
 		post_dict['post_date'] = self.post_date.isoformat("T")
 		post_dict['privacy'] = self.privacy
 		post_dict['location'] = self.location.to_json_dict()
+		post_dict['likes'] = self.likes
+		post_dict['liked'] = self.liked
 
 		if self.replies != None:
 			replies_dicts = []

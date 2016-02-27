@@ -9,7 +9,7 @@ def create_like(post_id, author_id):
 
 def delete_like(post_id, author_id):
 	cursor = handled_execute(db_conn, """
-		DELETE FROM likes WHERE postId=%s, likerId=%s
+		DELETE FROM likes WHERE postId=%s AND likerId=%s
 		""", (post_id, author_id))
 
 	return True
