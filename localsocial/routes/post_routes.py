@@ -66,7 +66,7 @@ def create_posts():
 	if(len(body) < MINIMUM_POST_BODY_LENGTH):
 		return {
 			"error" : True,
-			"message" : "Please include a post body with length greater than 10"
+			"message" : "Please make your post greater than " + str(MINIMUM_POST_BODY_LENGTH) + " characters"
 		}
 	else:
 		new_post = post_service.create_new_post(current_user, body, privacy, current_location)

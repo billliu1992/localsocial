@@ -44,7 +44,7 @@ define([
 						{ displayedPost['body'] }
 					</div>
 					<div className="post-controls">
-						<Like postId={ displayedPost['post_id'] } likes={ displayedPost['likes'] } liked = { displayedPost['liked'] } />
+						<Like className="post-control" postId={ displayedPost['post_id'] } likes={ displayedPost['likes'] } liked = { displayedPost['liked'] } />
 					</div>
 					<Replies
 						replies={ displayedPost['replies'] }

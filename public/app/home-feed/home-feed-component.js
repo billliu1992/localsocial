@@ -4,6 +4,7 @@ define([
 	'components/user-service',
 	'components/popup-service',
 	'components/user-profile-mixin',
+	'components/message-enabled-mixin',
 	'profile-popup/profile-popup-component',
 	'home-feed/feed/feed-component', 
 	'home-feed/post-form/post-form-component'
@@ -14,6 +15,7 @@ function(
 	UserService,
 	PopupService,
 	UserProfileMixin,
+	MessageEnabledMixin,
 	ProfilePopup,
 	Feed, 
 	NewPostForm
@@ -21,7 +23,7 @@ function(
 	'use strict';
 
 	var HomeFeed = React.createClass({
-		mixins : [UserProfileMixin],
+		mixins : [UserProfileMixin, MessageEnabledMixin],
 		getInitialState() {
 			return {
 				posts: [],
@@ -34,6 +36,7 @@ function(
 		render() {
 			return (
 				<div className="home-feed-area">
+					<div className={ 'home-feed-message ' + this.getMessageClass() }>{this.getMessageText()}</div>
 					<NewPostForm onSubmit={ this.submitPost } />
 					<Feed posts={ this.state.posts } location={ this.state.location } showProfile={ this.showProfile } />
 				</div>
@@ -61,7 +64,16 @@ function(
 				newPost.latitude = locationOverride.latitude;
 			}
 
-			PostService.savePost(newPost);
+			this.acknowledgeMessage();
+
+			PostService.savePost(newPost).then((data) => {
+				if(data.error === true && data.message) {
+					this.setMessage('error', data.message)
+				}
+				else if(data.error === true) {
+					this.setMessage('error', 'An error occurred. Please try again');
+				}
+			});
 
 			this.getNewPosts();
 		},
