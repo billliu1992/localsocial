@@ -25,12 +25,28 @@ def get_posts():
 	current_user = g.user
 	current_location = g.user_location
 
-	max_dist = request.args.get('max_dist', 25)
-	max_id = request.args.get('max_id', None)
-	page_num = request.args.get('page_num', 0)
-	post_per_page = request.args.get('post_per_page', 10)
+	max_dist_str = request.args.get('max_dist', 25)
+	max_id_str = request.args.get('max_id', None)
+	page_num_str = request.args.get('page', 1)
+	post_per_page_str = request.args.get('post_per_page', 10)
+
+	try:
+		max_dist = int(max_dist_str)
+		page_num = int(page_num_str)
+		post_per_page = int(post_per_page_str)
+
+		max_id = None
+		if(max_id_str != None):
+			max_id = int(max_id_str)
+	except ValueError as e:
+		return {
+			"error" : True,
+		}
 
 	current_posts = post_service.get_post_feed(current_user.user_id, current_location, max_dist, page_num, post_per_page, max_id)
+
+	if max_id == None and len(current_posts) > 0:
+		max_id = current_posts[0].post_id
 
 	output_json = {
 		"error" : False,

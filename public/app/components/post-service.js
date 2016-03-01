@@ -19,8 +19,20 @@ define([
 			HIDE_LOCATION : 'hide_location',
 			FRIENDS : 'friends'
 		},
-		getPosts() {
-			return APIService.filterResponse(axios.get('/post'))
+		getPosts(maxId, page) {
+			var options = {};
+			if(typeof maxId !== 'undefined' && maxId !== null) {
+				if(typeof page === 'undefined' || page === null || page < 1) {
+					page = 1;
+				}
+
+				options.params = {
+					'max_id' : maxId,
+					'page' : page
+				}
+			}
+
+			return APIService.filterResponse(axios.get('/post', options))
 				.catch((response) => ({ status: response.status, data: response.data }));
 		},
 		savePost(data) {

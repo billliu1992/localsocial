@@ -5,6 +5,7 @@ define([
 	'components/popup-service',
 	'components/user-profile-mixin',
 	'components/message-enabled-mixin',
+	'components/infinite-scroll-mixin',
 	'profile-popup/profile-popup-component',
 	'home-feed/feed/feed-component', 
 	'home-feed/post-form/post-form-component'
@@ -16,6 +17,7 @@ function(
 	PopupService,
 	UserProfileMixin,
 	MessageEnabledMixin,
+	InfiniteScrollMixin,
 	ProfilePopup,
 	Feed, 
 	NewPostForm
@@ -23,7 +25,7 @@ function(
 	'use strict';
 
 	var HomeFeed = React.createClass({
-		mixins : [UserProfileMixin, MessageEnabledMixin],
+		mixins : [UserProfileMixin, MessageEnabledMixin, InfiniteScrollMixin],
 		getInitialState() {
 			return {
 				posts: [],
@@ -32,6 +34,34 @@ function(
 		},
 		componentWillMount() {
 			this.getNewPosts();
+
+			// Attach event listener to the whole page
+			window.addEventListener('scroll', () => {
+				// Quirky Chrome/Firefox difference
+				var target = document.documentElement;
+				if(target.scrollTop === 0) {
+					target = document.body;
+				}
+
+				this.doInfiniteScrollElement(target, 300, (maxId, page, finish, noMore) => {
+					PostService.getPosts(maxId, page).then((data) => {
+						var posts = this.state.posts;
+
+						if(data.posts.length !== 0) {
+							posts.push(...data.posts);
+
+							this.setState({
+								posts
+							}, () => {
+								finish();
+							});
+						}
+						else {
+							noMore();
+						}
+					});
+				})
+			});
 		},
 		render() {
 			return (
@@ -46,7 +76,12 @@ function(
 		getNewPosts() {
 			PostService.getPosts().then(
 				(data) => {
-					this.setState({ posts : data.posts, location : data.current_location });
+					this.setState({ 
+						posts : data.posts,
+						location : data['current_location']
+					});
+
+					this.setScrollMaxId(data['max_id']);
 				},
 				(error) => {
 					// TODO error state

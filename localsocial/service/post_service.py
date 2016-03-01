@@ -36,6 +36,10 @@ def get_post_by_id(current_user_id, post_id):
 def get_post_feed(current_user_id, location, max_dist=25, page_num=1, post_per_page=10, max_id = None):
 	if(page_num < 1):
 		page_num = 1
+
+	print(page_num)
+	print((page_num - 1) * post_per_page)
+	print(max_id)
 		
 	return post_dao.get_post_feed(current_user_id, location, max_dist, post_per_page, (page_num - 1) * post_per_page, max_id)
 
