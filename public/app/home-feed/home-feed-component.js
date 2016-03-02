@@ -24,12 +24,13 @@ function(
 ) {
 	'use strict';
 
+	var FETCH_THRESHOLD = 300;
+
 	var HomeFeed = React.createClass({
 		mixins : [UserProfileMixin, MessageEnabledMixin, InfiniteScrollMixin],
 		getInitialState() {
 			return {
-				posts: [],
-				pageNum : 0,
+				posts: []
 			};
 		},
 		componentWillMount() {
@@ -43,7 +44,7 @@ function(
 					target = document.body;
 				}
 
-				this.doInfiniteScrollElement(target, 300, (maxId, page, finish, noMore) => {
+				this.doInfiniteScrollElement(target, FETCH_THRESHOLD, (maxId, page, finish, noMore) => {
 					PostService.getPosts(maxId, page).then((data) => {
 						var posts = this.state.posts;
 

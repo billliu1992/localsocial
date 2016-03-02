@@ -98,6 +98,22 @@ define([
 					log.log('Could not get user at ' + userId + response.status);
 				})
 		},
+		getUserPosts(userId, maxId, page) {
+			var options = {};
+			if(typeof maxId !== 'undefined' && maxId !== null) {
+				if(typeof page === 'undefined' || page === null || page < 1) {
+					page = 1;
+				}
+
+				options.params = {
+					'max_id' : maxId,
+					'page' : page
+				}
+			}
+
+			return APIService.filterResponse(axios.get('/user/' + userId + '/posts', options))
+				.catch((response) => ({ status: response.status, data: response.data }));
+		},
 		sendFriendRequest(userId) {
 			return axios.post('/user/' + userId + '/friends/request').then(() => true, () => false);
 		},
