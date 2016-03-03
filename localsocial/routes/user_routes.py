@@ -80,10 +80,24 @@ def create_user():
 
 @api_endpoint('/user/me', methods=("GET",))
 @login_required
-def get_my_info():
+def get_my_home():
 	requested_user = g.user
 
 	user_dict = requested_user.to_json_dict(private=True)
+
+	# Build additional user info
+	pending_friend_requests = user_service.get_friend_requests_pending(requested_user.user_id)
+
+	pending_requests_json_dict = []
+	for pending_request in pending_friend_requests:
+		pending_requests_json_dict.append(pending_request.to_json_dict())
+
+	followers = user_service.get_followers(requested_user.user_id, True)
+
+	user_dict["relations"] = {
+		"friend_requests_pending" : pending_requests_json_dict,
+		"followers_count" : len(followers)
+	}
 
 	return user_dict
 
@@ -145,10 +159,9 @@ def get_user_profile(queried_user_identifier):
 	are_friends = friendship_status == Friendship.FRIENDS
 
 	posts = post_service.get_posts_by_user(current_user.user_id, requested_user, are_friends)
-	friends = user_service.get_friends(requested_user_id)
-	followers = user_service.get_followers(requested_user_id)
+	friend_objs = user_service.get_friends(requested_user_id)
+	followers = user_service.get_followers(requested_user_id, True)
 
-	friend_objs = user_service.get_users_by_ids(friends)
 	friend_json_dicts = []
 	for friend in friend_objs:
 		friend_json_dicts.append(friend.to_json_dict())
@@ -259,7 +272,7 @@ def get_friend_requests():
 
 	return user_service.get_friend_requests_pending(current_user.user_id)
 
-@api_endpoint('/user/<queried_user_identifier>/follows', methods=("GET",))
+@api_endpoint('/user/<queried_user_identifier>/followers', methods=("GET",))
 @login_required
 @query_user()
 def get_followers(queried_user_identifier):
@@ -267,7 +280,7 @@ def get_followers(queried_user_identifier):
 
 	return user_service.get_followers(queried_user_id)
 
-@api_endpoint('/user/<queried_user_identifier>/follows/followers', methods=("GET",))
+@api_endpoint('/user/<queried_user_identifier>/following', methods=("GET",))
 @login_required
 @query_user()
 def get_following(queried_user_identifier):

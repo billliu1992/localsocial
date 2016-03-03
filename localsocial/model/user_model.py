@@ -34,7 +34,8 @@ class User():
 		if show_private_fields:
 			user_dict = self.__dict__
 
-			user_dict["portrait_set_date"] = user_dict["portrait_set_date"].isoformat("T")
+			if user_dict["portrait_set_date"] != None:
+				user_dict["portrait_set_date"] = user_dict["portrait_set_date"].isoformat("T")
 			user_dict["preferences"] = self.preferences.to_json_dict()
 
 		else:
@@ -51,6 +52,20 @@ class User():
 		
 
 		return user_dict
+
+class UserSummary:
+	def __init__(self, user_id, name, portrait, portrait_set_date):
+		self.user_id = user_id
+		self.name = name
+		self.portrait = portrait
+		self.portrait_set_date = portrait_set_date
+
+	def to_json_dict(self):
+		return {
+			"user_id" : self.user_id,
+			"name" : self.name,
+			"portrait_src" : filesystem_storage_service.get_cropped_src(self.portrait, self.portrait_set_date, self.user_id)
+		}
 
 class UserCredentials:
 	def __init__(self, user_id, password_hash, salt):

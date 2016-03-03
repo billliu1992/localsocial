@@ -1,0 +1,76 @@
+@import (reference) 'app/common';
+
+@sidePadding: 1em;
+.friend-requests-popup {
+	text-align: left;
+	background-color: #FFF;
+	padding: 1em 0;
+	min-width: 25em;
+
+	.friend-requests-header {
+		padding: 0 @sidePadding .5em;
+
+		h2 {
+			padding: 0;
+			margin: 0;
+			font-weight: normal;
+			font-size: 1.2em;
+			color: @darkestGreen;
+		}
+	}
+
+	.no-more-requests {
+		font-size: 1em;
+		line-height: 2em;
+		vertical-align: middle;
+		height: 2em;
+		font-style: italic;
+		color: @lightGray;
+
+		padding: 0 @sidePadding;
+
+		span {
+			font-size: .8em;
+		}
+	}
+
+	.friend-request-entry {
+		display: flex;
+		align-items: center;
+		flex-flow: row nowrap;
+		padding: 0 @sidePadding;
+		font-size: 1em;
+		height: 2em;
+
+		&:hover {
+			background-color: @lightGreen;
+		}
+
+		img {
+			max-width: 2em;
+			max-height: 2em;
+			border-radius: 3px;
+		}
+
+		.request-name {
+			flex-basis: 100%;
+
+			.request-name-text {
+				color: @medGreen;
+				cursor: pointer;
+
+				&:hover {
+					color: @darkerGreen;
+				}
+			}
+		}
+
+		.button-row {
+			white-space: nowrap;
+
+			.delete {
+				margin-left: 1em;
+			}
+		}
+	}
+}

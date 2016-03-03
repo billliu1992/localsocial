@@ -16,7 +16,9 @@ define([
 	var ProfileFeed = React.createClass({
 		mixins : [ InfiniteScrollMixin ],
 		componentWillMount() {
-			this.setScrollMaxId(this.props.posts[0]['post_id']);
+			if(this.props.posts.length > 0) {
+				this.setScrollMaxId(this.props.posts[0]['post_id']);
+			}
 		},
 		render() {
 			return <div className="profile-feed" onScroll={ this.doInfiniteScroll(FETCH_THRESHOLD, this.handleScrollBottom) }>

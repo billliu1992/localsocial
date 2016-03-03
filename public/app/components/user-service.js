@@ -51,16 +51,6 @@ define([
 	}
 
 	var UserService = {
-		setCustomLocation(location) {
-			if(!(location instanceof Coordinates)) {
-				throw 'Argument must be instance of Coordinates';
-			}
-
-			this.location = location;
-		},
-		getCustomLocation() {
-			return this.location;
-		},
 		getCurrentUserInfo() {
 			return userPromise;
 		},
@@ -75,6 +65,30 @@ define([
 			});
 
 			return promise;
+		},
+		replaceCurrentUserInfo(user) {
+			userPromise = Promise.resolve(user);
+
+			ListenerService.fireListeners(user);
+		},
+		overwriteCurrentUserInfo(newUser) {
+			userPromise.then((user) => {
+				for(var property in newUser) {
+					user[property] = newUser[property];
+				}
+
+				this.replaceCurrentUserInfo(user);
+			});
+		},
+		setCustomLocation(location) {
+			if(!(location instanceof Coordinates)) {
+				throw 'Argument must be instance of Coordinates';
+			}
+
+			this.location = location;
+		},
+		getCustomLocation() {
+			return this.location;
 		},
 		onUpdateCurrentUser(callback) {
 			return ListenerService.addListener(callback);
@@ -116,6 +130,12 @@ define([
 		},
 		sendFriendRequest(userId) {
 			return axios.post('/user/' + userId + '/friends/request').then(() => true, () => false);
+		},
+		getFollowers(userId) {
+			return APIService.filterResponse(axios.get('/user/' + userId + '/followers'));
+		},
+		getFollowing(userId) {
+			return APIService.filterResponse(axios.get('/user/' + userId + '/following'));
 		},
 		sendFollow(userId) {
 			return axios.post('/user/' + userId + '/follows/request').then(() => true, () => false);

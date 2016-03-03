@@ -1,7 +1,8 @@
 from psycopg2.extensions import AsIs
 
 from localsocial.database.db import db_conn, handled_execute
-from localsocial.model.user_model import Friendship
+from localsocial.database.util import build_name
+from localsocial.model.user_model import Friendship, UserSummary
 
 FRIENDS_TABLE = "userFriends"
 FOLLOWS_TABLE = "userFollows"
@@ -65,6 +66,7 @@ def get_relationships(user_id, relation_type, **kwargs):
 	reverse = kwargs.get('reverse', False)
 	mutual = kwargs.get('mutual', False)
 	not_mutual = kwargs.get('not_mutual', False)
+	ids_only = kwargs.get("ids_only", False)
 
 	query_params = {"table" : AsIs(relation_type), "user_id" : user_id}
 
@@ -76,28 +78,65 @@ def get_relationships(user_id, relation_type, **kwargs):
 		query_params["target"] = AsIs("secondUserId")
 
 	if mutual:
-		cursor = handled_execute(db_conn, """
-			SELECT %(target)s FROM %(table)s
-			WHERE %(initiator)s = %(user_id)s AND %(target)s IN
-				(SELECT %(initiator)s FROM %(table)s
-					WHERE %(target)s = %(user_id)s)
-			""", query_params)
+		if ids_only:
+			cursor = handled_execute(db_conn, """
+				SELECT %(target)s FROM %(table)s
+				WHERE %(initiator)s = %(user_id)s AND %(target)s IN
+					(SELECT %(initiator)s FROM %(table)s
+						WHERE %(target)s = %(user_id)s)
+				""", query_params)
+		else:
+			cursor = handled_execute(db_conn, """
+				SELECT userId, firstName, lastName, nickName, portrait, portraitSetDate, showLastName 
+					FROM %(table)s LEFT JOIN users ON %(table)s.%(target)s = users.userId
+				WHERE %(initiator)s = %(user_id)s AND %(target)s IN
+					(SELECT %(initiator)s FROM %(table)s
+						WHERE %(target)s = %(user_id)s)
+				""", query_params)
 	elif not_mutual:
-		cursor = handled_execute(db_conn, """
-			SELECT %(target)s FROM %(table)s
-			WHERE %(initiator)s = %(user_id)s AND NOT %(target)s IN
-				(SELECT %(initiator)s FROM %(table)s
-					WHERE %(target)s = %(user_id)s)
-			""", query_params)
+		if ids_only:
+			cursor = handled_execute(db_conn, """
+				SELECT %(target)s FROM %(table)s
+				WHERE %(initiator)s = %(user_id)s AND NOT %(target)s IN
+					(SELECT %(initiator)s FROM %(table)s
+						WHERE %(target)s = %(user_id)s)
+				""", query_params)
+		else:
+			cursor = handled_execute(db_conn, """
+				SELECT userId, firstName, lastName, nickName, portrait, portraitSetDate, showLastName 
+					FROM %(table)s LEFT JOIN users ON %(table)s.%(target)s = users.userId
+				WHERE %(initiator)s = %(user_id)s AND NOT %(target)s IN
+					(SELECT %(initiator)s FROM %(table)s
+						WHERE %(target)s = %(user_id)s)
+				""", query_params)
 	else:
-		cursor = handled_execute(db_conn, """
-			SELECT %(target)s FROM %(table)s WHERE %(initiator)s = %(user_id)s
-			""", query_params)
+		if ids_only:
+			cursor = handled_execute(db_conn, """
+				SELECT %(target)s FROM %(table)s WHERE %(initiator)s = %(user_id)s
+				""", query_params)
+		else:
+			cursor = handled_execute(db_conn, """
+				SELECT userId, firstName, lastName, nickName, portrait, portraitSetDate, showLastName 
+					FROM %(table)s LEFT JOIN users ON %(table)s.%(target)s = users.userId
+				WHERE %(initiator)s = %(user_id)s
+				""", query_params)
 
 	result_rows = cursor.fetchall()
 
-	user_ids = []
-	for row in result_rows:
-		user_ids.append(row[0])
+	if ids_only:
+		user_ids = []
+		for row in result_rows:
+			user_ids.append(row[0])
 
-	return user_ids
+		return user_ids
+	else:
+		user_summary_objs = []
+		for row in result_rows:
+			(user_id, first_name, last_name, nick_name, 
+				portrait, portrait_set_date, show_last_name) = row
+
+			user_name = build_name(first_name, nick_name, last_name, False, show_last_name)
+
+			user_summary_objs.append(UserSummary(user_id, user_name, portrait, portrait_set_date))
+
+		return user_summary_objs

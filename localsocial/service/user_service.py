@@ -79,20 +79,20 @@ def get_friendship_status(user_id1, user_id2):
 	
 	return user_relations_dao.get_friendship_status(user_id1, user_id2)
 
-def get_following(user_id):
-	return user_relations_dao.get_follows(user_id)
+def get_following(user_id, ids_only=False):
+	return user_relations_dao.get_follows(user_id, ids_only=ids_only)
 
-def get_followers(user_id):
-	return user_relations_dao.get_follows(user_id, reverse=True)
+def get_followers(user_id, ids_only=False):
+	return user_relations_dao.get_follows(user_id, reverse=True, ids_only=ids_only)
 
-def get_friends(user_id):
-	return user_relations_dao.get_friends(user_id, mutual=True)
+def get_friends(user_id, ids_only=False):
+	return user_relations_dao.get_friends(user_id, mutual=True, ids_only=ids_only)
 
-def get_friend_requests_pending(user_id):
-	return user_relations_dao.get_friends(user_id, reverse=True, not_mutual=True)
+def get_friend_requests_pending(user_id, ids_only=False):
+	return user_relations_dao.get_friends(user_id, reverse=True, not_mutual=True, ids_only=ids_only)
 
-def get_friend_requests_sent(user_id):
-	return user_relations_dao.get_friends(user_id, not_mutual=True)
+def get_friend_requests_sent(user_id, ids_only=False):
+	return user_relations_dao.get_friends(user_id, not_mutual=True, ids_only=ids_only)
 
 def create_follow(requester_id, requested_id):
 	return user_relations_dao.create_follow(requester_id, requested_id)

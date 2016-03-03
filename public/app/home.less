@@ -19,6 +19,7 @@ button, .button {
 	border: 1px solid @darkerGreen;
 	color: @darkestGreen;
 	border-radius: 5px;
+	cursor: pointer;
 
 	&:active:hover {
 		background-color: @darkerGreen;
@@ -37,6 +38,17 @@ button, .button {
 		&:active:hover {
 			background-color: #CCC;
 			border-color: #666;
+		}
+	}
+
+	&.delete {
+		color: @medRed;
+		background: @lightRed;
+		border-color: @medRed;
+
+		&:active:hover {
+			background-color: @medRed;
+			color: @darkerRed;
 		}
 	}
 
