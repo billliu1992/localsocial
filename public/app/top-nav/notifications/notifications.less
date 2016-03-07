@@ -1,0 +1,44 @@
+@import (reference) 'app/common';
+
+.notification-area {
+	display: inline-block;
+	position: relative;
+	margin-right: 1em;
+	height: 2.5em;
+
+	&.show-notifications {
+		.notifications {
+			display: block;
+		}
+	}
+
+	&.new-notifications {
+		.notifications-toggle {
+			font-weight: bold;
+		}
+	}
+
+	.notifications-toggle {
+		line-height: 2.5em;
+		vertical-align: middle;
+	}
+
+	.empty-notifications {
+		color: @lightGray;
+		font-style: italic;
+		padding: .5em 1em;
+		font-size: .9em;
+	}
+
+	.notifications {
+		position: absolute;
+		display: none;
+
+		right: 0;
+		width: 10em;
+		border: 1px solid @darkestGreen;
+		border-top: none;
+
+		background-color: #FFF;
+	}
+}
