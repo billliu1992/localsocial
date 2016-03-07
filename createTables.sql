@@ -106,3 +106,20 @@ CREATE TABLE userFriends (
 	secondUserId		INTEGER REFERENCES users (userId) NOT NULL,
 	UNIQUE(firstUserId, secondUserId)
 );
+
+CREATE TYPE notificationType AS ENUM('request_pending', 'request_accepted', 'follower', 'replied', 'liked');
+
+CREATE TABLE notifications (
+	notificationId		SERIAL PRIMARY KEY,
+	notifiedId			INTEGER REFERENCES users (userId) NOT NULL,
+	notifiedDate		TIMESTAMPTZ NOT NULL,
+	seen				BOOLEAN NOT NULL DEFAULT FALSE,
+	notifyType			notificationType NOT NULL,
+	targetId			INTEGER NOT NULL
+);
+
+CREATE TABLE notificationLink(
+	notificationId		INTEGER REFERENCES notifications (notificationId),
+	userId				INTEGER REFERENCES users (userId),
+	UNIQUE(notificationId, userId)
+);

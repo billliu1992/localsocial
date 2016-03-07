@@ -3,7 +3,7 @@ import localsocial.service.post_service
 from flask import request, g
 from localsocial import app
 from localsocial.exceptions import DAOException
-from localsocial.service import post_service, location_service
+from localsocial.service import post_service, location_service, notification_service
 from localsocial.service.picture import filesystem_storage_service
 from localsocial.model.location_model import Location
 from localsocial.decorator.user_decorator import login_required
@@ -107,6 +107,8 @@ def create_reply(post_id):
 	new_reply = post_service.create_new_reply(current_user, body, post_id, current_location, privacy)
 	updated_post = post_service.get_post_by_id(current_user.user_id, post_id)
 
+	notification_service.create_notification_for_user(updated_post.author_id, NotificationType.REPLIED, post_id, current_user.user_id)
+
 	return { "error" : False, "reply" : new_reply.to_json_dict(), "updated_post" : updated_post.to_json_dict() }
 
 
@@ -121,6 +123,9 @@ def create_like(post_id):
 		return {
 			"error" : True
 		}
+
+	post = post_service.get_post_by_id(current_user.user_id, post_id)
+	notification_service.create_notification_for_user(post.author_id, NotificationType.LIKED, post_id, current_user.user_id)
 
 	return { "error" : False }
 

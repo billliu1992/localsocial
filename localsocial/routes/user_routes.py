@@ -4,10 +4,11 @@ from localsocial import app
 from localsocial.exceptions import ServiceException
 from localsocial.decorator.user_decorator import login_required, query_user
 from localsocial.decorator.route_decorator import api_endpoint, location_endpoint
-from localsocial.service import facebook_service, user_service, post_service
+from localsocial.service import facebook_service, user_service, post_service, notification_service
 from localsocial.service.picture import picture_meta_service, filesystem_storage_service
 from localsocial.model.user_model import User, Friendship, UserPreferences
 from localsocial.model.picture_model import UploadedPicture, PictureSection
+from localsocial.model.notification_model import NotificationType
 
 from flask import redirect, request, session, g
 from werkzeug import secure_filename
@@ -86,6 +87,12 @@ def get_my_home():
 	user_dict = requested_user.to_json_dict(private=True)
 
 	# Build additional user info
+	notifications = notification_service.get_notifications_by_user_id(requested_user.user_id)
+
+	notification_json_dict = []
+	for notification in notifications:
+		notification_json_dict.append(notification.to_json_dict())
+
 	pending_friend_requests = user_service.get_friend_requests_pending(requested_user.user_id)
 
 	pending_requests_json_dict = []
@@ -98,6 +105,7 @@ def get_my_home():
 		"friend_requests_pending" : pending_requests_json_dict,
 		"followers_count" : len(followers)
 	}
+	user_dict["notifications"] = notification_json_dict
 
 	return user_dict
 
@@ -295,6 +303,8 @@ def create_friend(queried_user_identifier):
 	current_user = g.user
 	queried_user_id = g.queried_user_id
 	
+	notification_service.create_notification_for_user(queried_user_id, NotificationType.REQUEST_PENDING, current_user.user_id, current_user.user_id)
+
 	return user_service.create_friend(current_user.user_id, queried_user_id)
 
 @api_endpoint('/user/<queried_user_identifier>/follows/request', methods=("POST",))
@@ -303,6 +313,8 @@ def create_friend(queried_user_identifier):
 def create_follow(queried_user_identifier):
 	current_user = g.user
 	queried_user_id = g.queried_user_id
+
+	notification_service.create_notification_for_user(queried_user_id, NotificationType.FOLLOWER, current_user.user_id, current_user.user_id)
 
 	return user_service.create_follow(current_user.user_id, queried_user_id)
 
