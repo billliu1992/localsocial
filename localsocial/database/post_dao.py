@@ -156,7 +156,7 @@ def get_post_by_id(current_user_id, post_id):
 
 	if likes == None:
 		likes = 0
-	are_friends = request_sent and requests_pending
+	are_friends = request_sent and request_pending
 
 	author_name = build_name(first_name, nick_name, last_name, are_friends, show_last_name)
 	post_location = build_location(longitude, latitude, city_name, are_friends, privacy != POST_PRIVACY.HIDE_LOCATION)

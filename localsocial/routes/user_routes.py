@@ -302,10 +302,23 @@ def get_following(queried_user_identifier):
 def create_friend(queried_user_identifier):
 	current_user = g.user
 	queried_user_id = g.queried_user_id
-	
-	notification_service.create_notification_for_user(queried_user_id, NotificationType.REQUEST_PENDING, current_user.user_id, current_user.user_id)
 
-	return user_service.create_friend(current_user.user_id, queried_user_id)
+	friendship_status = user_service.get_friendship_status(current_user.user_id, queried_user_id)
+
+	notify_type = None
+	if friendship_status == Friendship.PENDING:
+		notify_type = NotificationType.REQUEST_ACCEPTED
+	elif friendship_status == Friendship.NOTHING:
+		notify_type = NotificationType.REQUEST_PENDING
+		
+	if friendship_status == Friendship.PENDING or friendship_status == Friendship.NOTHING:
+		result = user_service.create_friend(current_user.user_id, queried_user_id)
+
+		notification_service.create_notification_for_user(queried_user_id, notify_type, queried_user_id, current_user.user_id)
+
+		return { "error" : result }
+	else:
+		return { "error" : True, "message" : "Request already sent" }
 
 @api_endpoint('/user/<queried_user_identifier>/follows/request', methods=("POST",))
 @login_required
@@ -314,8 +327,8 @@ def create_follow(queried_user_identifier):
 	current_user = g.user
 	queried_user_id = g.queried_user_id
 
-	notification_service.create_notification_for_user(queried_user_id, NotificationType.FOLLOWER, current_user.user_id, current_user.user_id)
-
+	notification_service.create_notification_for_user(queried_user_id, NotificationType.FOLLOWER, queried_user_id, current_user.user_id)
+	
 	return user_service.create_follow(current_user.user_id, queried_user_id)
 
 @api_endpoint('/user/<queried_user_identifier>/friends/request', methods=("DELETE",))

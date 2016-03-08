@@ -6,6 +6,7 @@ from localsocial.exceptions import DAOException
 from localsocial.service import post_service, location_service, notification_service
 from localsocial.service.picture import filesystem_storage_service
 from localsocial.model.location_model import Location
+from localsocial.model.notification_model import NotificationType
 from localsocial.decorator.user_decorator import login_required
 from localsocial.decorator.route_decorator import api_endpoint, location_endpoint
 
@@ -124,7 +125,7 @@ def create_like(post_id):
 			"error" : True
 		}
 
-	post = post_service.get_post_by_id(current_user.user_id, post_id)
+	post = post_service.get_post_by_id(current_user.user_id, post_id) # We only get the post for the notification, consider not doing this
 	notification_service.create_notification_for_user(post.author_id, NotificationType.LIKED, post_id, current_user.user_id)
 
 	return { "error" : False }

@@ -43,24 +43,20 @@ def get_follows(user_id, **kwargs):
 
 def get_friendship_status(user_id1, user_id2):
 	cursor = handled_execute(db_conn, """
-		SELECT firstUserId FROM userFriends WHERE
-			(firstUserId = %(first_user_id)s AND secondUserId = %(second_user_id)s)
-			OR (firstUserId = %(second_user_id)s AND secondUserId = %(first_user_id)s);
+		SELECT EXISTS(SELECT firstUserId FROM userFriends WHERE firstUserId = %(first_user_id)s AND secondUserId = %(second_user_id)s),
+			EXISTS(SELECT firstUserId FROM userFriends WHERE firstUserId = %(second_user_id)s AND secondUserId = %(first_user_id)s);
 		""", { "first_user_id" : user_id1, "second_user_id" : user_id2 })
 
-	result_rows = cursor.fetchall()
+	sent, pending = cursor.fetchone()
 
-	if len(result_rows) == 2:
+	if sent and pending == 2:
 		return Friendship.FRIENDS
-	elif len(result_rows) == 0:
-		return Friendship.NOTHING
+	elif sent:
+		return Friendship.SENT
+	elif pending:
+		return Friendship.PENDING
 	else:
-		initiator = result_rows[0][0]
-
-		if initiator == user_id1:
-			return Friendship.SENT
-		else:
-			return Friendship.PENDING
+		return Friendship.NOTHING
 
 def get_relationships(user_id, relation_type, **kwargs):
 	reverse = kwargs.get('reverse', False)
