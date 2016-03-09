@@ -74,7 +74,9 @@ def get_notifications_by_user_id(user_id):
 
 def build_notification_links(notification_ids, notification_objs):
 	cursor = handled_execute(db_conn, """
-		SELECT notificationId, userId FROM notificationLink WHERE notificationId = ANY(%s);
+		SELECT notificationId, userId, 
+			FROM notificationLink LEFT JOIN users ON notificationLink.userId = users.userId
+		WHERE notificationId = ANY(%s);
 	""", (notification_ids,))
 
 	rows = cursor.fetchall()
