@@ -1,5 +1,7 @@
 from localsocial.database.db import db_conn, handled_execute
-from localsocial.model.notification_model import Notification, NotificationLink
+from localsocial.database.util import build_name
+from localsocial.model.notification_model import Notification
+from localsocial.model.user_model import UserSummary
 
 def trim_notifications(user_id, last_date):
 	cursor = handled_execute(db_conn, """
@@ -74,7 +76,7 @@ def get_notifications_by_user_id(user_id):
 
 def build_notification_links(notification_ids, notification_objs):
 	cursor = handled_execute(db_conn, """
-		SELECT notificationId, userId, 
+		SELECT notificationId, notificationLink.userId, firstName, lastName, nickName, portrait, portraitSetDate, showLastName
 			FROM notificationLink LEFT JOIN users ON notificationLink.userId = users.userId
 		WHERE notificationId = ANY(%s);
 	""", (notification_ids,))
@@ -83,10 +85,12 @@ def build_notification_links(notification_ids, notification_objs):
 
 	notification_links = {}
 	for row in rows:
-		(notification_id, user_id) = row
+		(notification_id, user_id, first_name, last_name, nick_name, portrait, portrait_set_date, show_last_name) = row
+
+		name = build_name(first_name, nick_name, last_name, False, show_last_name)
 
 		links = notification_links.get(notification_id, [])
-		links.append(NotificationLink(notification_id, user_id))
+		links.append(UserSummary(user_id, name, portrait, portrait_set_date))
 		notification_links[notification_id] = links
 
 	for notification in notification_objs:
