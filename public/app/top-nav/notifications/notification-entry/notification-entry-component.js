@@ -16,7 +16,8 @@ define([
 			var text = NotificationService['NOTIFICATION_TYPES'][this.props.notification.type];
 
 			return <div className="notification-entry">
-				{ buildNames
+				<span className="notification-names">{ this.buildNames(this.props.notification['notification_links']) }</span>
+				{ NotificationService['NOTIFICATION_TYPES'][this.props.notification['notify_type']] }
 			</div>;
 		},
 		buildNames(users) {
@@ -46,7 +47,7 @@ define([
 		},
 		buildName(user) {
 			<a onClick={ this.goToProfile(user['user_id']) }>{user.name}</a>
-		}
+		},
 		goToProfile(userId) {
 			return () => {
 				return PopupService.showPopup(ProfilePopup, {userId});
