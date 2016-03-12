@@ -3,18 +3,15 @@ define([
 	'profile-popup/profile-popup-component',
 	'components/user-service',
 	'components/popup-service',
-	'components/user-profile-mixin',
 	'react'
 ], function(
 	SettingsPopup,
 	ProfilePopup,
 	UserService,
 	PopupService,
-	UserProfileMixin,
 	React
 ) {
 	var UserSummary = React.createClass({
-		mixins : [UserProfileMixin],
 		getInitialState() {
 			return {
 				showDropdown : false
@@ -27,9 +24,9 @@ define([
 			else {
 				return <div className="user-summary">
 					<div className="portrait-wrap">
-						<img src={ this.getProfilePic() } />
+						<img src={ this.props.getProfilePic() } />
 					</div>
-					<span className="user-name">{ this.state.profile['first_name'] + ' ' + this.state.profile['last_name'] }</span>
+					<span className="user-name">{ this.props.profile['first_name'] + ' ' + this.props.profile['last_name'] }</span>
 					
 					<div className="user-dropdown">
 						<div className="dropdown-option profile" onClick={this.showProfilePopup}>Profile</div>

@@ -24,13 +24,13 @@ define([
 			if(users.length === 1) {
 				var user = users[0];
 
-				return <div className="notification-users">{ buildName(user) }</div>;
+				return <div className="notification-users">{ this.buildName(user) }</div>;
 			}
 			else if(users.length === 1) {
 				var user1 = users[0];
 				var user2 = users[1];
 
-				return <div className="notification-users">{ buildName(user) } and { buildName(user) }</div>;
+				return <div className="notification-users">{ this.buildName(user) } and { this.buildName(user) }</div>;
 			}
 			else if(users.length > 1) {
 				var elements = [];
@@ -39,14 +39,14 @@ define([
 				}
 
 				var lastUser = users[users.length - 1];
-				users.push(<span>and </span>, buildName(lastUser));
+				users.push(<span>and </span>, this.buildName(lastUser));
 
 				return <div className="notification-users">{ users }</div>;
 			}
 
 		},
 		buildName(user) {
-			<a onClick={ this.goToProfile(user['user_id']) }>{user.name}</a>
+			return <a onClick={ this.goToProfile(user['user_id']) }>{user.name}</a>
 		},
 		goToProfile(userId) {
 			return () => {
