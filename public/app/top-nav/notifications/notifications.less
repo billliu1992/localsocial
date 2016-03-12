@@ -1,0 +1,32 @@
+@import (reference) 'app/common';
+
+.notification-area {
+	display: inline-block;
+	position: relative;
+	margin-right: 1em;
+	height: 2.5em;
+
+	&.show-notifications {
+		.notifications {
+			display: block;
+		}
+	}
+
+	.notifications-toggle {
+		line-height: 2.5em;
+		vertical-align: middle;
+	}
+
+	.notifications {
+		position: absolute;
+		display: none;
+
+		right: 0;
+		width: 10em;
+		padding: .3em .5em;
+		border: 1px solid @darkestGreen;
+		border-top: none;
+
+		background-color: #FFF;
+	}
+}

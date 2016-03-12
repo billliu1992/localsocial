@@ -20,8 +20,10 @@ define([
 				return <div className="top-nav contained">
 					<strong>LocalSocial</strong>
 					<SearchBar />
-					<Notifications notifications={this.state.profile['notifications']} />
-					<UserSummaryComponent profile={this.state.profile} getProfilePic={this.getProfilePic} />
+					<div>
+						<Notifications notifications={this.state.profile['notifications']} />
+						<UserSummaryComponent profile={this.state.profile} getProfilePic={this.getProfilePic} />
+					</div>
 				</div>;
 			}
 			else {
