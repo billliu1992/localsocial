@@ -10,6 +10,13 @@ def trim_notifications(user_id, last_date):
 
 	return True
 
+def acknowledge_notifications(user_id):
+	cursor = handled_execute(db_conn, """
+		UPDATE notifications SET seen = TRUE WHERE notifiedId = %s; 
+	""", (user_id,))
+
+	return True
+
 def create_notification(notification):
 	cursor = handled_execute(db_conn, """
 		INSERT INTO notifications (notifiedId, notifiedDate, seen, notifyType, targetId)
@@ -53,6 +60,7 @@ def get_notifications_by_user_id(user_id):
 	cursor = handled_execute(db_conn, """
 		SELECT notificationId, notifiedId, notifiedDate, seen, notifyType, targetId FROM notifications
 		WHERE notifiedId = %s
+		ORDER BY notificationId DESC;
 	""", (user_id,))
 
 	rows = cursor.fetchall()

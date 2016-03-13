@@ -264,6 +264,14 @@ def set_user_biography():
 	else:
 		return { "error" : False }
 
+@api_endpoint("/user/me/notifications", methods=("POST",))
+@login_required
+def acknowledge_notifications():
+	current_user = g.user
+
+	notification_service.acknowledge_notifications(current_user.user_id)
+
+	return { "error" : False }
 	
 @api_endpoint('/user/<queried_user_identifier>/friends', methods=("GET",))
 @login_required

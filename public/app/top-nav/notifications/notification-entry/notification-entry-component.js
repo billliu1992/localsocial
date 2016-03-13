@@ -11,37 +11,41 @@ define([
 ) {
 	'use strict';
 
+	var preventDefault = function(event) {
+		event.preventDefault();
+	};
+
 	return React.createClass({
 		render() {
 			var text = NotificationService['NOTIFICATION_TYPES'][this.props.notification.type];
 
-			return <div className="notification-entry">
-				<span className="notification-names">{ this.buildNames(this.props.notification['notification_links']) }</span>
-				{ NotificationService['NOTIFICATION_TYPES'][this.props.notification['notify_type']] }
+			var entryClass = '';
+			if(!this.props.notification['seen']) {
+				entryClass = ' new';
+			}
+
+			return <div className={ 'notification-entry' + entryClass } onMouseDown={preventDefault} onMouseUp={preventDefault} onClick={ this.doNotifyAction() }>
+				<span className="notification-names">{ this.buildNames(this.props.notification['notification_links']) } </span>
+				<span className="notification-text"> { NotificationService['NOTIFICATION_TYPES'][this.props.notification['notify_type']] }</span>
 			</div>;
 		},
 		buildNames(users) {
 			if(users.length === 1) {
 				var user = users[0];
 
-				return <div className="notification-users">{ this.buildName(user) }</div>;
+				return <span className="notification-users">{ this.buildName(user) }</span>;
 			}
-			else if(users.length === 1) {
+			else if(users.length === 2) {
 				var user1 = users[0];
 				var user2 = users[1];
 
-				return <div className="notification-users">{ this.buildName(user) } and { this.buildName(user) }</div>;
+				return <span className="notification-users">{ this.buildName(user1) } and { this.buildName(user2) }</span>;
 			}
-			else if(users.length > 1) {
-				var elements = [];
-				for(var i = 0; i < users.length - 1; i++) {
-					users.push(buildName(users[i]), <span>,</span>);
-				}
+			else if(users.length > 2) {
+				var user1 = users[0];
+				var user2 = users[1];
 
-				var lastUser = users[users.length - 1];
-				users.push(<span>and </span>, this.buildName(lastUser));
-
-				return <div className="notification-users">{ users }</div>;
+				return <span className="notification-users">{ this.buildName(user1) }, { this.buildName(user2) }, and more</span>;
 			}
 
 		},
@@ -49,9 +53,19 @@ define([
 			return <a onClick={ this.goToProfile(user['user_id']) }>{user.name}</a>
 		},
 		goToProfile(userId) {
-			return () => {
-				return PopupService.showPopup(ProfilePopup, {userId});
+			return (event) => {
+				event.stopPropagation();
+				PopupService.showPopup(ProfilePopup, {userId});
 			};
+		},
+		doNotifyAction() {
+			return () => {
+				if(this.props.onEntrySelected) {
+					this.props.onEntrySelected();
+				}
+
+				NotificationService.doNotificationAction(this.props.notification['notify_type'], this.props.notification['target_id'])
+			}
 		}
 	});
 });

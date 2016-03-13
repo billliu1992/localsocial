@@ -1,0 +1,25 @@
+@import (reference) 'app/common';
+
+.notification-entry {
+	font-size: .8em;
+	cursor: pointer;
+	padding: .5em 1em;
+
+	&:hover {
+		background-color: @lightGreen;
+	}
+	
+	&.new {
+		background-color: @lightGreen;
+
+		&:hover {
+			background-color: #FFF;
+		}
+	}
+
+	.notification-users {
+		a:hover, a:focus, a:active {
+			color: @darkestGreen;
+		}
+	}
+}
