@@ -1,26 +1,28 @@
 define([
-	'react',
+	'home-feed/feed/feed-component', 
+	'home-feed/post-form/post-form-component',
+	'profile-popup/profile-popup-component',
+	'home-feed/minimap/minimap-component',
 	'components/post-service',
 	'components/user-service',
 	'components/popup-service',
 	'components/user-profile-mixin',
 	'components/message-enabled-mixin',
 	'components/infinite-scroll-mixin',
-	'profile-popup/profile-popup-component',
-	'home-feed/feed/feed-component', 
-	'home-feed/post-form/post-form-component'
+	'react'
 ], 
 function(
-	React,
+	Feed, 
+	NewPostForm,
+	ProfilePopup,
+	Minimap,
 	PostService,
 	UserService,
 	PopupService,
 	UserProfileMixin,
 	MessageEnabledMixin,
 	InfiniteScrollMixin,
-	ProfilePopup,
-	Feed, 
-	NewPostForm
+	React
 ) {
 	'use strict';
 
@@ -65,13 +67,14 @@ function(
 			});
 		},
 		render() {
-			return (
+			return <div className="home-feed-wrapper">
 				<div className="home-feed-area">
 					<div className={ 'home-feed-message ' + this.getMessageClass() }>{this.getMessageText()}</div>
 					<NewPostForm onSubmit={ this.submitPost } />
 					<Feed posts={ this.state.posts } location={ this.state.location } showProfile={ this.showProfile } />
 				</div>
-			);
+				<Minimap />
+			</div>
 		},
 
 		getNewPosts() {
