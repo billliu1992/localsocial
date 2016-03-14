@@ -1,10 +1,12 @@
 define([
 	'components/api-service',
 	'components/coordinates-model',
+	'components/util',
 	'axios'
 ], function(
 	APIService,
 	Coordinates,
+	Util,
 	axios
 ) {
 	'use strict;'
@@ -59,6 +61,9 @@ define([
 		unlikePost(postId) {
 			return APIService.filterResponse(axios.post('/post/' + postId + '/unlike'));
 		},
+		buildAnchor(postId) {
+			return 'post-' + postId;
+		},
 		// Distance approximation: http://www.movable-type.co.uk/scripts/latlong.html
 		getDistance(coord1, coord2, isMetric) {
 			var radius = isMetric ? 6371 /* meters */ : 3959 /* miles */;
@@ -78,7 +83,9 @@ define([
 				return postCoords.city;
 			}
 			else {
-				return PostService.getDistance(postCoords, feedCoords, true) + ' miles away';
+				var distance = PostService.getDistance(postCoords, feedCoords, true);
+
+				return Util.round(distance, 2) + ' miles away';
 			}
 		},
 		formatTimeForDisplay(time) {

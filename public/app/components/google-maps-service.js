@@ -10,7 +10,7 @@ define(['config'], function(Config) {
 
 	//TODO async and defer?
 	var googleMapsInclude = document.createElement('script');
-	googleMapsInclude.src = 'https://maps.googleapis.com/maps/api/js?key=' + Config.G_MAPS_API_KEY + '&callback=doGoogleMapsLoaded';
+	googleMapsInclude.src = 'https://maps.googleapis.com/maps/api/js?v=3.23&key=' + Config.G_MAPS_API_KEY + '&callback=doGoogleMapsLoaded';
 	document.getElementsByTagName('head')[0].appendChild(googleMapsInclude);
 
 	var GoogleMapsService = {

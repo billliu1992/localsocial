@@ -1,20 +1,28 @@
 @import (reference) "app/common";
 
-.home-feed-message {
-	display: none;
+.home-feed-wrapper {
+	display: flex;
 
-	margin-bottom: .4em;
-	padding: .3em 1em;
-	border-top: 1px solid #FFF;
-	border-bottom: 1px solid #FFF;
-	border-left: none;
-	border-right: none;
+	.home-feed-area {
+		width: 100%;
+		
+		.home-feed-message {
+			display: none;
 
-	&.error {
-		display: block;
+			margin-bottom: .4em;
+			padding: .3em 1em;
+			border-top: 1px solid #FFF;
+			border-bottom: 1px solid #FFF;
+			border-left: none;
+			border-right: none;
 
-		color: @medRed;
-		background-color: @lightRed;
-		border-color: @darkerRed;
+			&.error {
+				display: block;
+
+				color: @medRed;
+				background-color: @lightRed;
+				border-color: @darkerRed;
+			}
+		}
 	}
 }

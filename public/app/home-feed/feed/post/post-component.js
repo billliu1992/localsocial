@@ -26,7 +26,7 @@ define([
 			var dateObject = new Date(this.props.post['post_date']);
 
 			return (
-				<div className="feed-post pod">
+				<div className="feed-post pod" id={PostService.buildAnchor(displayedPost['post_id'])}>
 					<div className="portrait-wrap">
 						<img className="portrait" src={ displayedPost['portrait_src'] } />
 					</div>

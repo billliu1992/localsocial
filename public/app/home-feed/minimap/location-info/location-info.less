@@ -1,0 +1,79 @@
+@import (reference) 'app/common';
+
+.location-info-window {
+	font-family: @standardFont;
+	position: absolute;
+	left: 5%;
+	width: 90%;
+	bottom: 1em;
+	background-color: #FFF;
+	border: 1px solid @medGreen;
+
+	display: none;
+
+
+	&.shown {
+		display: block;
+	}
+
+	.location-window-close {
+		color: @darkGray;
+		cursor: pointer;
+		font-size: .7em;
+		text-align: right;
+		position: absolute;
+
+		right: -1em;
+		top: -1em;
+	}
+
+	.post-entries {
+		max-height: 16em;
+		overflow-y: auto;
+
+		.post-entry {
+			cursor: pointer;
+			font-size: .8em;
+			padding: .4em .2em;
+			display: flex;
+			align-items: center;
+
+			&:hover {
+				background-color: @lightGreen;
+			}
+
+			img {
+				flex: 1 1 2em;
+				max-width: 2em;
+				max-height: 2em;
+				align-self: flex-start;
+			}
+
+			.post-text {
+				margin-left: .5em;
+				display: inline-block;
+				overflow: hidden;
+				flex: 1 0 0;
+
+				.post-author-name {
+					white-space: nowrap;
+					font-size: 1.1em;
+					color: @darkGreen;
+				}
+
+				.post-body {
+					margin-left:.3em;
+					max-height:2em;
+					overflow: hidden;
+					text-overflow: ellipsis;
+				}
+
+				.post-stats {
+					font-size: .8em;
+					color: @lightGray;
+					display: inline-block;
+				}
+			}
+		}
+	}
+}
