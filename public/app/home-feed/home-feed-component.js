@@ -32,7 +32,8 @@ function(
 		mixins : [UserProfileMixin, MessageEnabledMixin, InfiniteScrollMixin],
 		getInitialState() {
 			return {
-				posts: []
+				posts: [],
+				location: null
 			};
 		},
 		componentWillMount() {
@@ -67,13 +68,18 @@ function(
 			});
 		},
 		render() {
+			var minimapElem = null;
+			if(this.state.location !== null) {
+				minimapElem = <Minimap posts={ this.state.posts } location={ this.state.location } />
+			}
+
 			return <div className="home-feed-wrapper">
 				<div className="home-feed-area">
 					<div className={ 'home-feed-message ' + this.getMessageClass() }>{this.getMessageText()}</div>
 					<NewPostForm onSubmit={ this.submitPost } />
 					<Feed posts={ this.state.posts } location={ this.state.location } showProfile={ this.showProfile } />
 				</div>
-				<Minimap />
+				{minimapElem}
 			</div>
 		},
 
