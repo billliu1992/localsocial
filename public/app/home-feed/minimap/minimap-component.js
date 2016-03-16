@@ -32,11 +32,15 @@ define([
 					zoomControl : true
 				});
 
-				var infoRef = new google.maps.InfoWindow();
+				var infoRef = new google.maps.InfoWindow({
+					disableAutoPan : true
+				});
+				var infoElemRef = document.createElement('div');
 
 				this.setState({
 					mapRef,
-					infoRef
+					infoRef,
+					infoElemRef
 				}, () => {
 					this.buildMarkers();
 				});
@@ -44,18 +48,20 @@ define([
 		},
 		buildMarkers() {
 			for(var post of this.props.posts) {
-				var mark = new google.maps.Marker({
-					position: {
-						lat : post['location']['latitude'],
-						lng : post['location']['longitude']
-					},
-					map: this.state.mapRef,
-					title: 'Mark'
-				});
+				((post) => {
+					var mark = new google.maps.Marker({
+						position: {
+							lat : post['location']['latitude'],
+							lng : post['location']['longitude']
+						},
+						map: this.state.mapRef,
+						title: 'Mark'
+					});
 
-				mark.addListener('click', () => {
-					this.createInfoWindowNode([post], mark.getPosition());
-				});
+					mark.addListener('click', () => {
+						this.createInfoWindowNode([post], mark.getPosition());
+					});
+				})(post);
 			}
 		},
 		render() {
@@ -64,11 +70,10 @@ define([
 			</div>
 		},
 		createInfoWindowNode(posts, pos) {
-			var infoWindowNode = document.createElement('div');
-			ReactDOM.render(<LocationInfoComponent posts={posts} />, infoWindowNode);
+			ReactDOM.render(<LocationInfoComponent posts={posts}/>, this.state.infoElemRef);
 
 			this.state.infoRef.setPosition(pos);
-			this.state.infoRef.setContent(infoWindowNode);
+			this.state.infoRef.setContent(this.state.infoElemRef);
 			this.state.infoRef.open(this.state.mapRef);
 		}
 	});
