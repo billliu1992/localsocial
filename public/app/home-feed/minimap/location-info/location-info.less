@@ -1,17 +1,48 @@
 @import (reference) 'app/common';
 
 .location-info-window {
-	white-space: nowrap;
-	overflow: hidden;
+	font-family: @standardFont;
+	font-size: .8em;
+
+	position: absolute;
+	bottom: 1.5em;
+	left: 5%;
+	width: 90%;
+	background-color: #FFF;
+	border: 1px solid @medGreen;
+	padding: .3em;
 
 	.post-entry {
+		padding: .2em;
+		
+		display: flex;
+		align-items: center;
+
 		img {
+			flex: 1 1 2em;
 			max-width: 2em;
 			max-height: 2em;
+			align-self: flex-start;
 		}
 
-		.post-body {
-			text-overflow: ellipsis;
+		.post-text {
+			margin-left:.3em;
+			display: inline-block;
+			overflow: hidden;
+			flex: 1 0 0;
+
+			.post-author-name {
+				white-space: nowrap;
+				font-size: 1.1em;
+				color: @darkGreen;
+			}
+
+			.post-body {
+				margin-left:.3em;
+				max-height:2em;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
 		}
 	}
 }

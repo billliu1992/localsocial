@@ -2,9 +2,28 @@
 
 .feed-minimap {
 	margin-left: 1em;
+	position: fixed;
+	bottom: 0;
+	right: 1em;
+
+	width: 18em;
+	background-color: #FFF;
+	border: 1px solid @medGreen;
+	border-bottom: none;
+
+	&.hidden {
+		.map-node {
+			display: none;
+		}
+	}
+
+	.map-controls {
+		text-align: right;
+		padding: .1em .5em .1em .1em;
+	}
 	
 	.map-node {
-		width: 15em;
-		height: 15em;
+		width: 18em;
+		height: 18em;
 	}
 }

@@ -11,22 +11,80 @@ define([
 ) {
 	'use strict';
 
-	var MarkerCacheService = function(markers) {
+	var PostsLocationMarker = function() {
+		this.posts = [];
+		this.marker = null;
 	};
+	PostsLocationMarker.prototype = {
+		pushPost(post) {
+			this.posts.push(post);
+		},
+		render(mapRef, location, onClickCallback) {
+			this.marker = new google.maps.Marker({
+				position: {
+					lat : location['latitude'],
+					lng : location['longitude']
+				},
+				map: mapRef,
+				title: 'Mark'
+			});
+
+			this.marker.addListener('click', () => {
+				onClickCallback(this.posts, this.marker.getPosition());
+			});
+		}
+	}
+
+	var PostsLocationAggregator = function() {
+		this.posts = {}
+	};
+	PostsLocationAggregator.prototype = {
+		pushPost(post) {
+			var location = post.location;
+			var decimalPlaces = 5;
+
+			var roundingFactor = Math.pow(10, decimalPlaces);
+			var roundedLat = Math.round(location['latitude'] * roundingFactor) / roundingFactor;
+			var roundedLong = Math.round(location['longitude'] * roundingFactor) / roundingFactor;
+
+			if(typeof this.posts[roundedLat] === 'undefined') {
+				this.posts[roundedLat] = {};
+			}
+			if(typeof this.posts[roundedLat][roundedLong] === 'undefined') {
+				this.posts[roundedLat][roundedLong] = new PostsLocationMarker();
+			}
+			this.posts[roundedLat][roundedLong].pushPost(post);
+		},
+		renderAll(mapRef, callback) {
+			for(var lat in this.posts) {
+				for(var long in this.posts[lat]) {
+					var latitude = Number(lat);
+					var longitude = Number(long);
+					this.posts[lat][long].render(mapRef, { latitude, longitude }, callback);
+				}
+			}
+		}
+	};
+
+	var postAggregator = null;
 
 	var Minimap = React.createClass({
 		getInitialState() {
 			return {
-				mapRef : null
+				mapRef : null,
+				shown : true
 			};
 		},
 		componentDidMount() {
+			postAggregator = new PostsLocationAggregator();
+
 			GoogleMapsService.defer().then(() => {
 				var mapRef = new google.maps.Map(this.refs.map, {
 					center : {
 						lat : this.props.location.latitude,
 						lng : this.props.location.longitude
 					},
+					maxWidth: 100,
 					zoom: 12,
 					disableDefaultUI: true,
 					zoomControl : true
@@ -48,33 +106,38 @@ define([
 		},
 		buildMarkers() {
 			for(var post of this.props.posts) {
-				((post) => {
-					var mark = new google.maps.Marker({
-						position: {
-							lat : post['location']['latitude'],
-							lng : post['location']['longitude']
-						},
-						map: this.state.mapRef,
-						title: 'Mark'
-					});
-
-					mark.addListener('click', () => {
-						this.createInfoWindowNode([post], mark.getPosition());
-					});
-				})(post);
+				postAggregator.pushPost(post);
 			}
+
+			postAggregator.renderAll(this.state.mapRef, (posts, pos) => {
+				this.createInfoWindowNode(posts, pos);
+			});
 		},
 		render() {
-			return <div className="feed-minimap">
+			var mapClass = 'feed-minimap';
+			var controlText = 'Hide map';
+			if(!this.state.shown) {
+				mapClass += ' hidden';
+				controlText = 'Show map';
+			}
+
+			return <div className={ mapClass }>
+				<div className="map-controls">
+					<a onClick={this.toggleMapShown}>{ controlText }</a>
+				</div>
 				<div className="map-node" ref="map"></div>
+				<LocationInfoComponent posts={this.state.currentPosts}/>
 			</div>
 		},
-		createInfoWindowNode(posts, pos) {
-			ReactDOM.render(<LocationInfoComponent posts={posts}/>, this.state.infoElemRef);
-
-			this.state.infoRef.setPosition(pos);
-			this.state.infoRef.setContent(this.state.infoElemRef);
-			this.state.infoRef.open(this.state.mapRef);
+		createInfoWindowNode(posts) {
+			this.setState({
+				currentPosts : posts
+			});
+		},
+		toggleMapShown(event) {
+			this.setState({
+				shown : !this.state.shown
+			});
 		}
 	});
 
