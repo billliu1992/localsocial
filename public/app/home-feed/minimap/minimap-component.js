@@ -72,7 +72,8 @@ define([
 		getInitialState() {
 			return {
 				mapRef : null,
-				shown : true
+				shown : true,
+				showLocationInfo : false
 			};
 		},
 		componentDidMount() {
@@ -137,6 +138,16 @@ define([
 		toggleMapShown(event) {
 			this.setState({
 				shown : !this.state.shown
+			});
+		},
+		showLocationInfoWindow(event) {
+			this.setState({
+				showLocationInfo : true
+			});
+		},
+		hideLocationInfoWindow(event) {
+			this.setState({
+				showLocationInfo : false
 			});
 		}
 	});
