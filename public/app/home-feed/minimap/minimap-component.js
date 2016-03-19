@@ -1,11 +1,13 @@
 define([
 	'home-feed/minimap/location-info/location-info-component',
 	'components/google-maps-service',
+	'components/util',
 	'react',
 	'react-dom'
 ], function(
 	LocationInfoComponent,
 	GoogleMapsService,
+	Util,
 	React,
 	ReactDOM
 ) {
@@ -41,11 +43,11 @@ define([
 	PostsLocationAggregator.prototype = {
 		pushPost(post) {
 			var location = post.location;
+			
 			var decimalPlaces = 5;
+			var roundedLat = Util.round(location['latitude'], decimalPlaces);
+			var roundedLong = Util.round(location['longitude'], decimalPlaces);
 
-			var roundingFactor = Math.pow(10, decimalPlaces);
-			var roundedLat = Math.round(location['latitude'] * roundingFactor) / roundingFactor;
-			var roundedLong = Math.round(location['longitude'] * roundingFactor) / roundingFactor;
 
 			if(typeof this.posts[roundedLat] === 'undefined') {
 				this.posts[roundedLat] = {};
@@ -112,6 +114,8 @@ define([
 
 			postAggregator.renderAll(this.state.mapRef, (posts, pos) => {
 				this.createInfoWindowNode(posts, pos);
+
+				this.openLocationInfoWindow();
 			});
 		},
 		render() {
@@ -127,7 +131,7 @@ define([
 					<a onClick={this.toggleMapShown}>{ controlText }</a>
 				</div>
 				<div className="map-node" ref="map"></div>
-				<LocationInfoComponent posts={this.state.currentPosts}/>
+				<LocationInfoComponent posts={this.state.currentPosts} shown={this.state.showLocationInfo} closeWindow={this.closeLocationInfoWindow} />
 			</div>
 		},
 		createInfoWindowNode(posts) {
@@ -140,12 +144,12 @@ define([
 				shown : !this.state.shown
 			});
 		},
-		showLocationInfoWindow(event) {
+		openLocationInfoWindow() {
 			this.setState({
 				showLocationInfo : true
 			});
 		},
-		hideLocationInfoWindow(event) {
+		closeLocationInfoWindow() {
 			this.setState({
 				showLocationInfo : false
 			});
