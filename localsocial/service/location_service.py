@@ -4,7 +4,7 @@ from localsocial.model.location_model import Location
 from localsocial.exceptions import ServiceException 
 
 def get_geoip_location(ip):
-	return Location("Test", -88.2183973, 40.1)
+	return Location("Test", -88.24, 40.1)
 
 #	geoip_request = requests.get("https://freegeoip.net/json/#localsocialwebapp")
 

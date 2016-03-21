@@ -1,86 +1,26 @@
 define([
 	'home-feed/minimap/location-info/location-info-component',
 	'components/google-maps-service',
-	'components/util',
 	'react',
 	'react-dom'
 ], function(
 	LocationInfoComponent,
 	GoogleMapsService,
-	Util,
 	React,
 	ReactDOM
 ) {
 	'use strict';
-
-	var PostsLocationMarker = function() {
-		this.posts = [];
-		this.marker = null;
-	};
-	PostsLocationMarker.prototype = {
-		pushPost(post) {
-			this.posts.push(post);
-		},
-		render(mapRef, location, onClickCallback) {
-			this.marker = new google.maps.Marker({
-				position: {
-					lat : location['latitude'],
-					lng : location['longitude']
-				},
-				map: mapRef,
-				title: 'Mark'
-			});
-
-			this.marker.addListener('click', () => {
-				onClickCallback(this.posts, this.marker.getPosition());
-			});
-		}
-	}
-
-	var PostsLocationAggregator = function() {
-		this.posts = {}
-	};
-	PostsLocationAggregator.prototype = {
-		pushPost(post) {
-			var location = post.location;
-			
-			var decimalPlaces = 5;
-			var roundedLat = Util.round(location['latitude'], decimalPlaces);
-			var roundedLong = Util.round(location['longitude'], decimalPlaces);
-
-
-			if(typeof this.posts[roundedLat] === 'undefined') {
-				this.posts[roundedLat] = {};
-			}
-			if(typeof this.posts[roundedLat][roundedLong] === 'undefined') {
-				this.posts[roundedLat][roundedLong] = new PostsLocationMarker();
-			}
-			this.posts[roundedLat][roundedLong].pushPost(post);
-		},
-		renderAll(mapRef, callback) {
-			for(var lat in this.posts) {
-				for(var long in this.posts[lat]) {
-					var latitude = Number(lat);
-					var longitude = Number(long);
-					this.posts[lat][long].render(mapRef, { latitude, longitude }, callback);
-				}
-			}
-		}
-	};
-
-	var postAggregator = null;
 
 	var Minimap = React.createClass({
 		getInitialState() {
 			return {
 				mapRef : null,
 				shown : true,
-				showLocationInfo : false
+				showLocationInfo : false,
+				postsRendered : 0
 			};
 		},
 		componentDidMount() {
-			postAggregator = new PostsLocationAggregator();
-
 			GoogleMapsService.defer().then(() => {
 				var mapRef = new google.maps.Map(this.refs.map, {
 					center : {
@@ -102,20 +42,16 @@ define([
 					mapRef,
 					infoRef,
 					infoElemRef
-				}, () => {
-					this.buildMarkers();
 				});
 			});
 		},
-		buildMarkers() {
-			for(var post of this.props.posts) {
-				postAggregator.pushPost(post);
-			}
+		componentWillReceiveProps(nextProps) {
+			GoogleMapsService.defer().then(() => {
+				this.props.postAggregator.renderAll(this.state.mapRef, (posts, pos) => {
+					this.createInfoWindowNode(posts, pos);
 
-			postAggregator.renderAll(this.state.mapRef, (posts, pos) => {
-				this.createInfoWindowNode(posts, pos);
-
-				this.openLocationInfoWindow();
+					this.openLocationInfoWindow();
+				});
 			});
 		},
 		render() {

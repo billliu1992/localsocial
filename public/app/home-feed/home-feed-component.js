@@ -9,6 +9,7 @@ define([
 	'components/user-profile-mixin',
 	'components/message-enabled-mixin',
 	'components/infinite-scroll-mixin',
+	'components/util',
 	'react'
 ], 
 function(
@@ -22,22 +23,91 @@ function(
 	UserProfileMixin,
 	MessageEnabledMixin,
 	InfiniteScrollMixin,
+	Util,
 	React
 ) {
 	'use strict';
 
 	var FETCH_THRESHOLD = 300;
 
+	var PostsLocationMarker = function() {
+		this.posts = [];
+		this.marker = null;
+	};
+	PostsLocationMarker.prototype = {
+		pushPost(post) {
+			this.posts.push(post);
+		},
+		render(mapRef, location, onClickCallback) {
+			if(this.marker === null) {
+				this.marker = new google.maps.Marker({
+					position: {
+						lat : location['latitude'],
+						lng : location['longitude']
+					},
+					map: mapRef,
+					title: 'Mark'
+				});
+
+				this.marker.addListener('click', () => {
+					onClickCallback(this.posts, this.marker.getPosition());
+				});
+			}
+		}
+	}
+
+	var PostsLocationAggregator = function() {
+		this.posts = {}
+	};
+	PostsLocationAggregator.prototype = {
+		pushPost(...newPosts) {
+			for(var post of newPosts) {
+				var location = post.location;
+				
+				var decimalPlaces = 5;
+				var roundedLat = Util.round(location['latitude'], decimalPlaces);
+				var roundedLong = Util.round(location['longitude'], decimalPlaces);
+
+
+				if(typeof this.posts[roundedLat] === 'undefined') {
+					this.posts[roundedLat] = {};
+				}
+				if(typeof this.posts[roundedLat][roundedLong] === 'undefined') {
+					this.posts[roundedLat][roundedLong] = new PostsLocationMarker();
+				}
+				this.posts[roundedLat][roundedLong].pushPost(post);
+			}
+		},
+
+		resetPosts() {
+			this.posts = {};
+		},
+		renderAll(mapRef, callback) {
+			for(var lat in this.posts) {
+				for(var long in this.posts[lat]) {
+					var latitude = Number(lat);
+					var longitude = Number(long);
+					this.posts[lat][long].render(mapRef, { latitude, longitude }, callback);
+				}
+			}
+		}
+	};
+
 	var HomeFeed = React.createClass({
 		mixins : [UserProfileMixin, MessageEnabledMixin, InfiniteScrollMixin],
 		getInitialState() {
 			return {
 				posts: [],
-				location: null
+				location: null,
+				postAggregator: null
 			};
 		},
 		componentWillMount() {
 			this.getNewPosts();
+
+			this.setState({
+				postAggregator : new PostsLocationAggregator()
+			});
 
 			// Attach event listener to the whole page
 			window.addEventListener('scroll', () => {
@@ -53,6 +123,7 @@ function(
 
 						if(data.posts.length !== 0) {
 							posts.push(...data.posts);
+							this.state.postAggregator.pushPost(...data.posts);
 
 							this.setState({
 								posts
@@ -70,7 +141,7 @@ function(
 		render() {
 			var minimapElem = null;
 			if(this.state.location !== null) {
-				minimapElem = <Minimap posts={ this.state.posts } location={ this.state.location } />
+				minimapElem = <Minimap location={ this.state.location } postAggregator={this.state.postAggregator} />
 			}
 
 			return <div className="home-feed-wrapper">
@@ -86,6 +157,10 @@ function(
 		getNewPosts() {
 			PostService.getPosts().then(
 				(data) => {
+					this.state.postAggregator.resetPosts();
+					this.state.postAggregator.pushPost(...data.posts);
+					this.state.postAggregator.renderAll();
+
 					this.setState({ 
 						posts : data.posts,
 						location : data['current_location']
