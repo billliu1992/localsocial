@@ -44,7 +44,12 @@ define([
 					<div className="sidebar-option" onClick={this.showSettingsPopup}>Settings</div>
 				</div>
 				<div className="legal-misc">
-					&copy; 2015 Bill Liu
+					<div>
+						&copy; 2015 Bill Liu
+					</div>
+					<div>
+						This product includes GeoLite2 data created by MaxMind, available from <a href="http://www.maxmind.com">http://www.maxmind.com</a>.
+					</div>
 				</div>
 			</div>;
 		},

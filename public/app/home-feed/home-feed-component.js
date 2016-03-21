@@ -6,6 +6,7 @@ define([
 	'components/post-service',
 	'components/user-service',
 	'components/popup-service',
+	'components/google-maps-service',
 	'components/user-profile-mixin',
 	'components/message-enabled-mixin',
 	'components/infinite-scroll-mixin',
@@ -20,6 +21,7 @@ function(
 	PostService,
 	UserService,
 	PopupService,
+	GoogleMapsService,
 	UserProfileMixin,
 	MessageEnabledMixin,
 	InfiniteScrollMixin,
@@ -159,7 +161,6 @@ function(
 				(data) => {
 					this.state.postAggregator.resetPosts();
 					this.state.postAggregator.pushPost(...data.posts);
-					this.state.postAggregator.renderAll();
 
 					this.setState({ 
 						posts : data.posts,

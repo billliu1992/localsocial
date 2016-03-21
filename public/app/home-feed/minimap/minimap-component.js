@@ -42,6 +42,8 @@ define([
 					mapRef,
 					infoRef,
 					infoElemRef
+				}, () => {
+					this.state.postAggregator.renderAll();
 				});
 			});
 		},
