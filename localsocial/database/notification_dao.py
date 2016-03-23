@@ -84,7 +84,7 @@ def get_notifications_by_user_id(user_id):
 
 def build_notification_links(notification_ids, notification_objs):
 	cursor = handled_execute(db_conn, """
-		SELECT notificationId, notificationLink.userId, firstName, lastName, nickName, portrait, portraitSetDate, showLastName
+		SELECT notificationId, notificationLink.userId, firstName, lastName, nickName, portrait, showLastName
 			FROM notificationLink LEFT JOIN users ON notificationLink.userId = users.userId
 		WHERE notificationId = ANY(%s);
 	""", (notification_ids,))
@@ -93,12 +93,12 @@ def build_notification_links(notification_ids, notification_objs):
 
 	notification_links = {}
 	for row in rows:
-		(notification_id, user_id, first_name, last_name, nick_name, portrait, portrait_set_date, show_last_name) = row
+		(notification_id, user_id, first_name, last_name, nick_name, portrait, show_last_name) = row
 
 		name = build_name(first_name, nick_name, last_name, False, show_last_name)
 
 		links = notification_links.get(notification_id, [])
-		links.append(UserSummary(user_id, name, portrait, portrait_set_date))
+		links.append(UserSummary(user_id, name, portrait))
 		notification_links[notification_id] = links
 
 	for notification in notification_objs:

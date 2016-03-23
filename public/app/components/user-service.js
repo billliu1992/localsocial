@@ -109,7 +109,7 @@ define([
 		getUserProfile(userId) {
 			return APIService.filterResponse(axios.get('/user/' + userId + '/profile'))
 				.catch((response) => {
-					log.log('Could not get user at ' + userId + response.status);
+					log.log('Could not get user at', userId, response.status);
 				})
 		},
 		getUserPosts(userId, maxId, page) {
@@ -150,14 +150,10 @@ define([
 			return APIService.filterResponse(axios.get('/user/me/image/profile'));
 		},
 		uploadUserProfilePic(formData) {
-			var uploadPromise = axios.post('/user/me/image/profile', formData)
+			return axios.post('/user/me/image/profile', formData).then((response) => {
+				var user = response.data.user;
 
-			userPromise = uploadPromise.then((response) => {
-				return response.data.user;
-			});
-
-			return uploadPromise.then((response) => {
-				ListenerService.fireListeners(response.data.user);
+				this.overwriteCurrentUserInfo(user);
 
 				return response.data;
 			});

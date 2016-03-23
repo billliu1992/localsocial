@@ -135,7 +135,8 @@ define([
 				UserService.uploadUserProfilePic(profilePicForm).then(() => {
 					this.closePopup();
 				},
-				() => {
+				(reason) => {
+					console.log(reason);
 					this.setMessage('error', 'An error occurred. Please try again');
 				});
 			}

@@ -417,30 +417,29 @@ def upload_profile_photo():
 			filesystem_storage_service.save_image(uploaded_photo, hashed_filename)
 		except ServiceException as se:
 			picture_meta_service.delete_picture_by_id(full_picture.picture_id)
-			return { "success" : False, "message" : "Error saving new image" }
+			return { "error" : True, "message" : "Error saving new image" }, 500
 	else:
 		full_picture = picture_meta_service.get_picture_by_id(picture_id, current_user.user_id)
 		hashed_filename = filesystem_storage_service.get_image_hash(full_picture.picture_id, full_picture.author_id)
 		uploaded_photo = filesystem_storage_service.get_image(hashed_filename)
 
-	cropped_time = datetime.now()
-
 	# Temporary local filesystem storae
-	hashed_cropped_filename = filesystem_storage_service.get_cropped_hash(full_picture.picture_id, cropped_time, current_user.user_id)
+	hashed_cropped_filename = filesystem_storage_service.get_cropped_hash(full_picture.picture_id, current_user.user_id)
 	
 	try:
 		crop = PictureSection(crop_x, crop_y, crop_width, crop_height)
 		filesystem_storage_service.save_cropped_image(uploaded_photo, hashed_cropped_filename, crop)
 	except ServiceException as se:
-		return { "success" : False, "message" : "Error saving cropped image" }
+		print se
+		return { "error" : True, "message" : "Error saving cropped image" }, 500
 
 	current_user.portrait = full_picture.picture_id
-	current_user.portrait_set_date = cropped_time
+	current_user.portrait_set_date = datetime.now()
 	updated_user = user_service.update_user(current_user)
 
 	updated_user_json_dict = updated_user.to_json_dict(private=True)
 
-	return { "success" : True, "user" : updated_user_json_dict }
+	return { "error" : False, "user" : updated_user_json_dict }
 
 @api_endpoint('/user/me/image/profile', methods=("DELETE",))
 @login_required

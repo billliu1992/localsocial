@@ -8,7 +8,7 @@ def get_replies_with_post_ids(post_ids, current_user_id):
 	cursor = handled_execute(db_conn, """
 		SELECT
 			replyId, postId, authorId, replyBody, replyDate, cityName, longitude, latitude, privacy, edited,
-			firstName, lastName, nickName, portrait, portraitSetDate, showLastName,
+			firstName, lastName, nickName, portrait, showLastName,
 			(authorId IN (SELECT firstUserId FROM userFriends WHERE secondUserId = %(current_user_id)s)
 				AND %(current_user_id)s IN (SELECT firstUserId FROM userFriends WHERE secondUserId = authorId)) AS areFriends
 		FROM replies LEFT JOIN users ON replies.authorId = users.userId
@@ -22,12 +22,12 @@ def get_replies_with_post_ids(post_ids, current_user_id):
 
 	for row in rows:
 		(reply_id, post_id, author_id, reply_body, reply_date, city_name, longitude, latitude, privacy, edited,
-			first_name, last_name, nick_name, portrait, portrait_set_date, show_last_name, are_friends) = row
+			first_name, last_name, nick_name, portrait, show_last_name, are_friends) = row
 
 		author_name = build_name(first_name, nick_name, last_name, are_friends, show_last_name)
 		new_location = build_location(longitude, latitude, city_name, are_friends, privacy != POST_PRIVACY.HIDE_LOCATION)
 
-		new_reply = Reply(post_id, author_id, author_name, portrait, portrait_set_date, reply_body, reply_date, new_location, privacy, edited)
+		new_reply = Reply(post_id, author_id, author_name, portrait, reply_body, reply_date, new_location, privacy, edited)
 		new_reply.reply_id = reply_id
 
 		replies.append(new_reply)
@@ -38,7 +38,7 @@ def get_replies_by_post_id(post_id, current_user_id):
 	cursor = handled_execute(db_conn, """
 		SELECT
 			replyId, postId, authorId, replyBody, replyDate, cityName, longitude, latitude, privacy, edited,
-			firstName, lastName, nickName, portrait, portraitSetDate, showLastName,
+			firstName, lastName, nickName, portrait, showLastName,
 			(authorId IN (SELECT firstUserId FROM userFriends WHERE secondUserId = %(current_user_id)s)
 				AND %(current_user_id)s IN (SELECT firstUserId FROM userFriends WHERE secondUserId = authorId)) AS areFriends
 		FROM replies LEFT JOIN users ON replies.authorId = users.userId
@@ -52,12 +52,12 @@ def get_replies_by_post_id(post_id, current_user_id):
 
 	for row in rows:
 		(reply_id, post_id, author_id, reply_body, reply_date, city_name, longitude, latitude, privacy, edited,
-			first_name, last_name, nick_name, portrait, portrait_set_date, show_last_name, are_friends) = row
+			first_name, last_name, nick_name, portrait, show_last_name, are_friends) = row
 
 		author_name = build_name(first_name, nick_name, last_name, are_friends, show_last_name)
 		new_location = build_location(longitude, latitude, city_name, are_friends, privacy != POST_PRIVACY.HIDE_LOCATION)
 
-		new_reply = Reply(post_id, author_id, author_name, portrait, portrait_set_date, reply_body, reply_date, new_location, privacy, edited)
+		new_reply = Reply(post_id, author_id, author_name, portrait, reply_body, reply_date, new_location, privacy, edited)
 		new_reply.reply_id = reply_id
 
 		replies.append(new_reply)

@@ -80,6 +80,7 @@ define([
 			var numberToCompute = Math.min(event.target.height, event.target.width);
 
 			var squareHalfSize = Math.floor(numberToCompute / 6);
+			squareHalfSize = Math.max(MIN_IMAGE_SIZE / 2, squareHalfSize);
 
 			var newTagX = Math.max(mouseX - squareHalfSize, 0);
 			newTagX = Math.min(newTagX, event.target.width - (squareHalfSize * 2));

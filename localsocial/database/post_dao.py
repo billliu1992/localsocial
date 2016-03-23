@@ -36,15 +36,15 @@ def get_posts_by_user(current_user_id, searched_user, friends, limit, offset, ma
 		post_location = build_location(longitude, latitude, city_name, friends, privacy != POST_PRIVACY.HIDE_LOCATION)
 
 		if(event_id != None):
-			new_post = EventPost(author_id, author_name, searched_user.portrait, searched_user.portrait_set_date, post_body, post_date, 
+			new_post = EventPost(author_id, author_name, searched_user.portrait, post_body, post_date, 
 				privacy, post_location, event_id,
 				event_name, event_location, event_start, event_end)
 
 		elif(image_id != None):
-			new_post = ImagePost(author_id, author_name, searched_user.portrait, searched_user.portrait_set_date, post_body, post_date, 
+			new_post = ImagePost(author_id, author_name, searched_user.portrait, post_body, post_date, 
 				privacy, post_location, image_id)
 		else:
-			new_post = Post(author_id, author_name, searched_user.portrait, searched_user.portrait_set_date, post_body, post_date, 
+			new_post = Post(author_id, author_name, searched_user.portrait, post_body, post_date, 
 				privacy, post_location, likes, liked)
 
 		new_post.post_id = post_id
@@ -66,7 +66,7 @@ def get_post_feed(current_user_id, current_location, range, limit, skip, max_id=
 			postId, authorId, postBody, postDate, privacy, cityName, longitude, latitude,
 			eventId, eventName, eventLocation, eventStart, eventEnd,
 			imageId,
-			firstName, lastName, nickName, portrait, portraitSetDate, showLastName,
+			firstName, lastName, nickName, portrait, showLastName,
 			(SELECT COUNT(likes.likerId) FROM likes WHERE likes.postId = posts.postId GROUP BY likes.postId) AS likeCount,
 			(authorId IN (SELECT likerId FROM likes WHERE likes.postId = posts.postId)) AS liked,
 			(authorId IN (SELECT firstUserId FROM userFriends WHERE secondUserId = %(current_user_id)s)) AS requestPending,
@@ -92,7 +92,7 @@ def get_post_feed(current_user_id, current_location, range, limit, skip, max_id=
 	for row in post_rows:
 		(post_id, author_id, post_body, post_date, privacy, city_name,
 			longitude, latitude, event_id, event_name, event_location, event_start,
-			event_end, image_id, first_name, last_name, nick_name, portrait, portrait_set_date, show_last_name,
+			event_end, image_id, first_name, last_name, nick_name, portrait, show_last_name,
 			likes, liked, request_pending, request_sent, follower, following) = row
 
 		if likes == None:
@@ -103,15 +103,15 @@ def get_post_feed(current_user_id, current_location, range, limit, skip, max_id=
 		post_location = build_location(longitude, latitude, city_name, are_friends, privacy != POST_PRIVACY.HIDE_LOCATION)
 
 		if(event_id != None):
-			new_post = EventPost(author_id, author_name, portrait, portrait_set_date, post_body, post_date, 
+			new_post = EventPost(author_id, author_name, portrait, post_body, post_date, 
 				privacy, post_location, event_id,
 				event_name, event_location, event_start, event_end)
 
 		elif(image_id != None):
-			new_post = ImagePost(author_id, author_name, portrait, portrait_set_date, post_body, post_date, 
+			new_post = ImagePost(author_id, author_name, portrait, post_body, post_date, 
 				privacy, post_location, image_id)
 		else:
-			new_post = Post(author_id, author_name, portrait, portrait_set_date, post_body, post_date, 
+			new_post = Post(author_id, author_name, portrait, post_body, post_date, 
 				privacy, post_location, likes, liked)
 
 		new_post.post_id = post_id
@@ -130,7 +130,7 @@ def get_post_by_id(current_user_id, post_id):
 			postId, authorId, postBody, postDate, privacy, cityName, longitude, latitude,
 			eventId, eventName, eventLocation, eventStart, eventEnd,
 			imageId,
-			firstName, lastName, nickName, portrait, portraitSetDate, showLastName,
+			firstName, lastName, nickName, portrait, showLastName,
 			(SELECT COUNT(likes.likerId) FROM likes WHERE likes.postId = posts.postId GROUP BY likes.postId) AS likeCount,
 			(authorId IN (SELECT userId FROM likes WHERE likes.postId = posts.postId)) AS liked,
 			(authorId IN (SELECT firstUserId FROM userFriends WHERE secondUserId = %(current_user_id)s)) AS requestPending,
@@ -151,7 +151,7 @@ def get_post_by_id(current_user_id, post_id):
 
 	(post_id, author_id, post_body, post_date, privacy, city_name,
 		longitude, latitude, event_id, event_name, event_location, event_start,
-		event_end, image_id, first_name, last_name, nick_name, portrait, portrait_set_date, show_last_name,
+		event_end, image_id, first_name, last_name, nick_name, portrait, show_last_name,
 		likes, liked, request_pending, request_sent, follower, following) = row
 
 	if likes == None:
@@ -162,15 +162,15 @@ def get_post_by_id(current_user_id, post_id):
 	post_location = build_location(longitude, latitude, city_name, are_friends, privacy != POST_PRIVACY.HIDE_LOCATION)
 
 	if(event_id != None):
-		new_post = EventPost(author_id, author_name, portrait, portrait_set_date, post_body, post_date, 
+		new_post = EventPost(author_id, author_name, portrait, post_body, post_date, 
 			privacy, post_location, event_id,
 			event_name, event_location, event_start, event_end)
 
 	elif(image_id != None):
-		new_post = ImagePost(author_id, author_name, portrait, portrait_set_date, post_body, post_date, 
+		new_post = ImagePost(author_id, author_name, portrait, post_body, post_date, 
 			privacy, post_location, image_id)
 	else:
-		new_post = Post(author_id, author_name, portrait, portrait_set_date, post_body, post_date, 
+		new_post = Post(author_id, author_name, portrait, post_body, post_date, 
 			privacy, post_location, likes, liked)
 
 	new_post.post_id = post_id

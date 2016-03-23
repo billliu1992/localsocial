@@ -83,7 +83,7 @@ def get_relationships(user_id, relation_type, **kwargs):
 				""", query_params)
 		else:
 			cursor = handled_execute(db_conn, """
-				SELECT userId, firstName, lastName, nickName, portrait, portraitSetDate, showLastName 
+				SELECT userId, firstName, lastName, nickName, portrait, showLastName 
 					FROM %(table)s LEFT JOIN users ON %(table)s.%(target)s = users.userId
 				WHERE %(initiator)s = %(user_id)s AND %(target)s IN
 					(SELECT %(initiator)s FROM %(table)s
@@ -99,7 +99,7 @@ def get_relationships(user_id, relation_type, **kwargs):
 				""", query_params)
 		else:
 			cursor = handled_execute(db_conn, """
-				SELECT userId, firstName, lastName, nickName, portrait, portraitSetDate, showLastName 
+				SELECT userId, firstName, lastName, nickName, portrait, showLastName 
 					FROM %(table)s LEFT JOIN users ON %(table)s.%(target)s = users.userId
 				WHERE %(initiator)s = %(user_id)s AND NOT %(target)s IN
 					(SELECT %(initiator)s FROM %(table)s
@@ -112,7 +112,7 @@ def get_relationships(user_id, relation_type, **kwargs):
 				""", query_params)
 		else:
 			cursor = handled_execute(db_conn, """
-				SELECT userId, firstName, lastName, nickName, portrait, portraitSetDate, showLastName 
+				SELECT userId, firstName, lastName, nickName, portrait, showLastName 
 					FROM %(table)s LEFT JOIN users ON %(table)s.%(target)s = users.userId
 				WHERE %(initiator)s = %(user_id)s
 				""", query_params)
@@ -129,10 +129,10 @@ def get_relationships(user_id, relation_type, **kwargs):
 		user_summary_objs = []
 		for row in result_rows:
 			(user_id, first_name, last_name, nick_name, 
-				portrait, portrait_set_date, show_last_name) = row
+				portrait, show_last_name) = row
 
 			user_name = build_name(first_name, nick_name, last_name, False, show_last_name)
 
-			user_summary_objs.append(UserSummary(user_id, user_name, portrait, portrait_set_date))
+			user_summary_objs.append(UserSummary(user_id, user_name, portrait))
 
 		return user_summary_objs

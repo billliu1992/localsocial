@@ -30,7 +30,7 @@ class User():
 		build_profile_pic_src = kwargs.get("portrait", True)
 
 		user_dict = None
-		portrait_src = filesystem_storage_service.get_cropped_src(self.portrait, self.portrait_set_date, self.user_id)
+		portrait_src = filesystem_storage_service.get_cropped_src(self.portrait, self.user_id)
 		if show_private_fields:
 			user_dict = self.__dict__
 
@@ -54,17 +54,16 @@ class User():
 		return user_dict
 
 class UserSummary:
-	def __init__(self, user_id, name, portrait, portrait_set_date):
+	def __init__(self, user_id, name, portrait):
 		self.user_id = user_id
 		self.name = name
 		self.portrait = portrait
-		self.portrait_set_date = portrait_set_date
 
 	def to_json_dict(self):
 		return {
 			"user_id" : self.user_id,
 			"name" : self.name,
-			"portrait_src" : filesystem_storage_service.get_cropped_src(self.portrait, self.portrait_set_date, self.user_id)
+			"portrait_src" : filesystem_storage_service.get_cropped_src(self.portrait, self.user_id)
 		}
 
 class UserCredentials:
