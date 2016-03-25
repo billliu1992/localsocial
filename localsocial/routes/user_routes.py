@@ -80,9 +80,11 @@ def create_user():
 
 
 @api_endpoint('/user/me', methods=("GET",))
+@location_endpoint
 @login_required
 def get_my_home():
 	requested_user = g.user
+	current_location = g.user_location
 
 	user_dict = requested_user.to_json_dict(private=True)
 
@@ -106,6 +108,7 @@ def get_my_home():
 		"followers_count" : len(followers)
 	}
 	user_dict["notifications"] = notification_json_dict
+	user_dict["current_location"] = current_location.to_json_dict()
 
 	return user_dict
 
