@@ -9,12 +9,12 @@ gulp.task('clean', () => {
 		]);
 });
 
-gulp.task('html', ['clean'], () => {
+gulp.task('html', () => {
 	return gulp.src('app/**/*.html')
 		.pipe(gulp.dest('target/'));
 });
 
-gulp.task('javascript', ['clean'],  () => {
+gulp.task('javascript', () => {
 	return gulp.src('app/**/*.js')
 		.pipe(babel(
 			{
@@ -26,17 +26,23 @@ gulp.task('javascript', ['clean'],  () => {
 		.pipe(gulp.dest('target/'));
 });
 
-gulp.task('less', ['clean'],  () => {
+gulp.task('less', () => {
 	return gulp.src('app/**/*.less')
 		.pipe(less())
 		.pipe(gulp.dest('target/'));
 });
 
-gulp.task('bower', ['clean'], () => {
+gulp.task('bower', () => {
 	return gulp.src('bower_components/**/*')
 		.pipe(gulp.dest('target/bower_components'));
 });
 
-gulp.task('build-dev', ['clean', 'bower', 'html', 'javascript', 'less']);
+gulp.task('watch', () => {
+	gulp.watch('bower_components/**/*', gulp.series('bower'));
+	gulp.watch('app/**/*.less', gulp.series('less'));
+	gulp.watch('app/**/*.js', gulp.series('javascript'));
+});
 
-gulp.task('default', ['build-dev']);
+gulp.task('build-dev', gulp.series('clean', gulp.parallel('bower', 'html', 'javascript', 'less', 'watch')));
+
+gulp.task('default', gulp.series('build-dev'));

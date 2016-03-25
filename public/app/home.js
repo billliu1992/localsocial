@@ -8,10 +8,8 @@ requirejs.config({
 	}
 });
 
-var doGeolocation = function() {
-};
-
-requirejs(['babel-polyfill',
+requirejs([
+	'babel-polyfill',
 	'home-feed/home-feed-component',
 	'top-nav/top-nav-component',
 	'sidebar/sidebar-component',
@@ -31,24 +29,28 @@ requirejs(['babel-polyfill',
 ) {
 	'use strict';
 
-	window.doGeolocation = function() {
-		LocationService.doBrowserGeolocation().then(function(location) {
-			UserService.setCustomLocation(location);
-		});
-	};
+	UserService.getCurrentUserInfo().then((user) => {
+		if(user.preferences['browser_geo']) {
+			LocationService.useBrowserGeolocation = true;
+		}
+		
+		if(user['current_location']) {
+			LocationService.cachedLocation = user['current_location'];
+		}
 
-	ReactDOM.render(
-		<HomeFeed />,
-		document.getElementById('post-feed')
-	);
+		ReactDOM.render(
+			<HomeFeed />,
+			document.getElementById('post-feed')
+		);
 
-	ReactDOM.render(
-		<Sidebar />,
-		document.getElementById('left-bar')
-	);
+		ReactDOM.render(
+			<Sidebar />,
+			document.getElementById('left-bar')
+		);
 
-	ReactDOM.render(
-		<TopNav />,
-		document.getElementById('top-nav-bar')
-	);
+		ReactDOM.render(
+			<TopNav />,
+			document.getElementById('top-nav-bar')
+		);
+	});
 });

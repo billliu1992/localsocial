@@ -55,16 +55,15 @@ define([
 			return userPromise;
 		},
 		updateCurrentUserInfo(newInfo) {
-			var promise = APIService.filterResponse(axios.post('/user/me',
-				APIService.transformObjectToForm(newInfo)));
+			return APIService
+				.filterResponse(axios.post('/user/me',
+					APIService.transformObjectToForm(newInfo))
+				).then((result) => {
+					this.overwriteCurrentUserInfo(result.user);
 
-			userPromise = promise.then((result) => {
-				ListenerService.fireListeners(result.user);
-
-				return result.user;
-			});
-
-			return promise;
+					return result;
+				}
+			);
 		},
 		replaceCurrentUserInfo(user) {
 			userPromise = Promise.resolve(user);
@@ -107,7 +106,7 @@ define([
 			);
 		},
 		getUserProfile(userId) {
-			return APIService.filterResponse(axios.get('/user/' + userId + '/profile'))
+			return APIService.filterResponse(APIService.localGet('/user/' + userId + '/profile'))
 				.catch((response) => {
 					log.log('Could not get user at', userId, response.status);
 				})
@@ -125,7 +124,7 @@ define([
 				}
 			}
 
-			return APIService.filterResponse(axios.get('/user/' + userId + '/posts', options))
+			return APIService.filterResponse(APIService.localGet('/user/' + userId + '/posts', options))
 				.catch((response) => ({ status: response.status, data: response.data }));
 		},
 		sendFriendRequest(userId) {

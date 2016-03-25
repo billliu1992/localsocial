@@ -34,21 +34,21 @@ define([
 				}
 			}
 
-			return APIService.filterResponse(axios.get('/post', options))
+			return APIService.filterResponse(APIService.localGet('/post', options))
 				.catch((response) => ({ status: response.status, data: response.data }));
 		},
 		savePost(data) {
 			return APIService.filterResponse(
-				axios.post('/post', APIService.transformObjectToForm(data), {
+				APIService.localPost('/post', data, {
 					headers : {
 						'Content-Type' : 'application/x-www-form-urlencoded'
 					}
 				})
-			).catch((response) => ({ status: response.status, data: response.data }));
+			);
 		},
 		saveReply(postId, data) {
 			return APIService.filterResponse(
-				axios.post('/post/' + postId + '/reply', APIService.transformObjectToForm(data), {
+				APIService.localPost('/post/' + postId + '/reply', data, {
 					headers: {
 						'Content-Type' : 'application/x-www-form-urlencoded'
 					}

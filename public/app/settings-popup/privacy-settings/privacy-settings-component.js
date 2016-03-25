@@ -1,8 +1,10 @@
 define([
 	'settings-popup/settings-field/settings-field-component',
+	'components/location-service',
 	'react'
 ], function(
 	SettingsField,
+	LocationService,
 	React
 ) {
 	var PrivacySettings = React.createClass({
@@ -40,6 +42,11 @@ define([
 					data : {}
 				});
 				this.props.updateInfo(this.state.data);
+
+				if(this.state.data['browser_geo']) {
+					LocationService.useBrowserGeolocation = true;
+					LocationService.doBrowserGeolocation();	// Force update of browser
+				}
 			}
 			else {
 			}

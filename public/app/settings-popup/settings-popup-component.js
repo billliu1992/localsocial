@@ -84,7 +84,7 @@ define([
 				});
 
 				this.setMessage('success', 'Updated');
-			}, () => {
+			}, (error) => {
 				this.setMessage('error', 'An error has occurred');
 			});
 		},

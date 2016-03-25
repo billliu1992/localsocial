@@ -1,9 +1,20 @@
-define(['axios', 'components/google-maps-service', 'components/coordinates-model'], function(axios, GoogleMapsService, Coordinates) {
+define([
+	'axios',
+	'components/google-maps-service',
+	'components/coordinates-model'
+], function(
+	axios,
+	GoogleMapsService,
+	Coordinates
+) {
 	'use strict';
 
-	var GEOIP_API_URL = '/location';
+	var BROWSER_GEOLOCATION_TIMEOUT = 5000;
 
 	var LocationService = {
+		useBrowserGeolocation : false,
+		cachedLocation : null,
+
 		doBrowserGeolocation() {
 			var browserGeolocationPromise = new Promise((resolve, reject) => {
 				if(navigator.geolocation) {
@@ -45,7 +56,12 @@ define(['axios', 'components/google-maps-service', 'components/coordinates-model
 							});
 						});
 					}, (error) => {
+						// Turn off browser geolocation if browser geolocation fails
+						this.useBrowserGeolocation = false;
+
 						reject();
+					}, {
+						timeout: BROWSER_GEOLOCATION_TIMEOUT
 					});
 				}
 				else {
@@ -54,6 +70,22 @@ define(['axios', 'components/google-maps-service', 'components/coordinates-model
 			});
 
 			return browserGeolocationPromise;
+		},
+		getLocation(useCache) {
+			return new Promise((resolve, reject) => {
+				var browserGeolocation = this.useBrowserGeolocation ? this.doBrowserGeolocation() : Promise.reject();
+
+				browserGeolocation.then((position) => {
+					resolve(position);
+				}, () => {
+					if(useCache) {
+						resolve(this.cachedLocation);
+					}
+					else {
+						resolve(null);
+					}
+				});
+			});
 		}
 	};
 

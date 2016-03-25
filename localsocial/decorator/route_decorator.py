@@ -4,17 +4,18 @@ from functools import wraps
 from flask import make_response, request, g
 from localsocial import app
 from localsocial.service import location_service
+from localsocial.model.location_model import Location
 
 #TODO: Right now, location_endpoint is dependent on api_endpoint since it returns a dict. We should change this
 def location_endpoint(original_function):
 	@wraps(original_function)
 	def new_function(*args, **kwargs):
 		detected_location = None
-		if request.method == "POST":
+		if request.method == "GET":
 			city = request.args.get('city', None)
 			longitude = request.args.get('longitude', None)
-			latitude = request.form.get('latitude', None)
-		elif request.method == "GET":
+			latitude = request.args.get('latitude', None)
+		elif request.method == "POST":
 			city = request.form.get('city', None)
 			longitude = request.form.get('longitude', None)
 			latitude = request.form.get('latitude', None)
