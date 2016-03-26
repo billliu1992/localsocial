@@ -37,20 +37,20 @@ requirejs([
 		if(user['current_location']) {
 			LocationService.cachedLocation = user['current_location'];
 		}
+
+		ReactDOM.render(
+			<HomeFeed />,
+			document.getElementById('post-feed')
+		);
+
+		ReactDOM.render(
+			<Sidebar />,
+			document.getElementById('left-bar')
+		);
+
+		ReactDOM.render(
+			<TopNav />,
+			document.getElementById('top-nav-bar')
+		);
 	});
-
-	ReactDOM.render(
-		<HomeFeed />,
-		document.getElementById('post-feed')
-	);
-
-	ReactDOM.render(
-		<Sidebar />,
-		document.getElementById('left-bar')
-	);
-
-	ReactDOM.render(
-		<TopNav />,
-		document.getElementById('top-nav-bar')
-	);
 });

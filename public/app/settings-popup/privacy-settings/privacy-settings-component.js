@@ -4,6 +4,7 @@ define([
 	'react'
 ], function(
 	SettingsField,
+	LocationService,
 	React
 ) {
 	var PrivacySettings = React.createClass({

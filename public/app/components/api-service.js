@@ -3,7 +3,7 @@ define([
 	'axios'
 ], function(
 	LocationService,
-	Axios
+	axios
 ) {
 	'use strict';
 
@@ -23,7 +23,7 @@ define([
 			});
 		},
 		localGet(url, httpConfig, useCache = true) {
-			LocationService.getLocation(useCache).then((position) => {
+			return LocationService.getLocation(useCache).then((position) => {
 				if(position !== null) {
 					if(!httpConfig) {
 						httpConfig = {};
@@ -31,7 +31,7 @@ define([
 					if(!httpConfig.params) {
 						httpConfig.params = {};
 					}
-					for(attr in position) {
+					for(var attr in position) {
 						httpConfig.params[attr] = position[attr];
 					}
 				}
@@ -40,17 +40,20 @@ define([
 			});
 		},
 		localPost(url, data, httpConfig, useCache = false) {
-			LocationService.getLocation(useCache).then((position) => {
+			return LocationService.getLocation(useCache).then((position) => {
 				if(position !== null) {
 					if(!data) {
 						data = {};
 					}
-					for(attr in position) {
+					for(var attr in position) {
 						data[attr] = position[attr];
 					}
 				}
 
-				return axios.post(url, data, httpConfig);
+				// TODO: move url encoding out of here, in case we switch to JSON
+				var encodedData = APIService.transformObjectToForm(data)
+
+				return axios.post(url, encodedData, httpConfig);
 			});
 		}
 	};

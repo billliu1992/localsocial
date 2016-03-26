@@ -194,9 +194,9 @@ function(
 				else if(data.error === true) {
 					this.setMessage('error', 'An error occurred. Please try again');
 				}
-			});
 
-			this.getNewPosts();
+				this.getNewPosts();
+			});
 		},
 		showProfile(userId) {
 			PopupService.showPopup(ProfilePopup, { userId });

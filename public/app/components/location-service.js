@@ -85,8 +85,8 @@ define([
 						resolve(null);
 					}
 				});
-			}
-		};
+			});
+		}
 	};
 
 	return LocationService;
