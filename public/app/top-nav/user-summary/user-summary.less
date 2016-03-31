@@ -7,6 +7,14 @@
 	box-sizing: border-box;
 	cursor: pointer;
 
+	&.shown {
+		background-color: @lightGreen;
+
+		.user-dropdown {
+			display: block;
+		}
+	}
+
 	.portrait-wrap, .user-name {
 		vertical-align: middle;
 	}
@@ -26,14 +34,6 @@
 
 	.user-name {
 		margin-left: .5em;
-	}
-
-	&:hover {
-		background-color: @lightGreen;
-
-		.user-dropdown {
-			display: block;
-		}
 	}
 
 	@dropdownBackground: @backgroundWhite;
