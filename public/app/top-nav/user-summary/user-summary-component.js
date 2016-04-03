@@ -30,7 +30,7 @@ define([
 				}
 
 				return <div className={summaryClass}>
-					<a href="" onClick={ this.openDropdown } onBlur={ this.closeDropdown }>
+					<a href="" onClick={ this.toggleDropdown } onBlur={ this.closeDropdown }>
 						<div className="portrait-wrap">
 							<img src={ this.props.getProfilePic() } />
 						</div>
@@ -53,11 +53,11 @@ define([
 			this.closeDropdown();
 			PopupService.showPopup(SettingsPopup, { userId : 'me' });
 		},
-		openDropdown(event) {
+		toggleDropdown(event) {
 			event.preventDefault();
 
 			this.setState({
-				showDropdown : true
+				showDropdown : !this.state.showDropdown
 			});
 		},
 		closeDropdown() {
