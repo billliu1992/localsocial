@@ -1,6 +1,13 @@
+@import (reference) 'app/common';
+
 .previous-photos {
 	overflow: auto;
 	max-width: 16em;
+
+	.mobile({
+		display: flex;
+		height: 3.5em;
+	});
 
 	div {
 		display: inline-block;

@@ -6,8 +6,16 @@
 	height: 100%;
 	box-sizing: border-box;
 
+	.mobile({
+		font-size: inherit;
+	});
+
 	input, button {
 		line-height: 1.5em;
+
+		.mobile({
+			line-height: unset;
+		});
 	}
 
 	input {
@@ -17,6 +25,10 @@
 		padding-left: .5em;
 
 		width: 30em;
+
+		.mobile({
+			width: 10em;
+		});
 
 		&:focus {
 			border-color: @darkGreen;

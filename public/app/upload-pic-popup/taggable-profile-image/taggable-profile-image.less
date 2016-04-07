@@ -4,9 +4,19 @@
 	position: relative;
 	height: 100%;
 
+	.mobile({
+		overflow: hidden;
+	});
+
 	img {
 		max-width: 25em;
 		max-height: 25em;
+
+		.mobile({
+			max-height: 100%;
+			max-width: 100%;
+			display: block;
+		});
 	}
 
 	@tagBoxBorderWidth: 1px;

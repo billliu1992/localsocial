@@ -1,7 +1,8 @@
 define([
 	'components/popup-service',
 	'components/user-service',
-	'profile-popup/profile-feed/profile-feed-component.js',
+	'upload-pic-popup/upload-pic-popup-component',
+	'profile-popup/profile-feed/profile-feed-component',
 	'profile-popup/user-relation-status/user-relation-status-component',
 	'profile-popup/biography/biography-component',
 	'profile-popup/friends-list/friends-list-component',
@@ -9,6 +10,7 @@ define([
 ], function(
 	PopupService,
 	UserService,
+	UploadPicPopup,
 	ProfileFeed,
 	UserRelationStatus,
 	Biography,
@@ -45,8 +47,14 @@ define([
 					followersString += ' Follower';
 				}
 
+				var updatePictureElem = null;
+				if(this.state.profile.self) {
+					updatePictureElem = <a className="change-profile-portrait" onClick={this.showUploadPopup}>Update Profile Picture</a>;
+				}
+
 				return <div className="user-profile-popup">
 					<img className="profile-portrait" src="/portrait/test" />
+					{updatePictureElem}
 					<h1 className="profile-name">{ this.state.profile['first_name'] + ' ' + this.state.profile['last_name'] }</h1>
 					<div className="profile-followers profile-info">{ followersString }</div>
 					<UserRelationStatus 
@@ -85,6 +93,9 @@ define([
 		},
 		showProfilePopup(userId) {
 			PopupService.updatePopup({ userId : userId });
+		},
+		showUploadPopup() {
+			PopupService.showPopup(UploadPicPopup);
 		}
 	});
 
