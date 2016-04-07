@@ -39,6 +39,7 @@ gulp.task('bower', () => {
 
 gulp.task('watch', () => {
 	gulp.watch('bower_components/**/*', gulp.series('bower'));
+	gulp.watch('app/**/*.html', gulp.series('html'));
 	gulp.watch('app/**/*.less', gulp.series('less'));
 	gulp.watch('app/**/*.js', gulp.series('javascript'));
 });
