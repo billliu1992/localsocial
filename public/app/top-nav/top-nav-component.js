@@ -21,8 +21,8 @@ define([
 					<strong>LocalSocial</strong>
 					<SearchBar />
 					<div>
-						<Notifications notifications={this.state.profile['notifications']} />
 						<UserSummaryComponent profile={this.state.profile} getProfilePic={this.getProfilePic} />
+						<Notifications notifications={this.state.profile['notifications']} />
 					</div>
 				</div>;
 			}

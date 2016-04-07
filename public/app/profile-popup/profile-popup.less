@@ -19,6 +19,16 @@
 	display: flex;
 	flex-flow: column wrap;
 
+	.mobile({
+		width: 100%;
+		height: 100%;
+		min-height: unset;
+		max-height: unset;
+		overflow: auto;
+
+		flex-flow: column nowrap;
+	});
+
 	h1 {
 		font-size: 1.5em;
 		font-weight: normal;
@@ -41,6 +51,11 @@
 		height: 8em;
 	}
 
+	.change-profile-portrait {
+		font-size: .7em;
+		margin-top: .2em;
+	}
+
 	.profile-name {
 		font-size: 1.5em;
 	}
@@ -57,6 +72,12 @@
 		align-self: flex-end;
 		overflow: auto;
 		padding-left: 1em;
+
+		.mobile({
+			align-self: center;
+			overflow: unset;
+			padding-left: unset;
+		});
 
 		h2 {
 			margin-bottom: .2em;

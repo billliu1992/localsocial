@@ -40,15 +40,10 @@ define([
 			if(newNotifications > 0) {
 				notificationsClass += ' new-notifications';
 			}
-
-			var notificationCountElem = null;
-			if(newNotifications > 0) {
-				notificationCountElem = <span>({newNotifications})</span>
-			}
 			
 			return <div className={ notificationsClass }>
 				<a href="" className="notifications-toggle" onClick={this.doToggleNotifications} onBlur={this.doHideNotifications}>
-					Notifications {notificationCountElem}
+					<span>{ '(' + newNotifications + ')' }</span>
 				</a>
 				<div className="notifications">{ notificationElems }</div>
 			</div>;

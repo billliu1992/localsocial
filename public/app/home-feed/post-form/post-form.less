@@ -13,28 +13,34 @@
 
 		padding-top: 1em;
 		padding-bottom: .5em;
+		display: flex;
 
 		.post-author-info {
 			display: inline-block;
 			vertical-align: top;
 			max-width: 4em;
 			max-height: 4em;
+			flex-basis: 4em;
 		}
 
-		textarea {
-			width: 80%;
-			height: 5em;
-			padding: .3em .3em .3em 1em;
+		.textarea-flex-wrapper {
+			flex-basis: 100%;
+			display: inline-block;
 
-			resize: none;
+			textarea {
+				width: 100%;
+				height: 5em;
+				padding: .3em .3em .3em 1em;
 
-			border: none;
-			background-color: white;
+				resize: none;
 
-			margin: 0;
-			box-sizing: border-box;
+				border: none;
+				background-color: white;
+
+				margin: 0;
+				box-sizing: border-box;
+			}
 		}
-
 	}
 
 	.post-privacy-settings {

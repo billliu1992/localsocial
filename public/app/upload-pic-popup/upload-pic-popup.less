@@ -8,18 +8,33 @@
 	display: flex;
 	flex-flow: row nowrap;
 
+	.mobile({
+		flex-flow: column;
+		height: 100%;
+		box-sizing: border-box;
+	});
+
 	form {
 		display: flex;
 		flex-flow: column nowrap;
 		justify-content: space-between;
 		margin-left: 1em;
 
+		.mobile({
+			display: block;
+			margin-top: .5em;
+		});
+
 		.photo-selector {
-			fieldset {
+			.photo-form-field {
 				label {
 					display: block;
 					font-size: .8em;
 					margin-bottom: .5em;
+
+					.mobile({
+						display: none;
+					});
 				}
 
 				input {

@@ -1,9 +1,20 @@
 @import (reference) 'app/common';
 
 .notification-area {
+	// Divider
+	// TODO: move this out of notifications
+	&:before {
+		margin-left: .5em;
+		padding-left: .5em;
+		border-left: 1px solid @lighterGray;
+		display: inline-block;
+		content: '';
+		height: 65%;
+		vertical-align: middle;
+	}
+
 	display: inline-block;
 	position: relative;
-	margin-right: 1em;
 	height: 2.5em;
 
 	&.show-notifications {

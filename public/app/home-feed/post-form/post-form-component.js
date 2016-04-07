@@ -25,12 +25,13 @@ define([
 
 			return (
 				<form id="post-form" className="pod important" onSubmit={this.submitNewPost }>
-					<fieldset className="post-body">
+					<div className="post-body">
 						<img className="post-author-info portrait large" src={ this.getProfilePic() } />
-						
-						<textarea value={this.state.postBody} onChange={ this.updatePostBody } placeholder="Say something">
-						</textarea>
-					</fieldset>
+						<div className="textarea-flex-wrapper">
+							<textarea value={this.state.postBody} onChange={ this.updatePostBody } placeholder="Say something">
+							</textarea>
+						</div>
+					</div>
 					<fieldset className={ privacyClassName }>
 						<select value={this.state.privacyDropdown} onChange={ this.updatePrivacyDropdown }>
 							<option value="public">Public</option>
