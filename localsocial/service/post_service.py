@@ -17,8 +17,8 @@ def create_new_post(author, body, privacy, location):
 def create_new_reply(author, body, parent_post_id, location, privacy):
 	current_time = datetime.now()
 
-	new_reply = Reply(parent_post_id, author.user_id, "", author.portrait,
-		author.portrait_set_date, body, current_time, location, privacy, False)
+	new_reply = Reply(parent_post_id, author.user_id, "", author.portrait, body, 
+		current_time, location, privacy, False)
 
 	reply_dao.create_reply(new_reply)
 
