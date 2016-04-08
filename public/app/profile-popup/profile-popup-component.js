@@ -53,7 +53,7 @@ define([
 				}
 
 				return <div className="user-profile-popup">
-					<img className="profile-portrait" src="/portrait/test" />
+					<img className="profile-portrait" src={ this.state.profile['portrait_src'] } />
 					{updatePictureElem}
 					<h1 className="profile-name">{ this.state.profile['first_name'] + ' ' + this.state.profile['last_name'] }</h1>
 					<div className="profile-followers profile-info">{ followersString }</div>
