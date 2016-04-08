@@ -41,7 +41,7 @@ define([
 			};
 
 			return <div className="user-entry" onMouseDown={preventDefault} onMouseUp={this.openProfile}>
-				<img src="/portrait/test" />
+				<img src={this.props.entry['portrait_src']} />
 				<span className="user-name">{this.props.entry.name}</span>
 				<span className="user-info">
 					{ followElement }
