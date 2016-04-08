@@ -7,7 +7,7 @@ from localsocial.decorator.route_decorator import api_endpoint, location_endpoin
 from localsocial.service import facebook_service, user_service, post_service, notification_service
 from localsocial.service.picture import picture_meta_service, filesystem_storage_service
 from localsocial.model.user_model import User, Friendship, UserPreferences
-from localsocial.model.picture_model import UploadedPicture, PictureSection
+from localsocial.model.picture_model import UploadedPicture, ProfilePicture, PictureSection
 from localsocial.model.notification_model import NotificationType
 
 from flask import redirect, request, session, g
@@ -378,6 +378,19 @@ def get_user_images(queried_user_identifier):
 
 	return picture_json_dicts
 
+@api_endpoint('/user/me/image/profile', methods=("GET",))
+@login_required
+@query_user()
+def get_user_profile_photo():
+	current_user = g.user
+
+	profile_picture = picture_meta_service.get_profile_picture_by_id(current_user.portrait)
+
+	if profile_picture != None:
+		return profile_picture.to_json_dict()
+	else:
+		return None
+
 @api_endpoint('/user/me/image/profile', methods=("POST",))
 @login_required
 @location_endpoint
@@ -413,6 +426,7 @@ def upload_profile_photo():
 
 		full_picture = UploadedPicture(current_user.user_id, datetime.now(), secured_name, current_location, None, None, privacy)
 		picture_meta_service.create_picture(full_picture)
+		picture_id = full_picture.picture_id
 
 		# Temporary local filesystem storage
 		hashed_filename = filesystem_storage_service.get_image_hash(full_picture.picture_id, full_picture.author_id)
@@ -426,9 +440,13 @@ def upload_profile_photo():
 		hashed_filename = filesystem_storage_service.get_image_hash(full_picture.picture_id, full_picture.author_id)
 		uploaded_photo = filesystem_storage_service.get_image(hashed_filename)
 
+
+	profile_picture = ProfilePicture(picture_id, datetime.now())
+	picture_meta_service.create_profile_picture(profile_picture)
+
 	# Temporary local filesystem storae
-	hashed_cropped_filename = filesystem_storage_service.get_cropped_hash(full_picture.picture_id, current_user.user_id)
-	
+	hashed_cropped_filename = filesystem_storage_service.get_cropped_hash(profile_picture.profile_picture_id, current_user.user_id)
+
 	try:
 		crop = PictureSection(crop_x, crop_y, crop_width, crop_height)
 		filesystem_storage_service.save_cropped_image(uploaded_photo, hashed_cropped_filename, crop)
@@ -436,8 +454,7 @@ def upload_profile_photo():
 		print se
 		return { "error" : True, "message" : "Error saving cropped image" }, 500
 
-	current_user.portrait = full_picture.picture_id
-	current_user.portrait_set_date = datetime.now()
+	current_user.portrait = profile_picture.profile_picture_id
 	updated_user = user_service.update_user(current_user)
 
 	updated_user_json_dict = updated_user.to_json_dict(private=True)

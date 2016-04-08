@@ -14,6 +14,12 @@ CREATE TABLE pictures (
 	privacy				privacyValues NOT NULL
 );
 
+CREATE TABLE profilePictures (
+	profilePictureId	SERIAL PRIMARY KEY,
+	uploadedPictureId	INTEGER REFERENCES pictures (pictureId) NOT NULL,
+	setDate				TIMESTAMPTZ NOT NULL
+);
+
 CREATE TABLE users (
 	userId			SERIAL PRIMARY KEY,
 
@@ -30,17 +36,13 @@ CREATE TABLE users (
 	lastName		VARCHAR(30) NOT NULL,
 	nickName		VARCHAR(30),
 	biography		TEXT CHECK(char_length(biography) <= 300),
-	portrait		INTEGER REFERENCES pictures (pictureId),
-	portraitSetDate	TIMESTAMP,
+	portrait		INTEGER REFERENCES profilePictures (profilePictureId),
 
 	-- Preferences
 	showLastName			BOOLEAN NOT NULL,
 	searchableByName		BOOLEAN NOT NULL,
 	useBrowserGeolocation	BOOLEAN NOT NULL
 );
-
--- Circular dependency
-ALTER TABLE pictures ADD FOREIGN KEY (authorId) REFERENCES users (userId);
 
 CREATE TYPE platform AS ENUM ('facebook', 'twitter', 'instagram');
 

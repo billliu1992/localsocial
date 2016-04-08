@@ -17,16 +17,14 @@ class UploadedPicture(object):
 		return json_dict
 
 class ProfilePicture(object):
-	def __init__(self, uploaded_picture_id, user_id, set_date, crop):
+	def __init__(self, uploaded_picture_id, set_date):
 		self.profile_picture_id = -1
 		self.uploaded_picture_id = uploaded_picture_id
 		self.set_date = set_date
-		self.crop = crop
 
 	def to_json_dict(self):
 		json_dict = self.__dict__
 		json_dict['set_date'] = json_dict['set_date'].isoformat("T")
-		json_dict['crop'] = json_dict['crop'].to_json_dict()
 
 		return json_dict
 

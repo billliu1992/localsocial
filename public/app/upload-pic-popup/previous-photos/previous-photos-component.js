@@ -18,11 +18,13 @@ define([
 				this.setState({
 					photos
 				}, () => {
-					UserService.getCurrentUserInfo().then((user) => {
-						for(var photoIdx in this.state.photos) {
-							var photo = this.state.photos[photoIdx];
-							if(user['portrait'] === photo['picture_id']) {
-								this.props.changePicture(photo['picture_id'], photo['image_src'])
+					UserService.getUserProfilePic().then((profilePic) => {
+						if(profilePic !== null) {
+							for(var photoIdx in this.state.photos) {
+								var photo = this.state.photos[photoIdx];
+								if(profilePic['uploaded_picture_id'] === photo['picture_id']) {
+									this.props.changePicture(profilePic['uploaded_picture_id'], photo['image_src'])
+								}
 							}
 						}
 					});

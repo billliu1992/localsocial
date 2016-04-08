@@ -40,8 +40,6 @@ def save_cropped_image(uploaded_file, new_filename, crop):
 	new_width = int(crop.width / scale)
 	new_height = int(crop.height / scale)
 
-	print crop.width
-	print crop.height
 	if crop.width < app.config["THUMBNAIL_SIZE"] or crop.height < app.config["THUMBNAIL_SIZE"]:
 		raise ServiceException("Cropped area too small")
 
@@ -67,7 +65,7 @@ def get_cropped_hash(cropped_id, author_id):
 	return hashed_name_obj.hexdigest()
 
 def build_src(hash, type):
-	return "/image/" + type + "/" + hash + ".jpg?r=" + str(random.randrange(1, 200))
+	return "/image/" + type + "/" + hash + ".jpg"
 
 def get_image_src(picture_id, author_id):
 	if picture_id == None or author_id == None:

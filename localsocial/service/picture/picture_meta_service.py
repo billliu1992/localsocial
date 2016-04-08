@@ -24,3 +24,12 @@ def update_picture(picture_obj):
 
 def delete_picture_by_id(picture_id):
 	return picture_dao.delete_picture_by_id(picture_id)
+
+def create_profile_picture(profile_picture_obj):
+	return profile_picture_dao.create_profile_picture(profile_picture_obj)
+
+def get_profile_picture_by_id(profile_picture_id):
+	return profile_picture_dao.get_profile_picture_by_id(profile_picture_id)
+
+def delete_profile_picture_by_id(profile_picture_id):
+	return profile_picture_dao.delete_profile_picture_by_id(profile_picture_id)

@@ -8,7 +8,7 @@ class Friendship():
 	SELF = "self"
 
 class User():
-	def __init__(self, email, phone, f_name, l_name, n_name, portrait, portrait_set_date, biography, preferences):
+	def __init__(self, email, phone, f_name, l_name, n_name, portrait, biography, preferences):
 		self.user_id = -1
 		self.email = email
 		self.phone = phone
@@ -16,7 +16,6 @@ class User():
 		self.last_name = l_name
 		self.nick_name = n_name
 		self.portrait = portrait
-		self.portrait_set_date = portrait_set_date
 		self.biography = biography
 		self.preferences = preferences
 
@@ -33,9 +32,6 @@ class User():
 		portrait_src = filesystem_storage_service.get_cropped_src(self.portrait, self.user_id)
 		if show_private_fields:
 			user_dict = self.__dict__
-
-			if user_dict["portrait_set_date"] != None:
-				user_dict["portrait_set_date"] = user_dict["portrait_set_date"].isoformat("T")
 			user_dict["preferences"] = self.preferences.to_json_dict()
 
 		else:

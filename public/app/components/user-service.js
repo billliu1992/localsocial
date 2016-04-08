@@ -43,7 +43,7 @@ define([
 					var thisCallback = this.listeners[i];
 
 					if(thisCallback.$$lscounter === counter) {
-						this.listeners = this.listeners.splice(i, 1);
+						this.listeners = this.listeners.slice(0, i).concat(...this.listeners.slice(i+1));
 					}
 				}
 			};
@@ -145,7 +145,7 @@ define([
 		deleteFollow(userId) {
 			return axios.delete('/user/' + userId + '/follows/request').then(() => true, () => false);
 		},
-		getUserProfilePictureList() {
+		getUserProfilePic() {
 			return APIService.filterResponse(axios.get('/user/me/image/profile'));
 		},
 		uploadUserProfilePic(formData) {
