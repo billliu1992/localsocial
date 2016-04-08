@@ -41,15 +41,15 @@ define([
 				<TaggableProfileImage src={this.state.imageUrl} onChange={this.doImageTag} onNewImage={this.doImageUpdateProps} />
 				<form onSubmit={this.doSubmit}>
 					<div className="photo-selector">
-						<fieldset>
+						<div className="photo-form-field">
 							<label forHtml="new-photo-upload">Upload a photo</label>
 							<input type="file" onChange={this.doUpload} id="new-photo-upload" />
-						</fieldset>
+						</div>
 						<div className="or-text">Or</div>
-						<fieldset>
+						<div className="photo-form-field">
 							<label>Select a previous image</label>
 							<PreviousPhotos changePicture={this.selectPreviousImage} />
-						</fieldset>
+						</div>
 					</div>
 					<div className="button-row">
 						{ errorMessageElem }
