@@ -13,9 +13,13 @@ def get_image(type, picture_hash):
 	else:
 		return "No image", 404
 
-@app.route('/')
+@app.route('/web/')
 def serve_index_page():
-	return redirect('/web/home.html')
+	return send_from_directory(os.path.join(app.root_path, "..", "public", "target"), "index.html")
+
+@app.route('/web/home')
+def serve_home_page():
+	return send_from_directory(os.path.join(app.root_path, "..", "public", "target"), "home.html")
 
 @app.route('/image/<type>/<hashed>')
 def serve_uploaded_images(type, hashed):

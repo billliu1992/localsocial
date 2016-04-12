@@ -1,37 +1,35 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Localsocial</title>
+		<title>Hapnen - What's Hapnen?</title>
+
+		<link rel="stylesheet" href="index.css"></link>
+
+		<script data-main="index.js" src="bower_components/requirejs/require.js"></script>
 	</head>
 	<body>
-		Login Form:
+		<div class="page">
+			<nav>
+				<div id="login-form-container" class="contained"></div>
+			</nav>
+			<main class="contained">
+				<section id="hero-container">
+					<h1>Hapnen</h1>
+					<h3>What's hapnen?</h3>
+				</section>
 
-		<form action="/user/login" method="POST">
-			Email
-			<input type="text" name="email" />
-			Pass
-			<input type="password" name="password" />
+				<section id="create-account-container" class="pod">
+					<h4>Create an account</h4>
+					<div id="create-account"></div>
+				</section>
+			</main>
+		</div>
+		<footer>
+			<div class="footer-content">
+				&copy; 2016 Hapnen
 
-			<button>Submit</button>
-		</form>
-
-		<form action="/user/create" method="POST">
-			Email
-			<input type="email" name="email" />
-			Phone
-			<input type="text" name="phone" />
-			First
-			<input type="text" name="first-name" />
-			Last
-			<input type="text" name="last-name" />
-			Nick
-			<input type="text" name="nick-name" />
-			Password
-			<input type="password" name="password" />
-			Confirm
-			<input type="password" name="confirm-password" />
-
-			<button>Submit</button>
-		</form>
+				<a href="https://github.com/billliu1992/localsocial">Want to contribute?</a>
+			</div>
+		</footer>
 	</body>
 </html>

@@ -55,6 +55,10 @@ def do_login():
 	except:
 		return { "success" : False }
 
+@api_endpoint("/user/login", methods=("DELETE",))
+def do_logout():
+	session.clear()
+
 @api_endpoint("/user/create", methods=("POST",))
 def create_user():
 	email = request.form["email"]
@@ -70,8 +74,7 @@ def create_user():
 	if password != confirm_password:
 		return { "success" : False, "reason" : "password" }
 	else:
-		phone = user_service.convert_text_to_num(phone)
-		new_user = User(email, phone, first_name, last_name, nick_name, portrait, None, "", DEFAULT_PREFS)
+		new_user = User(email, phone, first_name, last_name, nick_name, portrait, "", DEFAULT_PREFS)
 
 		new_user = user_service.create_new_user(new_user, password)
 		session["user_id"] = new_user.user_id
@@ -119,21 +122,21 @@ def update_user_info():
 
 	if "email" in request.form:
 		requested_user.email = request.form["email"]
-	elif "phone" in request.form:
+	if "phone" in request.form:
 		phone = request.form["phone"]
 		phone = user_service.convert_text_to_num(phone)
 		requested_user.phone = phone
-	elif "first_name" in request.form:
+	if "first_name" in request.form:
 		requested_user.first_name = request.form["first_name"]
-	elif "last_name" in request.form:
+	if "last_name" in request.form:
 		requested_user.last_name = request.form["last_name"]
-	elif "nick_name" in request.form:
+	if "nick_name" in request.form:
 		requested_user.nick_name = request.form["nick_name"]
-	elif "show_last_name" in request.form:
+	if "show_last_name" in request.form:
 		requested_user.preferences.show_last_name = request.form["show_last_name"] == "true"
-	elif "name_search" in request.form:
+	if "name_search" in request.form:
 		requested_user.preferences.name_search = request.form["name_search"] == "true"
-	elif "browser_geo" in request.form:
+	if "browser_geo" in request.form:
 		requested_user.preferences.browser_geo = request.form["browser_geo"] == "true"
 
 	updated_user = user_service.update_user(requested_user)
