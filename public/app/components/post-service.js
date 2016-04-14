@@ -46,6 +46,11 @@ define([
 				})
 			);
 		},
+		deletePost(postId) {
+			return APIService.filterResponse(
+				axios.delete('/post/' + postId)
+			);
+		},
 		saveReply(postId, data) {
 			return APIService.filterResponse(
 				APIService.localPost('/post/' + postId + '/reply', data, {
@@ -54,6 +59,11 @@ define([
 					}
 				})
 			).catch((response) => ({ status: response.status, data: response.data}));
+		},
+		deleteReply(replyId) {
+			return APIService.filterResponse(
+				axios.delete('/reply/' + replyId)
+			);
 		},
 		likePost(postId) {
 			return APIService.filterResponse(axios.post('/post/' + postId + '/like'));

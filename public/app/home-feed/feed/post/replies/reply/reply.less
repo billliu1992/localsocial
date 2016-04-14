@@ -13,24 +13,27 @@
 		font-size: .8em;
 	}
 
-	.reply-location, .reply-date {
-		font-size: .7em;
-	}
-
-	.author-info {
+	.reply-info {
 		vertical-align: top;
 		line-height: 1;
 		display: inline-block;
 		margin-left: .3em;
 
 		.reply-author {
-			color: @darkGreen;
 			display: block;
 		}
 
-		.reply-location, .reply-date {
+		.reply-meta {
+			font-size: .7em;
 			color: @lightGray;
-			margin-right: 1em;
+
+			.reply-meta-entry {
+				margin-right: .5em;
+			}
+
+			.delete-reply {
+				color: @darkerGreen;
+			}
 		}
 	}
 

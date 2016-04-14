@@ -1,0 +1,21 @@
+@import (reference) 'app/common';
+
+.post-delete {
+	cursor: pointer;
+
+	&.confirming {
+		cursor: default;
+	}
+
+	.confirm-text {
+		color: @lightGray;
+	}
+
+	.delete-option {
+		margin-right: .4em;
+
+		&.confirm {
+			margin-left: .4em;
+		}
+	}
+}

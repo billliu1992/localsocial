@@ -79,6 +79,19 @@ def create_reply(reply):
 
 	return reply
 
+def delete_replies_by_post_id(post_id):
+	cursor = handled_execute(db_conn, """
+		DELETE FROM replies WHERE postId=%s
+		""", (post_id,))
+
+	return cursor.rowcount
+
+def delete_reply_by_id(reply_id, author_id):
+	cursor = handled_execute(db_conn, """
+		DELETE FROM replies WHERE replyId=%s AND authorId=%s
+		""", (reply_id, author_id))
+
+	return cursor.rowcount
 
 
 def update_reply(reply):

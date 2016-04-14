@@ -94,6 +94,13 @@ def create_posts():
 		}
 		return result_json_dict
 
+@api_endpoint('/post/<int:post_id>', methods=("DELETE",))
+@login_required
+def delete_post(post_id):
+	current_user = g.user
+
+	return { "error" : not post_service.delete_post_by_id(current_user.user_id, post_id) }
+
 
 @api_endpoint('/post/<int:post_id>/reply', methods=("POST",))
 @location_endpoint
@@ -143,3 +150,10 @@ def delete_like(post_id):
 		}
 
 	return { "error" : False }
+
+@api_endpoint('/reply/<int:reply_id>', methods=("DELETE",))
+@login_required
+def delete_reply(reply_id):
+	current_user = g.user
+
+	return { "error" : not post_service.delete_reply_by_id(current_user.user_id, reply_id) }

@@ -2,11 +2,13 @@ define([
 	'components/post-service',
 	'home-feed/feed/post/replies/replies-component',
 	'home-feed/feed/post/like/like-component',
+	'home-feed/feed/post/delete/delete-component',
 	'react'
 ], function(
 	PostService,
 	Replies,
 	Like,
+	Delete,
 	React
 ) {
 	'use strict';
@@ -14,10 +16,15 @@ define([
 	var Post = React.createClass({
 		getInitialState() {
 			return {
-				updatedPost : null
+				updatedPost : null,
+				isDeleted : false
 			};
 		},
 		render() {
+			if(this.state.isDeleted === true) {
+				return null;
+			}
+
 			var displayedPost = this.props.post;
 			if(this.state.updatedPost !== null) {
 				displayedPost = this.state.updatedPost;
@@ -45,12 +52,14 @@ define([
 					</div>
 					<div className="post-controls">
 						<Like className="post-control" postId={ displayedPost['post_id'] } likes={ displayedPost['likes'] } liked = { displayedPost['liked'] } />
+						<Delete className="post-control" authorId={ displayedPost['author_id'] } onConfirm={ this.deletePost }>Delete</Delete>
 					</div>
 					<Replies
 						replies={ displayedPost['replies'] }
 						postId={ displayedPost['post_id'] }
 						location={ this.props.location }
 						updatePost={ this.updatePost }
+						showProfile={ this.props.showProfile }
 					/>
 				</div>
 			);
@@ -62,6 +71,15 @@ define([
 		},
 		showUserProfile() {
 			this.props.showProfile(this.props.post['author_id']);
+		},
+		deletePost() {
+			PostService.deletePost(this.props.post['post_id']).then((data) => {
+				if(data.error !== true) {
+					this.setState({
+						isDeleted : true
+					});
+				}
+			});
 		}
 	});
 

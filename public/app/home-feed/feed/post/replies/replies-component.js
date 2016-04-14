@@ -27,7 +27,7 @@ define([
 			}
 
 			var replies = displayedReplies.map((reply) =>
-				<Reply key={ reply['reply_id'] } reply={ reply } location={ this.props.location } />
+				<Reply key={ reply['reply_id'] } reply={ reply } location={ this.props.location } showProfile={this.props.showProfile}/>
 			);
 
 			return (

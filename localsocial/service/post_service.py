@@ -24,6 +24,16 @@ def create_new_reply(author, body, parent_post_id, location, privacy):
 
 	return new_reply
 
+def delete_post_by_id(current_user_id, post_id):
+	# Delete dangling rows
+	reply_dao.delete_replies_by_post_id(post_id)
+	like_dao.delete_likes(post_id)
+
+	return post_dao.delete_post_by_id(post_id, current_user_id) > 0
+
+def delete_reply_by_id(current_user_id, reply_id):
+	return reply_dao.delete_reply_by_id(reply_id, current_user_id)
+
 def get_posts_by_user(current_user_id, searched_user, are_friends, page_num=1, post_per_page=10, max_id=None):
 	if page_num < 1:
 		page_num = 1

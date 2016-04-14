@@ -50,7 +50,7 @@ define([
 						</span>
 
 						<button type="button" onClick={this.doUnexpand} className="cancel">Cancel</button>
-						<button className="small">Submit</button>
+						<button>Submit</button>
 					</div>
 				</div>
 			</form>;

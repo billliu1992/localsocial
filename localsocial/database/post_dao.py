@@ -180,6 +180,13 @@ def get_post_by_id(current_user_id, post_id):
 
 	return new_post
 
+def delete_post_by_id(post_id, author_id):
+	cursor = handled_execute(db_conn, """
+		DELETE FROM posts WHERE postId=%s AND authorId=%s;
+		""", (post_id, author_id))
+
+	return cursor.rowcount
+
 def build_replies(post_ids, post_objects, current_user_id):
 	replies = reply_dao.get_replies_with_post_ids(post_ids, current_user_id)
 
