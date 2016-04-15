@@ -40,7 +40,7 @@ define([
 					<div className="user-dropdown">
 						<div className="dropdown-option profile" onMouseDown={preventDefault} onMouseUp={this.showProfilePopup}>Profile</div>
 						<div className="dropdown-option settings" onMouseDown={preventDefault} onMouseUp={this.showSettingsPopup}>Settings</div>
-						<div className="dropdown-option log-out">Log Out</div>
+						<div className="dropdown-option log-out" onMouseDown={preventDefault} onMouseUp={this.logOut}>Log Out</div>
 					</div>
 				</div>;
 			}
@@ -64,6 +64,11 @@ define([
 			this.setState({
 				showDropdown : false
 			});
+		},
+		logOut(event) {
+			event.preventDefault();
+
+			UserService.logOut();
 		}
 	});
 

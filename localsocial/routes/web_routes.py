@@ -1,6 +1,6 @@
 import os
 
-from flask import send_file, redirect, request, send_from_directory
+from flask import send_file, redirect, request, send_from_directory, session
 from localsocial import app
 
 def get_image(type, picture_hash):
@@ -12,6 +12,13 @@ def get_image(type, picture_hash):
 		return send_from_directory(os.path.join(app.root_path, app.config["FILESYSTEM_STORE_FOLDER"], type), picture_filename)
 	else:
 		return "No image", 404
+
+@app.route('/')
+def get_home():
+	if 'user_id' in session:
+		return redirect('/web/home.html')
+	else:
+		return redirect('/web/index.html')
 
 @app.route('/web/')
 def serve_index_page():

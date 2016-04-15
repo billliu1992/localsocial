@@ -17,10 +17,7 @@ define([
 
 	var log = LogService.createNewLogger('UserService');
 
-	var userPromise = APIService.filterResponse(axios.get('/user/me'))
-		.catch((response) => {
-			log.log('Could not get user, status: ' + response.status);
-		});
+	var userPromise = APIService.filterResponse(axios.get('/user/me').catch(() => window.location.href = '/'));
 
 	var ListenerService = {
 		listeners : [],
@@ -53,6 +50,9 @@ define([
 	var UserService = {
 		getCurrentUserInfo() {
 			return userPromise;
+		},
+		logOut() {
+			axios.delete('/user/login').then(() => window.location.href = '/');
 		},
 		updateCurrentUserInfo(newInfo) {
 			return APIService

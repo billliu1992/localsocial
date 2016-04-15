@@ -1,8 +1,10 @@
 define([
 	'components/api-service',
+	'config',
 	'axios'
 ], function(
 	APIService,
+	Config,
 	axios
 ) {
 	'use strict';
@@ -34,7 +36,7 @@ define([
 			});
 		},
 		handleLoggedIn : function() {
-			window.location.href = "/web/home";
+			window.location.href = Config.WEBAPP_HOME;
 		}
 	}
 });
