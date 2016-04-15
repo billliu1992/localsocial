@@ -1,3 +1,5 @@
+CREATE TYPE privacyValues as ENUM ('public', 'hide_location', 'friends');
+
 CREATE TABLE pictures (
 	pictureId			SERIAL PRIMARY KEY,
 	authorId			INTEGER NOT NULL,
@@ -52,8 +54,6 @@ CREATE TABLE platformLink (
 	externalId		VARCHAR(75) NOT NULL,
 	UNIQUE(loginPlatform, externalId)
 );
-
-CREATE TYPE privacyValues as ENUM ('public', 'hide_location', 'friends');
 
 CREATE TABLE posts (
 	-- General post values
