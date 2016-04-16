@@ -1,21 +1,23 @@
 @import "app/common";
 
-main {
-	margin-top: 2em;
-	display: flex;
+#home-page {
+	main {
+		margin-top: 2em;
+		display: flex;
 
-	#left-bar {
-		.mobile({
-			display: none;
-		});
+		#left-bar {
+			.mobile({
+				display: none;
+			});
 
-		width: 20%;
-		display: inline-block;
-		vertical-align: top;
-	}
+			width: 20%;
+			display: inline-block;
+			vertical-align: top;
+		}
 
-	#post-feed {
-		flex-basis: 100%;
-		display: inline-block;
+		#post-feed {
+			flex-basis: 100%;
+			display: inline-block;
+		}
 	}
 }

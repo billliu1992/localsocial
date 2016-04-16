@@ -3,11 +3,17 @@
 	<head>
 		<title>Hapnen - What's Hapnen?</title>
 
+		<%= devStart %>
 		<link rel="stylesheet" href="index.css"></link>
+		<%= devEnd %>
 
-		<script data-main="index.js" src="bower_components/requirejs/require.js"></script>
+		<%= prdStart %>
+		<link rel="stylesheet" href="hapnen.min.css"></link>
+		<%= prdEnd %>
+
+		<script data-main="index.js" src="bower_components/requirejs/require.js" type="application/javascript"></script>
 	</head>
-	<body>
+	<body id="index-page">
 		<div class="page">
 			<nav>
 				<div id="login-form-container" class="contained"></div>

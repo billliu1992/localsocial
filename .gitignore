@@ -5,6 +5,7 @@ instance/
 
 config.js
 
+public/.tmp/
 public/target/
 
 **/bower_components/

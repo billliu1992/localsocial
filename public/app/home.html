@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<script data-main="home.js" src="bower_components/requirejs/require.js"></script>
+		<script data-main="home.js" src="bower_components/requirejs/require.js" type="application/javascript"></script>
 
+		<%= devStart %>
 		<link rel="stylesheet" href="home.css"></link>
 		<link rel="stylesheet" href="home-feed/home-feed-component.css"></link>
 		<link rel="stylesheet" href="home-feed/post-form/post-form.css"></link>
@@ -35,13 +36,18 @@
 		<link rel="stylesheet" href="upload-pic-popup/upload-pic-popup.css"></link>
 		<link rel="stylesheet" href="upload-pic-popup/taggable-profile-image/taggable-profile-image.css"></link>
 		<link rel="stylesheet" href="upload-pic-popup/previous-photos/previous-photos.css"></link>
+		<%= devEnd %>
+
+		<%= prdStart %>
+			<link rel="stylesheet" href="hapnen.min.css"></link>
+		<%= prdEnd %>
 
 		<title>Localsocial Home</title>
 
 		<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1">
 	</head>
 
-	<body>
+	<body id="home-page">
 		<nav id="top-nav-bar"></nav>
 		<main class="contained main-content">
 			<aside id="left-bar"></aside>
