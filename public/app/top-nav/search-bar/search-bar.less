@@ -8,6 +8,7 @@
 
 	.mobile({
 		font-size: inherit;
+		width: 100%;
 	});
 
 	input, button {
@@ -15,6 +16,7 @@
 
 		.mobile({
 			line-height: unset;
+			font-size: 1em;
 		});
 	}
 
@@ -27,7 +29,8 @@
 		width: 30em;
 
 		.mobile({
-			width: 10em;
+			width: 100%;
+			box-sizing: border-box;
 		});
 
 		&:focus {

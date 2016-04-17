@@ -18,9 +18,9 @@ define([
 		render() {
 			if(this.state.profile !== null) {
 				return <div className="top-nav contained">
-					<strong>LocalSocial</strong>
+					<h1><strong>LocalSocial</strong></h1>
 					<SearchBar />
-					<div>
+					<div className="user-container">
 						<UserSummaryComponent profile={this.state.profile} getProfilePic={this.getProfilePic} />
 						<Notifications notifications={this.state.profile['notifications']} />
 					</div>

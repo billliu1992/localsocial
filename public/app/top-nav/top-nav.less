@@ -2,13 +2,29 @@
 
 .top-nav {
 	height: 2.5em;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 
 	.mobile({
 		padding: 0 .5em;
 		font-size: .7em;
 	});
 
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
+	h1 {
+		margin: 0;
+		font-size: 1em;
+
+		.mobile({
+			margin-right: 1em;
+		})
+	}
+
+	.user-container {
+		white-space: nowrap;
+
+		.mobile({
+			margin-left: 1em;
+		})
+	}
 }

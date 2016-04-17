@@ -11,6 +11,11 @@
 	border: 1px solid @medGreen;
 	border-bottom: none;
 
+	.mobile({
+		right: 12vw;
+		width: 75vw;
+	});
+
 	&.hidden {
 		.map-node {
 			display: none;
@@ -25,5 +30,10 @@
 	.map-node {
 		width: 18em;
 		height: 18em;
+
+		.mobile({
+			height: 35vh;
+			width: 75vw;
+		});
 	}
 }
