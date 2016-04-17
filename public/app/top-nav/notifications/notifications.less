@@ -17,6 +17,10 @@
 	position: relative;
 	height: 2.5em;
 
+	.mobile({
+		white-space: normal;	// Need to unset inherited property
+	});
+
 	&.show-notifications {
 		.notifications {
 			display: block;

@@ -3,6 +3,7 @@ define([
 	'upload-pic-popup/upload-pic-popup-component',
 	'profile-popup/profile-popup-component',
 	'settings-popup/settings-popup-component',
+	'copyright-text/copyright-text-component',
 	'components/popup-service',
 	'components/user-service',
 	'components/user-profile-mixin',
@@ -12,6 +13,7 @@ define([
 	UploadPicPopup,
 	ProfilePopup,
 	SettingsPopup,
+	CopyrightText,
 	PopupService,
 	UserService,
 	UserProfileMixin,
@@ -43,14 +45,7 @@ define([
 					<div className="sidebar-option" onClick={this.showProfilePopup}>Profile</div>
 					<div className="sidebar-option" onClick={this.showSettingsPopup}>Settings</div>
 				</div>
-				<div className="legal-misc">
-					<div>
-						&copy; 2015 Bill Liu
-					</div>
-					<div>
-						This product includes GeoLite2 data created by MaxMind, available from <a href="http://www.maxmind.com">http://www.maxmind.com</a>.
-					</div>
-				</div>
+				<CopyrightText />
 			</div>;
 		},
 		showFriendRequests() {

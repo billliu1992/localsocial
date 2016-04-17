@@ -3,6 +3,10 @@
 #index-page {
 	.contained {
 		max-width: 70em;
+
+		.mobile({
+			max-width: 90%;
+		});
 	}
 
 	input {
@@ -32,6 +36,12 @@
 				input {
 					margin-right: 1em;
 					padding: .3em .8em;
+
+					.mobile({
+						width: 35%;
+						box-sizing: border-box;
+						padding: .3em .2em;
+					});
 				}
 
 				button {
@@ -47,6 +57,11 @@
 			align-items: center;
 			justify-content: space-around;
 
+			.mobile({
+				flex-flow: column nowrap;
+				justify-content: flex-start;
+			});
+
 			section {
 				display: inline-block;
 				
@@ -56,6 +71,11 @@
 				font-weight: normal;
 				text-align: center;
 				width: 50%;
+
+				.mobile({
+					width: 100%;
+					margin: 5%;
+				});
 
 				h1 {
 					font-weight: normal;
@@ -74,6 +94,10 @@
 			#create-account-container {
 				padding: 1em 1em .5em 1em;
 				width: 35%;
+
+				.mobile({
+					width: 100%;
+				});
 
 				h4 {
 					font-size: 1em;

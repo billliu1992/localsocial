@@ -1,12 +1,14 @@
 define([
 	'settings-popup/settings-popup-component',
 	'profile-popup/profile-popup-component',
+	'copyright-text/copyright-text-component',
 	'components/user-service',
 	'components/popup-service',
 	'react'
 ], function(
 	SettingsPopup,
 	ProfilePopup,
+	CopyrightText,
 	UserService,
 	PopupService,
 	React
@@ -41,6 +43,7 @@ define([
 						<div className="dropdown-option profile" onMouseDown={preventDefault} onMouseUp={this.showProfilePopup}>Profile</div>
 						<div className="dropdown-option settings" onMouseDown={preventDefault} onMouseUp={this.showSettingsPopup}>Settings</div>
 						<div className="dropdown-option log-out" onMouseDown={preventDefault} onMouseUp={this.logOut}>Log Out</div>
+						<CopyrightText />
 					</div>
 				</div>;
 			}
