@@ -447,6 +447,15 @@ def upload_profile_photo():
 	profile_picture = ProfilePicture(picture_id, datetime.now())
 	picture_meta_service.create_profile_picture(profile_picture)
 
+	# Attempt to delete previous portrait
+	if current_user.portrait != None:
+		old_hash = filesystem_storage_service.get_cropped_hash(current_user.portrait, current_user.user_id)
+		try:
+			filesystem_storage_service.delete_cropped(old_hash)
+		except OSError:
+			pass
+
+
 	# Temporary local filesystem storae
 	hashed_cropped_filename = filesystem_storage_service.get_cropped_hash(profile_picture.profile_picture_id, current_user.user_id)
 
@@ -468,6 +477,13 @@ def upload_profile_photo():
 @login_required
 def delete_profile_photo():
 	current_user = g.user
+
+	if current_user.portrait != None:
+		old_hash = filesystem_storage_service.get_cropped_hash(current_user.portrait, current_user.user_id)
+		try:
+			filesystem_storage_service.delete_cropped(old_hash)
+		except OSError:
+			pass
 
 	current_user.portrait = None
 	updated_user = user_service.update_user(current_user)

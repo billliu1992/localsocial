@@ -18,6 +18,7 @@ define([
 		render() {
 			var notificationElems = null;
 			var newNotifications = 0;
+
 			if(this.props.notifications.length > 0) {
 				notificationElems = this.props.notifications.slice(0, 15).map((notification) => {
 					if(!notification['seen']) {

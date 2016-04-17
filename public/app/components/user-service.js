@@ -76,6 +76,8 @@ define([
 					user[property] = newUser[property];
 				}
 
+				console.log(user);
+
 				this.replaceCurrentUserInfo(user);
 			});
 		},
@@ -158,15 +160,13 @@ define([
 			});
 		},
 		deleteUserProfilePic() {
-			var deletePromise = APIService.filterResponse(axios.delete('/user/me/image/profile'));
+			return axios.delete('/user/me/image/profile').then((response) => {
+				var user = response.data.user;
 
-			userPromise = deletePromise.then((result) => {
-				ListenerService.fireListeners(result.user);
+				this.overwriteCurrentUserInfo(user);
 
-				return result.user;
+				return response.data;
 			});
-
-			return deletePromise;
 		},
 		getUploadedImages(userId) {
 			return APIService.filterResponse(axios.get('/user/' + userId + '/image'));

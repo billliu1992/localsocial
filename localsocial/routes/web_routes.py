@@ -32,6 +32,10 @@ def serve_home_page():
 def serve_uploaded_images(type, hashed):
 	return get_image(type, hashed)
 
+@app.route('/portrait/none')
+def serve_no_portrait():
+	return send_file('no-portrait.svg')
+
 @app.route('/portrait/test')
 def serve_test_portrait():
 	return send_file('test-portrait.jpg')
