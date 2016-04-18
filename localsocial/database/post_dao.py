@@ -15,7 +15,7 @@ def get_posts_by_user(current_user_id, searched_user, friends, limit, offset, ma
 		FROM posts
 		WHERE authorId=%(searched_user_id)s
 			AND (privacy != 'friends' OR %(friends)s = True)
-			AND (%(max_id)s IS NULL OR postId < %(max_id)s)
+			AND (%(max_id)s IS NULL OR postId <= %(max_id)s)
 		ORDER BY postId DESC
 		LIMIT %(limit)s OFFSET %(offset)s;
 		""", { "searched_user_id" : searched_user.user_id, "friends" : friends, "max_id" : max_id, "limit" : limit, "offset" : offset})
@@ -58,6 +58,9 @@ def get_posts_by_user(current_user_id, searched_user, friends, limit, offset, ma
 
 
 def get_post_feed(current_user_id, current_location, range, limit, skip, max_id=None):
+	print limit
+	print skip
+
 	current_long = current_location.longitude
 	current_lat = current_location.latitude
 
@@ -78,7 +81,7 @@ def get_post_feed(current_user_id, current_location, range, limit, skip, max_id=
 			AND (privacy != 'friends' OR authorId=%(current_user_id)s
 				OR (authorId IN (SELECT firstUserId FROM userFriends WHERE secondUserId = %(current_user_id)s)
 					AND %(current_user_id)s IN (SELECT firstUserId FROM userFriends WHERE secondUserId = authorId)))
-			AND (%(max_id)s IS NULL OR postId < %(max_id)s)
+			AND (%(max_id)s IS NULL OR postId <= %(max_id)s)
 		ORDER BY postId DESC
 		LIMIT %(limit)s OFFSET %(skip)s;""", {
 			"current_long" : current_long, "current_lat" : current_lat, "range" : range, "current_user_id" : current_user_id,
