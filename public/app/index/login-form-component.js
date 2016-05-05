@@ -16,8 +16,8 @@ define([
 		},
 		render() {
 			return <form onSubmit={this.doLogin} method="POST">
-				<input type="email" name="email" placeholder="Email" value={this.state.email} onChange={this.updateEmail} />
-				<input type="password" name="password" placeholder="Password" value={this.state.password} onChange={this.updatePassword}/>
+				<input type="email" name="email" placeholder="Email" required value={this.state.email} onChange={this.updateEmail} />
+				<input type="password" name="password" placeholder="Password" required value={this.state.password} onChange={this.updatePassword}/>
 				<button>Login</button>
 			</form>;
 		},
