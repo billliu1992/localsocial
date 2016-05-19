@@ -67,9 +67,9 @@ def get_posts_by_user(current_user_id, searched_user, are_friends, page_num=1, p
 
 	Returns a list of the queried post
 	"""
-	limit = page_to_query(page_num, post_per_page)
+	offset = page_to_query(page_num, post_per_page)
 
-	return post_dao.get_posts_by_user(current_user_id, searched_user, are_friends, limit, max_id)
+	return post_dao.get_posts_by_user(current_user_id, searched_user, are_friends, post_per_page, offset, max_id)
 
 def get_post_by_id(current_user_id, post_id):
 	"""
@@ -85,9 +85,9 @@ def get_post_feed(current_user_id, location, max_dist=25, page_num=1, post_per_p
 
 	Returns a list of posts
 	"""
-	limit = page_to_query(page_num, post_per_page)
+	offset = page_to_query(page_num, post_per_page)
 		
-	return post_dao.get_post_feed(current_user_id, location, max_dist, post_per_page, limit, max_id)
+	return post_dao.get_post_feed(current_user_id, location, max_dist, post_per_page, offset, max_id)
 
 def get_post_replies(post):
 	"""
