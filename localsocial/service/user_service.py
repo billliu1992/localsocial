@@ -1,10 +1,17 @@
+"""
+Service for operations on users
+"""
+
 import re
 
+from localsocial.exceptions import CreateUserException
 from localsocial.model.user_model import User, Friendship, UserPreferences
 from localsocial.database import user_dao, ext_platform_dao, user_relations_dao
 from localsocial.service import facebook_service, auth_service
 
 BIOGRAPHY_MAX_LENGTH = 300
+MIN_PASSWORD_LENGTH = 7
+VALID_EMAIL_PATTERN = re.compile(r"\w+?@\w+?")
 
 def convert_text_to_num(in_string):
 	only_numbers = "".join(char for char in in_string if char.isdecimal())
@@ -38,11 +45,44 @@ def login_by_email(email, password):
 	else:
 		return None
 
-def create_new_user(user_obj, new_password):
+def create_new_user(user, new_password, confirm_password):
+	"""
+	Create a new user. Throws exceptions if the provided information is incorrect
+
+	Returns the result of the user creation
+	"""
+
+	validate_user(user)
+	validate_password(new_password, confirm_password)
+
 	#TODO create user by phone as well
 	password_hash, salt = auth_service.hash_password(new_password)
 
-	return user_dao.create_user_by_email(user_obj, password_hash, salt)
+	return user_dao.create_user_by_email(user, password_hash, salt)
+
+def validate_user(user):
+	"""
+	Given a user object, make sure all fields are valid. Throws a CreateUserException
+	if not.
+	"""
+	if user.email == None or VALID_EMAIL_PATTERN.search(user.email) == None:
+		raise CreateUserException("Please provide a valid e-mail")
+	if user.first_name == None or len(user.first_name) < 1:
+		raise CreateUserException("Please provide a first name")
+	if user.last_name == None or len(user.last_name) < 1:
+		raise CreateUserException("Please provide a last name")
+
+def validate_password(password, confirm):
+	"""
+	Check the password and confirm password input to see if they are correct.
+	If anything from user input is incorrect, a CreateUserException is thrown
+
+	Validation needs to be handled by exceptions, this method returns nothing.
+	"""
+	if password != confirm:
+		raise CreateUserException("Passwords do not match")
+	if len(password) < MIN_PASSWORD_LENGTH:
+		raise CreateUserException("Password is too short, needs to be " + str(MIN_PASSWORD_LENGTH) + " characters long")
 
 def get_user_by_id(user_id):
 	return user_dao.get_user_by_id(user_id)

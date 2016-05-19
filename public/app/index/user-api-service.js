@@ -27,7 +27,7 @@ define([
 						this.handleLoggedIn();
 					}
 					
-					return response.data.success;
+					return response.data;
 				})
 		},
 		checkLogIn : function() {

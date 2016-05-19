@@ -6,3 +6,9 @@ class DAOException(LocalSocialException):
 
 class ServiceException(LocalSocialException):
 	pass
+
+class UserServiceException(ServiceException):
+	pass
+
+class CreateUserException(ServiceException):
+	pass

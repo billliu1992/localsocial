@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from localsocial import app
-from localsocial.exceptions import ServiceException
+from localsocial.exceptions import ServiceException, CreateUserException
 from localsocial.decorator.user_decorator import login_required, query_user
 from localsocial.decorator.route_decorator import api_endpoint, location_endpoint
 from localsocial.service import facebook_service, user_service, post_service, notification_service
@@ -71,15 +71,16 @@ def create_user():
 	password = request.form["password"]
 	confirm_password = request.form["confirm-password"]
 
-	if password != confirm_password:
-		return { "success" : False, "reason" : "password" }
-	else:
-		new_user = User(email, phone, first_name, last_name, nick_name, portrait, "", DEFAULT_PREFS)
+	new_user = User(email, phone, first_name, last_name, nick_name, portrait, "", DEFAULT_PREFS)
 
-		new_user = user_service.create_new_user(new_user, password)
-		session["user_id"] = new_user.user_id
+	try:
+		new_user = user_service.create_new_user(new_user, password, confirm_password)
+	except CreateUserException as cue:
+		return { "success" : False, "message" : str(cue) }
 
-		return { "success" : True }
+	session["user_id"] = new_user.user_id
+
+	return { "success" : True }
 
 
 @api_endpoint('/user/me', methods=("GET",))
